@@ -1,5 +1,6 @@
 # Déploiement continu : chaque push sur main publie le dossier site/ sur GitHub Pages.
-# Site statique, aucun build. Domaine personnalisé : ajouter site/CNAME une fois le domaine réservé.
+# Site statique, aucun build. Domaine personnalisé legantis.net : réglé dans les paramètres Pages du dépôt
+# (avec un déploiement par workflow, GitHub ignore le fichier CNAME), DNS chez Hostinger.
 name: Déployer sur GitHub Pages
 
 on:
