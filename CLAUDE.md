@@ -28,7 +28,7 @@ En ligne sur **https://legantis.net** (GitHub Pages, déploiement à chaque push
 - Toute modification de ces données se fait dans les **4 pages** (accueil + légal, FR + EN), dans les **2 blocs JSON-LD** et dans les pages légales d'Atlasya (`Medlink/apps/web-*/src/pages/MentionsLegalesPage.jsx`).
 
 ## Domaine et DNS
-- `legantis.net` acheté chez Hostinger le 14/09/2026 (expire le 14/09/2027). Titulaire : la société (profil WHOIS 15854315), protection WHOIS active, domaine verrouillé.
+- `legantis.net` acheté chez Hostinger le 14/09/2026 (expire le 14/09/2027). Titulaire : la société (profil WHOIS 15857626, téléphone +212 672759097 depuis le 14/09/2026 ; l'API Hostinger ne modifie pas un profil : en recréer un et basculer les 4 rôles), protection WHOIS active, domaine verrouillé.
 - DNS chez Hostinger : `@` A → 185.199.108-111.153 et AAAA → 2606:50c0:8000-8003::153 (GitHub Pages), `www` CNAME → `warimvp.github.io.`
 - Le domaine personnalisé est réglé dans les paramètres Pages du dépôt (`gh api repos/Warimvp/legantis/pages`) : avec un déploiement par workflow, un fichier `site/CNAME` serait ignoré.
 
