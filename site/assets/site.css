@@ -1,42 +1,50 @@
-/* Legantis — feuille de style unique du site vitrine (4 pages : FR, EN, mentions légales FR/EN).
-   Parti pris : un éditeur de logiciels présenté comme un éditeur tout court — un catalogue
-   de titres (les produits) et un colophon (l'identité légale), composés en Newsreader,
-   Schibsted Grotesk et Spline Sans Mono. Aucune dépendance, aucun script. */
+/* Legantis — feuille de style unique du site vitrine (accueil FR/EN, mentions légales FR/EN, 404).
+   Parti pris : les papiers d'une société marocaine, pris au sérieux et mis en beauté.
+   Fond « chaux » (Casablanca, Dar el Beïda, la ville blanche) ; encre de tampon indigo, entre le
+   bleu d'Atlasya et le violet de Rihla ; le cachet de la société pressé sur la fiche d'identité ;
+   le colophon composé comme un formulaire à points de conduite ; les produits en couvertures.
+   Archivo à largeur variable (étendue pour les titres, condensée pour le cachet), Spline Sans Mono
+   pour les identifiants. Aucun script : le grain d'encre est un filtre SVG déclaré dans la page. */
 
 :root {
-  --papier: #F4F5F1;
+  --chaux: #F6F7F9;
   --carte: #FFFFFF;
-  --encre: #121C1A;
-  --gris: #55615D;
-  --filet: #D8DDD6;
-  --vert: #0E5C4C;
-  --vert-pale: #E2EEE9;
-  --sur-vert: #FFFFFF;
-  --laiton: #B08D3C;
-  --laiton-texte: #7A5C1C;
-  --focus: #0E5C4C;
+  --encre: #16172E;
+  --gris: #5A5C72;
+  --filet: #DCDEE6;
+  --pointille: #A9ABBD;
+  --tampon: #3D36B2;
+  --tampon-pale: #ECEBFA;
+  --sur-tampon: #FFFFFF;
+  --focus: #3D36B2;
+  --ombre: 0 1px 2px rgb(22 23 46 / .04), 0 24px 48px -30px rgb(22 23 46 / .3);
+  --melange-cachet: multiply;
 
-  --f-titre: "Newsreader", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
-  --f-texte: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Couleurs des produits, relevées sur leurs icônes : identiques dans les deux thèmes */
+  --atlasya: #252981;
+  --rihla: #4E46C8;
+
+  --f-texte: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --f-mono: "Spline Sans Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  --largeur: 1120px;
+  --largeur: 1160px;
   --mesure: 66ch;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --papier: #0E1513;
-    --carte: #151E1B;
-    --encre: #E4EAE6;
-    --gris: #9CA9A3;
-    --filet: #26312D;
-    --vert: #6CC4A8;
-    --vert-pale: #16302A;
-    --sur-vert: #0B1210;
-    --laiton: #C9A75C;
-    --laiton-texte: #D8B86F;
-    --focus: #6CC4A8;
+    --chaux: #0E0F1B;
+    --carte: #161728;
+    --encre: #E8E8F2;
+    --gris: #A2A4BA;
+    --filet: #292B42;
+    --pointille: #4F5170;
+    --tampon: #ABA6FF;
+    --tampon-pale: #1F1D45;
+    --sur-tampon: #0E0F1B;
+    --focus: #ABA6FF;
+    --ombre: 0 1px 2px rgb(0 0 0 / .3), 0 24px 48px -30px rgb(0 0 0 / .8);
+    --melange-cachet: screen;
   }
 }
 
@@ -44,117 +52,190 @@
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 body {
   margin: 0;
-  background: var(--papier);
+  background: var(--chaux);
   color: var(--encre);
   font: 400 1.0625rem/1.62 var(--f-texte);
   text-rendering: optimizeLegibility;
 }
-img { max-width: 100%; display: block; }
-a { color: var(--vert); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+img, svg { display: block; max-width: 100%; }
+a { color: var(--tampon); text-underline-offset: 3px; text-decoration-thickness: 1px; }
 a:hover { text-decoration-thickness: 2px; }
-a:focus-visible, .bouton:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
-p { margin: 0; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 3px; }
+p { margin: 0; text-wrap: pretty; }
+h1, h2, h3 { text-wrap: balance; }
 
 .enveloppe { max-width: var(--largeur); margin: 0 auto; padding: 0 clamp(20px, 4vw, 40px); }
 .lien-evitement { position: absolute; left: -9999px; }
 .lien-evitement:focus { left: 16px; top: 12px; background: var(--carte); padding: 8px 12px; z-index: 10; }
+.filtres { position: absolute; width: 0; height: 0; overflow: hidden; }
 
 /* ── Barre du haut ─────────────────────────────────────────── */
 .barre { border-bottom: 1px solid var(--filet); }
-.barre .enveloppe { display: flex; align-items: center; justify-content: space-between; gap: 20px 32px; flex-wrap: wrap; padding-top: 20px; padding-bottom: 20px; }
-.marque { display: inline-flex; align-items: baseline; gap: 8px; color: var(--encre); text-decoration: none; }
-.marque b { font: 600 1.55rem/1 var(--f-titre); letter-spacing: -0.01em; }
-.marque small { font: 500 0.68rem/1 var(--f-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--gris); }
-.nav { display: flex; align-items: center; gap: 8px 24px; flex-wrap: wrap; list-style: none; margin: 0; padding: 0; font-size: 0.95rem; }
+.barre .enveloppe { display: flex; align-items: center; justify-content: space-between; gap: 14px 32px; flex-wrap: wrap; padding-top: 18px; padding-bottom: 18px; }
+.marque { display: inline-flex; align-items: center; gap: 11px; color: var(--encre); text-decoration: none; }
+.marque svg { width: 32px; height: 32px; flex: none; }
+.marque b { font-weight: 700; font-size: 1.32rem; line-height: 1; font-stretch: 112%; letter-spacing: -0.025em; }
+.marque small { font: 500 0.64rem/1 var(--f-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--gris); padding: 3px 0 3px 11px; border-left: 1px solid var(--filet); }
+.nav { display: flex; align-items: center; gap: 6px 26px; flex-wrap: wrap; list-style: none; margin: 0; padding: 0; font-size: 0.95rem; font-weight: 500; }
 .nav a { color: var(--gris); text-decoration: none; }
 .nav a:hover { color: var(--encre); }
-.nav .langue { font: 500 0.78rem/1 var(--f-mono); letter-spacing: 0.06em; color: var(--encre); border: 1px solid var(--filet); padding: 6px 9px; border-radius: 3px; }
+.nav .langue { display: inline-block; font: 500 0.76rem/1 var(--f-mono); letter-spacing: 0.06em; color: var(--encre); border: 1px solid var(--filet); padding: 7px 10px; border-radius: 999px; }
+.nav .langue:hover { border-color: var(--tampon); color: var(--tampon); }
 
 /* ── Ouverture ─────────────────────────────────────────────── */
-.ouverture .enveloppe { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 330px); gap: clamp(32px, 6vw, 72px); align-items: end; padding-top: clamp(56px, 9vw, 116px); padding-bottom: clamp(48px, 7vw, 88px); }
-.surtitre { font: 500 0.74rem/1.3 var(--f-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--laiton-texte); }
-h1 { font: 500 clamp(2.5rem, 5.6vw, 4.6rem)/1.03 var(--f-titre); letter-spacing: -0.022em; margin: 16px 0 24px; text-wrap: balance; }
-h1 em, h2 em { font-style: italic; color: var(--vert); }
-.chapeau { font-size: clamp(1.1rem, 1.6vw, 1.25rem); color: var(--gris); max-width: 54ch; }
-.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
-.bouton { display: inline-flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 4px; font-weight: 600; font-size: 0.98rem; text-decoration: none; border: 1px solid var(--vert); }
-.bouton--plein { background: var(--vert); color: var(--sur-vert); }
-.bouton--trait { color: var(--vert); }
-.bouton:hover { text-decoration: none; filter: brightness(1.06); }
+.ouverture { overflow-x: clip; }
+.ouverture .enveloppe { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 360px); gap: 56px clamp(40px, 6vw, 88px); align-items: center; padding-top: clamp(56px, 8vw, 108px); padding-bottom: clamp(88px, 9vw, 128px); }
+.surtitre { font: 500 0.74rem/1.3 var(--f-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--tampon); }
+h1 { font-weight: 640; font-size: clamp(2.5rem, 5vw, 4.25rem); line-height: 1.02; font-stretch: 112%; letter-spacing: -0.034em; margin: 18px 0 26px; }
+h1 em, h2 em { font-style: normal; color: var(--tampon); }
+.chapeau { font-size: clamp(1.1rem, 1.5vw, 1.24rem); line-height: 1.55; color: var(--gris); max-width: 52ch; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+.bouton { display: inline-flex; align-items: center; gap: 10px; padding: 13px 20px; border-radius: 8px; border: 1.5px solid var(--tampon); font-weight: 600; font-size: 0.98rem; line-height: 1.2; text-decoration: none; transition: background-color .15s, color .15s; }
+.bouton--plein { background: var(--tampon); color: var(--sur-tampon); }
+.bouton--plein:hover { background: color-mix(in srgb, var(--tampon) 84%, var(--encre)); }
+.bouton--trait { color: var(--tampon); }
+.bouton--trait:hover { background: var(--tampon-pale); }
 
-/* Fiche d'identité : la preuve d'existence, visible dès l'ouverture */
-.fiche { background: var(--carte); border: 1px solid var(--filet); border-radius: 6px; padding: 18px 20px 20px; }
-.fiche h2 { font: 500 0.72rem/1.3 var(--f-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--laiton-texte); margin: 0 0 12px; }
-.fiche dl { margin: 0; display: grid; gap: 10px; }
-.fiche div { display: grid; gap: 1px; }
-.fiche dt { font-size: 0.78rem; color: var(--gris); }
-.fiche dd { margin: 0; font: 500 0.9rem/1.35 var(--f-mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+/* Fiche d'identité : un formulaire rempli, que le cachet vient valider */
+.fiche { position: relative; background: var(--carte); border: 1px solid var(--filet); border-radius: 12px; padding: 20px 24px 22px; box-shadow: var(--ombre); }
+.fiche h2 { font: 500 0.7rem/1.3 var(--f-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--encre); margin: 0 0 16px; padding-bottom: 14px; border-bottom: 1px solid var(--filet); }
+.fiche dl { margin: 0; display: grid; gap: 13px; }
+.fiche dl div { display: grid; gap: 2px; }
+.fiche dt { font-size: 0.76rem; color: var(--gris); }
+.fiche dd { margin: 0; padding-bottom: 5px; border-bottom: 1.5px dotted var(--pointille); font: 500 0.88rem/1.4 var(--f-mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+
+/* Cachet de la société : double filet, capitales condensées, encre usée (filtre #encre) */
+.cachet {
+  --angle: -6deg;
+  color: var(--tampon);
+  border: 3px solid currentColor;
+  border-radius: 12px;
+  outline: 1.2px solid currentColor;
+  outline-offset: -8px;
+  padding: 15px 18px 14px;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  font-stretch: 72%;
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
+  opacity: .9;
+  transform: rotate(var(--angle));
+  mix-blend-mode: var(--melange-cachet);
+  filter: url(#encre);
+  pointer-events: none;
+  user-select: none;
+  animation: coup-de-tampon .55s cubic-bezier(.2, 1.4, .45, 1) .45s both;
+}
+.cachet b { display: block; font-size: 1.12rem; font-weight: 800; line-height: 1.15; letter-spacing: 0.03em; margin-bottom: 4px; }
+.cachet span { display: block; }
+/* Dans le flux, sous la liste : il déborde du papier par ses marges négatives sans jamais couvrir l'adresse */
+.fiche .cachet { position: relative; width: 308px; max-width: calc(100% + 40px); margin: 24px -40px -54px auto; }
+@keyframes coup-de-tampon {
+  from { opacity: 0; transform: rotate(var(--angle)) scale(1.55); }
+  65% { opacity: .95; transform: rotate(var(--angle)) scale(.97); }
+  to { opacity: .9; transform: rotate(var(--angle)) scale(1); }
+}
 
 /* ── Sections ──────────────────────────────────────────────── */
 .section { border-top: 1px solid var(--filet); }
-.section > .enveloppe { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 24px clamp(24px, 5vw, 64px); padding-top: clamp(48px, 7vw, 88px); padding-bottom: clamp(48px, 7vw, 88px); }
-.section .rail { padding-top: 10px; }
+.section > .enveloppe { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 24px clamp(24px, 5vw, 72px); padding-top: clamp(56px, 7vw, 96px); padding-bottom: clamp(56px, 7vw, 96px); }
+.section .rail { padding-top: 12px; }
 .section .rail .surtitre { position: sticky; top: 24px; display: block; }
-h2 { font: 500 clamp(1.85rem, 3.3vw, 2.7rem)/1.1 var(--f-titre); letter-spacing: -0.016em; margin: 0 0 14px; text-wrap: balance; }
-h3 { font: 600 1.08rem/1.3 var(--f-texte); margin: 0; }
-.intro { color: var(--gris); max-width: var(--mesure); margin-bottom: 36px; }
+h2 { font-weight: 640; font-size: clamp(1.9rem, 3.4vw, 2.8rem); line-height: 1.06; font-stretch: 114%; letter-spacing: -0.03em; margin: 0 0 14px; }
+h3 { font-weight: 650; font-size: 1.1rem; line-height: 1.3; margin: 0; }
+.intro { color: var(--gris); max-width: var(--mesure); margin-bottom: 40px; }
 
-/* Catalogue : un titre par produit */
-.catalogue { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-.titre { background: var(--carte); border: 1px solid var(--filet); border-radius: 8px; padding: 24px; display: grid; gap: 18px; align-content: start; }
-.titre-tete { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 16px; align-items: center; }
-.titre-tete img { width: 56px; height: 56px; border-radius: 13px; }
-.titre-tete h3 { font: 600 1.7rem/1.05 var(--f-titre); letter-spacing: -0.01em; }
-.titre-tete p { color: var(--gris); font-size: 0.95rem; margin-top: 4px; }
-.titre > p { max-width: var(--mesure); }
-.faits { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 18px; padding-top: 16px; border-top: 1px solid var(--filet); font-size: 0.9rem; }
-.faits dt { font: 500 0.72rem/1.9 var(--f-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--gris); }
+/* Catalogue : chaque produit en couverture, dans ses propres couleurs */
+.catalogue { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.titre { background: var(--carte); border: 1px solid var(--filet); border-radius: 16px; overflow: hidden; display: grid; grid-template-rows: auto 1fr; box-shadow: var(--ombre); }
+.couverture { position: relative; isolation: isolate; overflow: hidden; min-height: 236px; padding: 28px; display: grid; align-content: end; gap: 6px; color: #FFFFFF; }
+.couverture::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.couverture img { width: 64px; height: 64px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 0 0 1px rgb(255 255 255 / .2), 0 12px 26px -12px rgb(0 0 0 / .55); }
+.couverture h3 { font-weight: 700; font-size: 2.35rem; line-height: 1; font-stretch: 118%; letter-spacing: -0.035em; }
+.couverture p { font-size: 0.98rem; color: rgb(255 255 255 / .8); }
+/* Atlasya : la trame de points et le tracé de pouls de son icône */
+.titre--atlasya .couverture { background: var(--atlasya); }
+.titre--atlasya .couverture::before {
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 340 90'><path d='M0 56h118l12-22 15 46 17-70 15 56 11-10h152' fill='none' stroke='%2334D399' stroke-width='3' stroke-linejoin='round' stroke-linecap='round'/></svg>") right -24px top 30px / 330px auto no-repeat,
+    radial-gradient(circle, rgb(255 255 255 / .13) 1.1px, transparent 1.7px) 0 0 / 15px 15px;
+  opacity: .9;
+}
+/* Rihla : l'étoile à huit branches de son icône */
+.titre--rihla .couverture { background: var(--rihla); }
+.titre--rihla .couverture::before {
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><g fill='none' stroke='%23F7F0E3' stroke-width='1.1'><rect x='21' y='21' width='58' height='58'/><rect x='21' y='21' width='58' height='58' transform='rotate(45 50 50)'/><rect x='31' y='31' width='38' height='38'/><rect x='31' y='31' width='38' height='38' transform='rotate(45 50 50)'/><circle cx='50' cy='50' r='9'/></g></svg>") right -64px top -64px / 300px no-repeat;
+  opacity: .24;
+}
+.titre-corps { padding: 24px 28px 26px; display: grid; gap: 20px; align-content: start; }
+.titre-corps > p { max-width: var(--mesure); }
+.faits { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 9px 18px; padding-top: 18px; border-top: 1px solid var(--filet); font-size: 0.92rem; }
+.faits dt { font: 500 0.68rem/2 var(--f-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--gris); }
 .faits dd { margin: 0; }
-.titre .suivre { font-weight: 600; justify-self: start; }
+.suivre { justify-self: start; display: inline-flex; align-items: center; gap: 8px; font-weight: 650; text-decoration: none; }
+.suivre:hover { text-decoration: underline; }
+.suivre span { display: inline-block; transition: transform .2s; }
+.suivre:hover span { transform: translateX(3px); }
 
-/* Services : trois colonnes de texte, un filet de laiton au-dessus */
-.services { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
-.service { border-top: 2px solid var(--laiton); padding-top: 16px; display: grid; gap: 8px; align-content: start; }
+/* Services : trois colonnes, un trait d'encre en tête */
+.services { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.service { position: relative; border-top: 1px solid var(--filet); padding-top: 20px; display: grid; gap: 8px; align-content: start; }
+.service::before { content: ""; position: absolute; left: 0; top: -2px; width: 40px; height: 3px; background: var(--tampon); }
 .service p { color: var(--gris); font-size: 0.97rem; }
 
-/* Colophon : l'identité légale composée comme la dernière page d'un livre */
-.colophon { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; }
-.colophon div { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--filet); }
-.colophon dt { font-size: 0.86rem; color: var(--gris); }
-.colophon dd { margin: 0; font: 500 0.92rem/1.45 var(--f-mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.note { margin-top: 18px; font-size: 0.88rem; color: var(--gris); max-width: var(--mesure); }
+/* Colophon : l'identité légale composée comme un formulaire, avec points de conduite */
+.colophon { margin: 0; display: grid; max-width: 820px; }
+.colophon div { display: grid; grid-template-columns: minmax(9rem, 15rem) minmax(0, 1fr); align-items: baseline; padding: 10px 0; }
+.colophon dt { display: flex; align-items: baseline; font-size: 0.9rem; color: var(--gris); }
+.colophon dt::after { content: ""; flex: 1 1 auto; min-width: 20px; margin: 0 14px 0 10px; border-bottom: 1.5px dotted var(--pointille); transform: translateY(-0.24em); }
+.colophon dd { margin: 0; font: 500 0.92rem/1.5 var(--f-mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.note { margin-top: 22px; font-size: 0.9rem; color: var(--gris); max-width: var(--mesure); }
 
-/* Contact */
-.contact { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+/* Contact : l'adresse email en grand, le reste en dessous */
+.contact { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 32px; max-width: 820px; }
 .contact div { display: grid; gap: 6px; align-content: start; }
-.contact dt { font: 500 0.72rem/1.3 var(--f-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gris); }
+.contact div:first-child { grid-column: 1 / -1; padding-bottom: 28px; border-bottom: 1px solid var(--filet); }
+.contact dt { font: 500 0.7rem/1.3 var(--f-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--gris); }
 .contact dd { margin: 0; font-size: 1.02rem; }
+.contact div:first-child dd { font-weight: 640; font-size: clamp(1.7rem, 4vw, 2.9rem); line-height: 1.1; font-stretch: 112%; letter-spacing: -0.03em; overflow-wrap: anywhere; }
+.contact div:first-child a { text-decoration-thickness: 2px; text-underline-offset: 7px; }
 
-/* Pages légales */
-.document { max-width: var(--mesure); padding-top: clamp(40px, 6vw, 72px); padding-bottom: clamp(56px, 8vw, 96px); }
-.document h1 { font-size: clamp(2.2rem, 4.4vw, 3.3rem); margin-top: 12px; }
-.document .date { color: var(--gris); font-size: 0.92rem; margin-bottom: 40px; }
-.document h2 { font-size: 1.45rem; margin: 40px 0 12px; }
+/* Pages légales et 404 */
+.document { max-width: 760px; padding-top: clamp(40px, 6vw, 80px); padding-bottom: clamp(56px, 8vw, 104px); }
+.document h1 { font-size: clamp(2.2rem, 4.4vw, 3.4rem); margin-top: 14px; }
+.document .date { color: var(--gris); font-size: 0.92rem; margin-bottom: 44px; }
+.document h2 { font-size: 1.5rem; font-stretch: 108%; margin: 44px 0 12px; }
 .document p + p { margin-top: 12px; }
 .document ul { margin: 12px 0 0; padding-left: 20px; display: grid; gap: 6px; }
-.document .colophon { grid-template-columns: 1fr; margin-top: 8px; }
+.document .colophon { margin-top: 12px; }
+.document .colophon div { grid-template-columns: minmax(9rem, 13rem) minmax(0, 1fr); }
+.cachet--retour { --angle: -4deg; display: inline-block; margin: 6px 0 34px; }
 
 /* Pied */
 .pied { border-top: 1px solid var(--filet); }
-.pied .enveloppe { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px; padding-top: 28px; padding-bottom: 40px; font-size: 0.86rem; color: var(--gris); }
+.pied .enveloppe { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px 24px; padding-top: 28px; padding-bottom: 40px; font-size: 0.86rem; color: var(--gris); }
 .pied nav { display: flex; gap: 8px 20px; flex-wrap: wrap; }
 .pied a { color: var(--gris); }
+.pied a:hover { color: var(--encre); }
 
 @media (max-width: 900px) {
   .ouverture .enveloppe, .section > .enveloppe { grid-template-columns: minmax(0, 1fr); }
+  .fiche { max-width: 460px; }
   .section .rail { padding-top: 0; }
   .section .rail .surtitre { position: static; }
-  .catalogue, .services, .contact, .colophon { grid-template-columns: minmax(0, 1fr); }
+  .catalogue, .services { grid-template-columns: minmax(0, 1fr); }
 }
-@media (max-width: 520px) {
-  .colophon div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+@media (max-width: 560px) {
+  .colophon div, .document .colophon div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .colophon dt::after { display: none; }
+  .contact { grid-template-columns: minmax(0, 1fr); }
   .nav { gap: 6px 16px; font-size: 0.9rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .cachet { animation: none; }
+  .suivre span { transition: none; }
 }

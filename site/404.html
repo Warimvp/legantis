@@ -11,13 +11,25 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&family=Schibsted+Grotesk:wght@400;500;600&family=Spline+Sans+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Spline+Sans+Mono:wght@500&display=swap">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
+<svg class="filtres" aria-hidden="true" focusable="false">
+  <filter id="encre" x="-5%" y="-10%" width="110%" height="120%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" seed="5" result="grain"/>
+    <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -8 0 0 0 5.8" result="usure"/>
+    <feComposite in="SourceGraphic" in2="usure" operator="in" result="encre"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="1" seed="11" result="onde"/>
+    <feDisplacementMap in="encre" in2="onde" scale="1.5" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
 <header class="barre">
   <div class="enveloppe">
-    <a class="marque" href="/" aria-label="Legantis, accueil"><b>Legantis</b><small>Digital Service</small></a>
+    <a class="marque" href="/" aria-label="Legantis, accueil">
+      <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#3D36B2"/><path d="M21 13h11v29h17v9H21z" fill="#F6F7F9"/><rect x="41" y="13" width="8" height="8" fill="#E3A33A"/></svg>
+      <b>Legantis</b><small>Digital Service</small>
+    </a>
   </div>
 </header>
 
@@ -25,6 +37,10 @@
   <article class="document">
     <span class="surtitre">Erreur 404</span>
     <h1>Cette page n'existe pas.</h1>
+    <div class="cachet cachet--retour" aria-hidden="true">
+      <b>N'habite pas à l'adresse indiquée</b>
+      <span>Retour à l'expéditeur · Return to sender</span>
+    </div>
     <p>L'adresse est peut-être mal saisie, ou la page a été déplacée.</p>
     <div class="actions">
       <a class="bouton bouton--plein" href="/">Retour à l'accueil</a>

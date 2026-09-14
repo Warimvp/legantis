@@ -6,6 +6,8 @@
 <title>Legantis — éditeur de logiciels à Casablanca</title>
 <meta name="description" content="LEGANTIS DIGITAL SERVICE SAS conçoit, développe et édite des applications web et mobiles au Maroc : Atlasya pour la santé, Rihla pour les langues.">
 <meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#F6F7F9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E0F1B" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="canonical" href="https://legantis.net/">
@@ -54,15 +56,28 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&family=Schibsted+Grotesk:wght@400;500;600&family=Spline+Sans+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Spline+Sans+Mono:wght@500&display=swap">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
+<svg class="filtres" aria-hidden="true" focusable="false">
+  <!-- Grain du cachet : l'encre manque par endroits (bruit fin), le bord tremble un peu (bruit large). -->
+  <filter id="encre" x="-5%" y="-10%" width="110%" height="120%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" seed="5" result="grain"/>
+    <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -8 0 0 0 5.8" result="usure"/>
+    <feComposite in="SourceGraphic" in2="usure" operator="in" result="encre"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="1" seed="11" result="onde"/>
+    <feDisplacementMap in="encre" in2="onde" scale="1.5" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
 <a class="lien-evitement" href="#contenu">Aller au contenu</a>
 
 <header class="barre">
   <div class="enveloppe">
-    <a class="marque" href="./" aria-label="Legantis, accueil"><b>Legantis</b><small>Digital Service</small></a>
+    <a class="marque" href="./" aria-label="Legantis, accueil">
+      <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#3D36B2"/><path d="M21 13h11v29h17v9H21z" fill="#F6F7F9"/><rect x="41" y="13" width="8" height="8" fill="#E3A33A"/></svg>
+      <b>Legantis</b><small>Digital Service</small>
+    </a>
     <nav aria-label="Navigation principale">
       <ul class="nav">
         <li><a href="#produits">Produits</a></li>
@@ -96,6 +111,12 @@
           <div><dt>ICE</dt><dd>004026900000030</dd></div>
           <div><dt>Siège</dt><dd>Oasis Offices Latitudes, Bureau 304, Maarif, Casablanca</dd></div>
         </dl>
+        <div class="cachet" aria-hidden="true">
+          <b>Legantis Digital Service SAS</b>
+          <span>Capital 10 000 MAD · Casablanca</span>
+          <span>Oasis Offices Latitudes · Bureau 304 · Maarif</span>
+          <span>RC 745587 · IF 73343482 · ICE 004026900000030</span>
+        </div>
       </aside>
     </div>
   </section>
@@ -107,31 +128,37 @@
         <h2 id="produits-titre">Nos produits</h2>
         <p class="intro">Deux titres au catalogue, conçus, développés et maintenus par Legantis.</p>
         <div class="catalogue">
-          <article class="titre" aria-labelledby="atlasya-nom">
-            <div class="titre-tete">
-              <img src="assets/atlasya.png" alt="" width="56" height="56">
-              <div><h3 id="atlasya-nom">Atlasya</h3><p>La plateforme médicale de confiance au Maroc</p></div>
+          <article class="titre titre--atlasya" aria-labelledby="atlasya-nom">
+            <div class="couverture">
+              <img src="assets/atlasya.png" alt="" width="64" height="64">
+              <h3 id="atlasya-nom">Atlasya</h3>
+              <p>La plateforme médicale de confiance au Maroc</p>
             </div>
-            <p>Les patients trouvent un médecin par spécialité ou par ville, prennent rendez-vous en ligne et gardent leur suivi santé au même endroit. Les cabinets gèrent leur agenda, leurs dossiers et leurs encaissements avec Atlasya Pro.</p>
-            <dl class="faits">
-              <dt>Domaine</dt><dd>Santé : prise de rendez-vous et logiciel de cabinet</dd>
-              <dt>Plateformes</dt><dd>Web · application mobile en préparation</dd>
-              <dt>Langues</dt><dd>Français, arabe, anglais</dd>
-            </dl>
-            <a class="suivre" href="https://atlasyahealth.com">atlasyahealth.com →</a>
+            <div class="titre-corps">
+              <p>Les patients trouvent un médecin par spécialité ou par ville, prennent rendez-vous en ligne et gardent leur suivi santé au même endroit. Les cabinets gèrent leur agenda, leurs dossiers et leurs encaissements avec Atlasya Pro.</p>
+              <dl class="faits">
+                <dt>Domaine</dt><dd>Santé : prise de rendez-vous et logiciel de cabinet</dd>
+                <dt>Plateformes</dt><dd>Web · application mobile en préparation</dd>
+                <dt>Langues</dt><dd>Français, arabe, anglais</dd>
+              </dl>
+              <a class="suivre" href="https://atlasyahealth.com">atlasyahealth.com <span aria-hidden="true">→</span></a>
+            </div>
           </article>
-          <article class="titre" aria-labelledby="rihla-nom">
-            <div class="titre-tete">
-              <img src="assets/rihla.png" alt="" width="56" height="56">
-              <div><h3 id="rihla-nom">Rihla</h3><p>Les langues du monde, gratuites pour toujours</p></div>
+          <article class="titre titre--rihla" aria-labelledby="rihla-nom">
+            <div class="couverture">
+              <img src="assets/rihla.png" alt="" width="64" height="64">
+              <h3 id="rihla-nom">Rihla</h3>
+              <p>Les langues du monde, gratuites pour toujours</p>
             </div>
-            <p>Quatorze langues à apprendre sur la route d'Ibn Battuta, de Grenade à Tokyo : leçons, jeux de révision et carnet de révision espacée. Sans compte ni publicité, et tout fonctionne hors ligne.</p>
-            <dl class="faits">
-              <dt>Domaine</dt><dd>Éducation : apprentissage des langues</dd>
-              <dt>Plateformes</dt><dd>Web (application installable) · iPhone en préparation</dd>
-              <dt>Prix</dt><dd>Gratuit, sans achat intégré</dd>
-            </dl>
-            <a class="suivre" href="https://warimvp.github.io/rihla/">Ouvrir Rihla →</a>
+            <div class="titre-corps">
+              <p>Quatorze langues à apprendre sur la route d'Ibn Battuta, de Grenade à Tokyo : leçons, jeux de révision et carnet de révision espacée. Sans compte ni publicité, et tout fonctionne hors ligne.</p>
+              <dl class="faits">
+                <dt>Domaine</dt><dd>Éducation : apprentissage des langues</dd>
+                <dt>Plateformes</dt><dd>Web (application installable) · iPhone en préparation</dd>
+                <dt>Prix</dt><dd>Gratuit, sans achat intégré</dd>
+              </dl>
+              <a class="suivre" href="https://warimvp.github.io/rihla/">Ouvrir Rihla <span aria-hidden="true">→</span></a>
+            </div>
           </article>
         </div>
       </div>
