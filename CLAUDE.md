@@ -34,7 +34,7 @@ En ligne sur **https://legantis.net** (GitHub Pages, déploiement à chaque push
 
 ## En attente
 - **Boîte `contact@legantis.net`** : affichée sur les 4 pages, à créer par le user dans hPanel (Hostinger Email). Jamais créée par Claude (mot de passe).
-- **Téléphone** : +33 7 66 37 28 99 provisoire. Passer au numéro marocain dès qu'il est actif (4 pages + 2 JSON-LD), et donner le même à D&B.
+- **Téléphone chez D&B** : le site affiche le numéro marocain +212 6 72 75 90 97 depuis le 14/09/2026 (4 pages + 2 JSON-LD, ex-+33 7 66 37 28 99 provisoire). Faire corriger la fiche D&B (encore « 766372899 ») avec ce même numéro.
 - **legantis.ma** (plus tard) : exige un contact administratif personne physique résidant au Maroc (coordonnées publiques, pas de masquage en .ma), un RC modèle 7 de moins de 3 mois déposé sous 14 jours, et 2 à 4 semaines de validation. Ensuite : `.net` redirige vers `.ma`, et toutes les URL absolues (canonical, hreflang, OG, JSON-LD, sitemap, robots) basculent.
 - Hébergement : les pages légales annoncent GitHub Pages. Si l'hébergeur change, corriger le § « Hébergement » (FR + EN).
 
