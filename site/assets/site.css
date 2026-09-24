@@ -180,6 +180,15 @@ h3 { font-weight: 650; font-size: 1.1rem; line-height: 1.3; margin: 0; }
 .suivre span { display: inline-block; transition: transform .2s; }
 .suivre:hover span { transform: translateX(3px); }
 
+/* À paraître : les prochains titres en épreuves, cadre pointillé, sans nom ni couverture */
+.parution { display: grid; gap: 40px; }
+.parution-groupe h3 { font: 500 0.72rem/1.3 var(--f-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--gris); margin-bottom: 16px; }
+.epreuves { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.epreuve { border: 1.5px dashed var(--pointille); border-radius: 14px; padding: 20px 22px; display: grid; grid-template-rows: auto 1fr auto; gap: 8px; }
+.epreuve h4 { font-weight: 650; font-size: 1.08rem; line-height: 1.3; font-stretch: 106%; margin: 0; }
+.epreuve p { color: var(--gris); font-size: 0.95rem; }
+.epreuve .support { justify-self: start; margin-top: 6px; padding: 3px 9px; border-radius: 999px; background: var(--tampon-pale); color: var(--tampon); font: 500 0.66rem/1.5 var(--f-mono); letter-spacing: 0.1em; text-transform: uppercase; }
+
 /* Services : trois colonnes, un trait d'encre en tête */
 .services { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
 .service { position: relative; border-top: 1px solid var(--filet); padding-top: 20px; display: grid; gap: 8px; align-content: start; }
@@ -227,6 +236,7 @@ h3 { font-weight: 650; font-size: 1.1rem; line-height: 1.3; margin: 0; }
   .section .rail { padding-top: 0; }
   .section .rail .surtitre { position: static; }
   .catalogue, .services { grid-template-columns: minmax(0, 1fr); }
+  .epreuves { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 560px) {
   .colophon div, .document .colophon div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
