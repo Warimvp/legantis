@@ -84,6 +84,7 @@
   </filter>
 </svg>
 <a class="lien-evitement" href="#contenu">Skip to content</a>
+<div class="progression" aria-hidden="true"></div>
 
 <header class="barre">
   <div class="enveloppe">
@@ -91,7 +92,7 @@
       <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#3D36B2"/><path d="M21 13h11v29h17v9H21z" fill="#F6F7F9"/><rect x="41" y="13" width="8" height="8" fill="#E3A33A"/></svg>
       <b>Legantis</b><small>Digital Service</small>
     </a>
-    <nav aria-label="Main navigation">
+    <nav class="nav-bureau" aria-label="Main navigation">
       <ul class="nav">
         <li><a href="#services">Services</a></li>
         <li><a href="#produits">Products</a></li>
@@ -100,174 +101,240 @@
         <li><a class="langue" href="../" hreflang="fr" lang="fr">FR</a></li>
       </ul>
     </nav>
+    <a class="bouton bouton--petit barre-cta" href="mailto:contact@legantis.net">Tell us about your project</a>
+    <a class="menu-ouvrir" href="#menu" aria-label="Open the menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg></a>
   </div>
 </header>
+<nav id="menu" class="menu-plein" aria-label="Menu">
+  <a class="menu-fermer" href="#!" aria-label="Close the menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg></a>
+  <ul>
+    <li style="--i:0"><a href="#services">Services</a></li>
+    <li style="--i:1"><a href="#produits">Products</a></li>
+    <li style="--i:2"><a href="#societe">Company</a></li>
+    <li style="--i:3"><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="menu-pied">
+    <a href="mailto:contact@legantis.net">contact@legantis.net</a>
+    <a href="../" hreflang="fr" lang="fr">Français</a>
+  </div>
+</nav>
 
 <main id="contenu">
-  <section class="ouverture" aria-labelledby="titre">
-    <div class="enveloppe">
-      <div>
-        <span class="surtitre">Web and mobile development · Casablanca, Morocco</span>
-        <h1 id="titre"><em>Custom</em> web and mobile apps, designed and built in Morocco.</h1>
-        <p class="chapeau">LEGANTIS DIGITAL SERVICE builds applications for companies, professionals and founders: web platforms, iPhone and Android apps, business software. We also publish our own titles, Atlasya for healthcare and Rihla for languages.</p>
-        <div class="actions">
-          <a class="bouton bouton--plein" href="mailto:contact@legantis.net">Tell us about your project</a>
-          <a class="bouton bouton--trait" href="#services">See our services</a>
-        </div>
+  <section class="ouverture grain" aria-labelledby="titre">
+    <div class="halo" aria-hidden="true"></div>
+    <div class="forme forme--cercle" aria-hidden="true"></div>
+    <div class="forme forme--carre" aria-hidden="true"></div>
+    <svg class="rond-tournant" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+      <path id="cercle-texte" d="M50 50m-37 0a37 37 0 1 1 74 0a37 37 0 1 1-74 0" fill="none"/>
+      <text><textPath href="#cercle-texte">Legantis · Casablanca · Web · Mobile · </textPath></text>
+    </svg>
+    <div class="enveloppe ouverture-corps">
+      <p class="badge">Taking on new projects · 2026 →</p>
+      <h1 id="titre">
+        <span class="ligne"><span class="mot" style="--i:0">Custom</span> <span class="mot" style="--i:1">web</span></span>
+        <span class="ligne contour"><span class="mot" style="--i:2">and</span> <span class="mot" style="--i:3">mobile</span> <span class="mot" style="--i:4">apps,</span></span>
+        <span class="ligne"><span class="mot" style="--i:5">built</span> <span class="mot" style="--i:6">in</span> <span class="mot" style="--i:7">Morocco.</span></span>
+      </h1>
+      <p class="chapeau">From Casablanca, LEGANTIS DIGITAL SERVICE builds applications for companies, professionals and founders: web platforms, iPhone and Android apps, business software. We also publish our own titles, Atlasya for healthcare and Rihla for languages.</p>
+      <div class="actions">
+        <a class="bouton bouton--plein" href="mailto:contact@legantis.net">Tell us about your project <span class="fleche" aria-hidden="true">→</span></a>
+        <a class="bouton bouton--trait" href="#services">See our services</a>
       </div>
-      <aside class="fiche" aria-labelledby="fiche-titre">
-        <h2 id="fiche-titre">Company details</h2>
-        <dl>
-          <div><dt>Legal name</dt><dd>LEGANTIS DIGITAL SERVICE SAS</dd></div>
-          <div><dt>Legal form and capital</dt><dd>Single-shareholder SAS · MAD 10,000</dd></div>
-          <div><dt>Commercial register</dt><dd>Casablanca No. 745587</dd></div>
-          <div><dt>ICE (company identifier)</dt><dd>004026900000030</dd></div>
-          <div><dt>Registered office</dt><dd>Oasis Offices Latitudes, Bureau 304, Maarif, Casablanca</dd></div>
-        </dl>
-        <div class="cachet" aria-hidden="true" lang="fr">
-          <b>Legantis Digital Service SAS</b>
-          <span>Capital 10 000 MAD · Casablanca</span>
-          <span>Oasis Offices Latitudes · Bureau 304 · Maarif</span>
-          <span>RC 745587 · IF 73343482 · ICE 004026900000030</span>
-        </div>
-      </aside>
+    </div>
+    <div class="enveloppe ouverture-pied">
+      <p class="compteur"><span class="chiffre-n"><span class="n" style="--n:2">2</span></span><span class="chiffre-l">titles published in our catalogue</span></p>
+      <a class="descendre" href="#services" aria-label="Scroll down to our services"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></a>
+    </div>
+  </section>
+
+  <section class="defile" aria-label="Our fields, at a glance">
+    <p>Development studio · Casablanca</p>
+    <div class="defile-rangee">
+      <ul>
+        <li>Web applications</li><li>iOS and Android</li><li>Business software</li><li>Consulting and takeovers</li><li>French and Arabic</li><li>Works offline</li><li>Source code handed over</li>
+        <li aria-hidden="true">Web applications</li><li aria-hidden="true">iOS and Android</li><li aria-hidden="true">Business software</li><li aria-hidden="true">Consulting and takeovers</li><li aria-hidden="true">French and Arabic</li><li aria-hidden="true">Works offline</li><li aria-hidden="true">Source code handed over</li>
+      </ul>
+    </div>
+    <div class="defile-rangee defile-rangee--inverse" aria-hidden="true">
+      <ul>
+        <li>Source code handed over</li><li>Works offline</li><li>French and Arabic</li><li>Consulting and takeovers</li><li>Business software</li><li>iOS and Android</li><li>Web applications</li>
+        <li>Source code handed over</li><li>Works offline</li><li>French and Arabic</li><li>Consulting and takeovers</li><li>Business software</li><li>iOS and Android</li><li>Web applications</li>
+      </ul>
     </div>
   </section>
 
   <section class="section" id="services" aria-labelledby="services-titre">
     <div class="enveloppe">
-      <div class="rail"><span class="surtitre">Services</span></div>
-      <div>
-        <h2 id="services-titre">What we build <em>for you</em></h2>
+      <div class="entete reveler">
+        <span class="surtitre"><span class="no">01</span>Services</span>
+        <h2 id="services-titre">What we build <em>for you.</em></h2>
         <p class="intro">What we do for our own products, we do for your business: a complete application, designed, built, published and maintained by the same team, from the brief to launch.</p>
-        <ol class="prestations" role="list">
-          <li class="prestation">
-            <h3>Web applications</h3>
-            <p>Platforms, customer portals, dashboards, websites and online shops. Fast, installable on a phone like a native app, and able to work offline when field conditions require it.</p>
-            <p class="exemples">Platform · customer portal · back office · website · online shop</p>
-          </li>
-          <li class="prestation">
-            <h3>Mobile applications</h3>
-            <p>iPhone and Android from a single code base, published on the App Store and Google Play: camera, notifications, sharing, offline use. We handle both stores' requirements.</p>
-            <p class="exemples">iOS · Android · App Store · Google Play</p>
-          </li>
-          <li class="prestation">
-            <h3>Business software</h3>
-            <p>Point of sale, management, activity tracking, internal tools: software shaped for your trade, with your rules and your documents (receipts, invoices, accounting exports).</p>
-            <p class="exemples">Point of sale · management · field tracking · internal tools</p>
-          </li>
-          <li class="prestation">
-            <h3>Consulting and takeovers</h3>
-            <p>Project scoping, architecture choices, security and quality audits, compliance with Morocco's data protection law 09-08, and taking over or modernising an application already in place.</p>
-            <p class="exemples">Scoping · architecture · security · compliance · takeover</p>
-          </li>
+      </div>
+      <ol class="bento" role="list">
+        <li class="prestation prestation--large reveler" id="web">
+          <div class="prestation-tete"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></div>
+          <h3>Web applications</h3>
+          <p>Platforms, customer portals, dashboards, websites and online shops. Fast, installable on a phone like a native app, and able to work offline when field conditions require it.</p>
+          <ul class="etiquettes"><li>Platform</li><li>Customer portal</li><li>Back office</li><li>Website</li><li>Online shop</li></ul>
+        </li>
+        <li class="prestation reveler" id="mobile">
+          <div class="prestation-tete"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></div>
+          <h3>Mobile applications</h3>
+          <p>iPhone and Android from a single code base, published on the App Store and Google Play: camera, notifications, sharing, offline use. We handle both stores' requirements.</p>
+          <ul class="etiquettes"><li>iOS</li><li>Android</li><li>App Store</li><li>Google Play</li></ul>
+        </li>
+        <li class="prestation reveler" id="metier">
+          <div class="prestation-tete"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M16 14v4M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M8 18h.01M12 18h.01"/></svg></div>
+          <h3>Business software</h3>
+          <p>Point of sale, management, activity tracking, internal tools: software shaped for your trade, with your rules and your documents (receipts, invoices, accounting exports).</p>
+          <ul class="etiquettes"><li>Point of sale</li><li>Management</li><li>Field tracking</li><li>Internal tools</li></ul>
+        </li>
+        <li class="prestation prestation--large reveler" id="conseil">
+          <div class="prestation-tete"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></svg></div>
+          <h3>Consulting and takeovers</h3>
+          <p>Project scoping, architecture choices, security and quality audits, compliance with Morocco's data protection law 09-08, and taking over or modernising an application already in place.</p>
+          <ul class="etiquettes"><li>Scoping</li><li>Architecture</li><li>Security</li><li>Compliance</li><li>Takeover</li></ul>
+        </li>
+      </ol>
+
+      <div class="bloc">
+        <div class="bloc-tete reveler">
+          <span class="sous-titre">Built for Morocco</span>
+          <h3>Nothing to retrofit later.</h3>
+        </div>
+        <div class="atouts reveler">
+          <div class="atout"><h4>French and Arabic</h4><p>A bilingual interface with genuine right-to-left reading, whenever your audience needs it.</p></div>
+          <div class="atout"><h4>Local practices</h4><p>Dirhams, cash on delivery, Moroccan cities and local phone numbers: nothing to retrofit later.</p></div>
+          <div class="atout"><h4>Protected data</h4><p>Encryption, backups, compliance with law 09-08 (CNDP) and with Apple's and Google's rules.</p></div>
+        </div>
+      </div>
+
+      <div class="bloc">
+        <div class="bloc-tete reveler">
+          <span class="sous-titre">How we work</span>
+          <h3>Four steps, from scoping to follow-up.</h3>
+        </div>
+        <ol class="frise" role="list">
+          <li class="etape"><span class="pilule">Step 01</span><h4>Scoping</h4><p>We listen to your needs and write them down: screens, rules, priorities. You receive a detailed quote.</p></li>
+          <li class="etape"><span class="pilule">Step 02</span><h4>Design</h4><p>Mock-ups of every screen, in both languages if needed, approved with you before the first line of code.</p></li>
+          <li class="etape"><span class="pilule">Step 03</span><h4>Development</h4><p>Regular deliveries to a test address: you try the application at every step and adjust course.</p></li>
+          <li class="etape"><span class="pilule">Step 04</span><h4>Launch and follow-up</h4><p>Publication, handover of the source code and documentation, then fixes and improvements over time.</p></li>
         </ol>
+      </div>
 
-        <div class="bloc">
-          <h3 class="sous-titre">Built for Morocco</h3>
-          <div class="atouts">
-            <div class="atout"><h4>French and Arabic</h4><p>A bilingual interface with genuine right-to-left reading, whenever your audience needs it.</p></div>
-            <div class="atout"><h4>Local practices</h4><p>Dirhams, cash on delivery, Moroccan cities and local phone numbers: nothing to retrofit later.</p></div>
-            <div class="atout"><h4>Protected data</h4><p>Encryption, backups, compliance with law 09-08 (CNDP) and with Apple's and Google's rules.</p></div>
+      <p class="note">These services fall under the three activities recorded in the commercial register: software publishing, IT consulting and online sales.</p>
+    </div>
+  </section>
+
+  <section class="section section--2" id="produits" aria-labelledby="produits-titre">
+    <div class="enveloppe">
+      <div class="entete entete--double reveler">
+        <div>
+          <span class="surtitre"><span class="no">02</span>Catalogue</span>
+          <h2 id="produits-titre">Our products, in production.</h2>
+          <p class="intro">Two titles designed, built and maintained by Legantis. What we offer our clients, we practise first on our own products.</p>
+        </div>
+        <a class="bouton bouton--trait" href="#a-paraitre">See what's coming</a>
+      </div>
+      <div class="catalogue">
+        <article class="titre titre--atlasya reveler" aria-labelledby="atlasya-nom">
+          <div class="couverture">
+            <span class="domaine">Healthcare</span>
+            <div class="couverture-bas">
+              <img src="../assets/atlasya.png" alt="" width="56" height="56">
+              <h3 id="atlasya-nom">Atlasya</h3>
+              <p>Morocco's trusted medical platform</p>
+            </div>
           </div>
-        </div>
-
-        <div class="bloc">
-          <h3 class="sous-titre">How we work</h3>
-          <ol class="etapes" role="list">
-            <li class="etape"><h4>Scoping</h4><p>We listen to your needs and write them down: screens, rules, priorities. You receive a detailed quote.</p></li>
-            <li class="etape"><h4>Design</h4><p>Mock-ups of every screen, in both languages if needed, approved with you before the first line of code.</p></li>
-            <li class="etape"><h4>Development</h4><p>Regular deliveries to a test address: you try the application at every step and adjust course.</p></li>
-            <li class="etape"><h4>Launch and follow-up</h4><p>Publication, handover of the source code and documentation, then fixes and improvements over time.</p></li>
-          </ol>
-        </div>
-
-        <p class="note">These services fall under the three activities recorded in the commercial register: software publishing, IT consulting and online sales.</p>
+          <div class="titre-corps">
+            <p>Patients find a doctor by specialty or city, book appointments online and keep their health records in one place. Clinics run their calendar, patient files and payments with Atlasya Pro.</p>
+            <dl class="faits">
+              <dt>Field</dt><dd>Healthcare: appointment booking and practice software</dd>
+              <dt>Platforms</dt><dd>Web · mobile app in preparation</dd>
+              <dt>Languages</dt><dd>French, Arabic, English</dd>
+            </dl>
+            <a class="suivre" href="https://atlasyahealth.com">atlasyahealth.com <span aria-hidden="true">→</span></a>
+          </div>
+        </article>
+        <article class="titre titre--rihla reveler" aria-labelledby="rihla-nom">
+          <div class="couverture">
+            <span class="domaine">Education</span>
+            <div class="couverture-bas">
+              <img src="../assets/rihla.png" alt="" width="56" height="56">
+              <h3 id="rihla-nom">Rihla</h3>
+              <p>The world's languages, free forever</p>
+            </div>
+          </div>
+          <div class="titre-corps">
+            <p>Fourteen languages to learn along Ibn Battuta's route, from Granada to Tokyo: lessons, review games and a spaced-repetition notebook. No account, no ads, and everything works offline.</p>
+            <dl class="faits">
+              <dt>Field</dt><dd>Education: language learning</dd>
+              <dt>Platforms</dt><dd>iPhone (App Store) · Web (installable app)</dd>
+              <dt>Price</dt><dd>Free, no in-app purchases</dd>
+            </dl>
+            <div class="liens">
+              <a class="suivre" href="https://apps.apple.com/app/id6809222617">Download on the App Store <span aria-hidden="true">→</span></a>
+              <a class="suivre" href="https://warimvp.github.io/rihla/">Open the web version <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
       </div>
     </div>
   </section>
 
-  <section class="section" id="produits" aria-labelledby="produits-titre">
+  <section class="chiffres" aria-labelledby="chiffres-titre">
     <div class="enveloppe">
-      <div class="rail"><span class="surtitre">Catalogue</span></div>
-      <div>
-        <h2 id="produits-titre">Our products</h2>
-        <p class="intro">Two titles designed, built and maintained by Legantis. What we offer our clients, we practise first on our own products.</p>
-        <div class="catalogue">
-          <article class="titre titre--atlasya" aria-labelledby="atlasya-nom">
-            <div class="couverture">
-              <img src="../assets/atlasya.png" alt="" width="64" height="64">
-              <h3 id="atlasya-nom">Atlasya</h3>
-              <p>Morocco's trusted medical platform</p>
-            </div>
-            <div class="titre-corps">
-              <p>Patients find a doctor by specialty or city, book appointments online and keep their health records in one place. Clinics run their calendar, patient files and payments with Atlasya Pro.</p>
-              <dl class="faits">
-                <dt>Field</dt><dd>Healthcare: appointment booking and practice software</dd>
-                <dt>Platforms</dt><dd>Web · mobile app in preparation</dd>
-                <dt>Languages</dt><dd>French, Arabic, English</dd>
-              </dl>
-              <a class="suivre" href="https://atlasyahealth.com">atlasyahealth.com <span aria-hidden="true">→</span></a>
-            </div>
-          </article>
-          <article class="titre titre--rihla" aria-labelledby="rihla-nom">
-            <div class="couverture">
-              <img src="../assets/rihla.png" alt="" width="64" height="64">
-              <h3 id="rihla-nom">Rihla</h3>
-              <p>The world's languages, free forever</p>
-            </div>
-            <div class="titre-corps">
-              <p>Fourteen languages to learn along Ibn Battuta's route, from Granada to Tokyo: lessons, review games and a spaced-repetition notebook. No account, no ads, and everything works offline.</p>
-              <dl class="faits">
-                <dt>Field</dt><dd>Education: language learning</dd>
-                <dt>Platforms</dt><dd>iPhone (App Store) · Web (installable app)</dd>
-                <dt>Price</dt><dd>Free, no in-app purchases</dd>
-              </dl>
-              <div class="liens">
-                <a class="suivre" href="https://apps.apple.com/app/id6809222617">Download on the App Store <span aria-hidden="true">→</span></a>
-                <a class="suivre" href="https://warimvp.github.io/rihla/">Open the web version <span aria-hidden="true">→</span></a>
-              </div>
-            </div>
-          </article>
-        </div>
-      </div>
+      <h2 id="chiffres-titre" class="visuellement-cache">In numbers</h2>
+      <ul>
+        <li class="chiffre reveler"><span class="chiffre-n"><span class="n" style="--n:2">2</span></span><span class="chiffre-l">titles published</span></li>
+        <li class="chiffre reveler"><span class="chiffre-n"><span class="n" style="--n:7">7</span></span><span class="chiffre-l">titles in the works</span></li>
+        <li class="chiffre reveler"><span class="chiffre-n"><span class="n" style="--n:3">3</span></span><span class="chiffre-l">languages: French, Arabic, English</span></li>
+        <li class="chiffre reveler"><span class="chiffre-n"><span class="n" style="--n:100">100</span><span class="unite">%</span></span><span class="chiffre-l">of the source code handed over to the client</span></li>
+      </ul>
     </div>
   </section>
 
   <section class="section" id="a-paraitre" aria-labelledby="a-paraitre-titre">
     <div class="enveloppe">
-      <div class="rail"><span class="surtitre">Forthcoming</span></div>
-      <div>
-        <h2 id="a-paraitre-titre">In the works</h2>
+      <div class="entete reveler">
+        <span class="surtitre"><span class="no">03</span>Forthcoming</span>
+        <h2 id="a-paraitre-titre">In the works.</h2>
         <p class="intro">The next titles in our catalogue, currently in development. Their names will be announced at launch.</p>
-        <div class="parution">
-          <section class="parution-groupe" aria-labelledby="grand-public-titre">
-            <h3 id="grand-public-titre">For everyone</h3>
-            <ul class="epreuves">
-              <li class="epreuve"><h4>Home rentals</h4><p>Find a long-term rental, then manage the lease, rent and receipts between landlord and tenant.</p><span class="support">Web · mobile</span></li>
-              <li class="epreuve"><h4>Second-hand marketplace</h4><p>Buy and sell between individuals, with messaging, offers and cash on delivery.</p><span class="support">Web · iPhone</span></li>
-              <li class="epreuve"><h4>Teaching</h4><p>A space for independent teachers and their students: classes, exercises and progress tracking.</p><span class="support">Web · iPhone</span></li>
-              <li class="epreuve"><h4>Jobs</h4><p>Job listings in Morocco with the salary shown, in French and Arabic.</p><span class="support">Web</span></li>
-            </ul>
-          </section>
-          <section class="parution-groupe" aria-labelledby="pro-titre">
-            <h3 id="pro-titre">For businesses</h3>
-            <ul class="epreuves">
-              <li class="epreuve"><h4>Point of sale for restaurants and cafés</h4><p>Checkout, receipts, discounts and end-of-day closing, in French and Arabic.</p><span class="support">Tablet · web</span></li>
-              <li class="epreuve"><h4>Construction site tracking</h4><p>For building contractors: progress, expenses and crews, from the phone, even offline.</p><span class="support">Mobile · web</span></li>
-              <li class="epreuve"><h4>Agricultural cooperative management</h4><p>Members, deliveries, advances and revenue sharing, all the way to the general assembly pack.</p><span class="support">Web</span></li>
-            </ul>
-          </section>
-        </div>
+      </div>
+      <div class="parution">
+        <section class="parution-groupe reveler" aria-labelledby="grand-public-titre">
+          <h3 id="grand-public-titre">For everyone</h3>
+          <ul class="epreuves">
+            <li class="epreuve"><h4>Home rentals</h4><p>Find a long-term rental, then manage the lease, rent and receipts between landlord and tenant.</p><span class="support">Web · mobile</span></li>
+            <li class="epreuve"><h4>Second-hand marketplace</h4><p>Buy and sell between individuals, with messaging, offers and cash on delivery.</p><span class="support">Web · iPhone</span></li>
+            <li class="epreuve"><h4>Teaching</h4><p>A space for independent teachers and their students: classes, exercises and progress tracking.</p><span class="support">Web · iPhone</span></li>
+            <li class="epreuve"><h4>Jobs</h4><p>Job listings in Morocco with the salary shown, in French and Arabic.</p><span class="support">Web</span></li>
+          </ul>
+        </section>
+        <section class="parution-groupe reveler" aria-labelledby="pro-titre">
+          <h3 id="pro-titre">For businesses</h3>
+          <ul class="epreuves">
+            <li class="epreuve"><h4>Point of sale for restaurants and cafés</h4><p>Checkout, receipts, discounts and end-of-day closing, in French and Arabic.</p><span class="support">Tablet · web</span></li>
+            <li class="epreuve"><h4>Construction site tracking</h4><p>For building contractors: progress, expenses and crews, from the phone, even offline.</p><span class="support">Mobile · web</span></li>
+            <li class="epreuve"><h4>Agricultural cooperative management</h4><p>Members, deliveries, advances and revenue sharing, all the way to the general assembly pack.</p><span class="support">Web</span></li>
+          </ul>
+        </section>
       </div>
     </div>
   </section>
 
-  <section class="section" id="societe" aria-labelledby="societe-titre">
-    <div class="enveloppe">
-      <div class="rail"><span class="surtitre">Colophon</span></div>
-      <div>
-        <h2 id="societe-titre">The company</h2>
+  <section class="section section--2" id="societe" aria-labelledby="societe-titre">
+    <div class="enveloppe societe">
+      <div class="societe-texte reveler">
+        <span class="numero-fantome" aria-hidden="true">04</span>
+        <span class="surtitre"><span class="no">04</span>Colophon</span>
+        <h2 id="societe-titre">A Moroccan company, entered in the commercial register.</h2>
+        <p>LEGANTIS DIGITAL SERVICE SAS is a simplified joint-stock company under Moroccan law, entered in the Casablanca Commercial Register on 7 September 2026, with a share capital of MAD 10,000, and presided over by Yassir Legmara.</p>
+        <p>Its three registered activities: software publishing, IT consulting and online sales. It publishes Atlasya and Rihla and builds applications for its clients.</p>
+        <p class="note">Full details are in the <a href="legal/">legal notice</a>.</p>
+      </div>
+      <aside class="fiche reveler" aria-labelledby="fiche-titre">
+        <h3 id="fiche-titre">Company details</h3>
         <dl class="colophon">
           <div><dt>Legal name</dt><dd>LEGANTIS DIGITAL SERVICE SAS</dd></div>
           <div><dt>Legal form</dt><dd>Simplified joint-stock company (SAS), single shareholder</dd></div>
@@ -280,34 +347,78 @@
           <div><dt>Registered office</dt><dd>Oasis Offices Latitudes, Route de l'Oasis, Bureau 304, Maarif, Casablanca, Morocco</dd></div>
           <div><dt>Domiciliation</dt><dd>MyLegal Offices</dd></div>
         </dl>
-        <p class="note">Full details are in the <a href="legal/">legal notice</a>.</p>
-      </div>
+        <div class="cachet" aria-hidden="true" lang="fr">
+          <b>Legantis Digital Service SAS</b>
+          <span>Capital 10 000 MAD · Casablanca</span>
+          <span>Oasis Offices Latitudes · Bureau 304 · Maarif</span>
+          <span>RC 745587 · IF 73343482 · ICE 004026900000030</span>
+        </div>
+      </aside>
     </div>
   </section>
 
-  <section class="section" id="contact" aria-labelledby="contact-titre">
+  <section class="appel grain" id="contact" aria-labelledby="contact-titre">
+    <div class="forme forme--a" aria-hidden="true"></div>
+    <div class="forme forme--b" aria-hidden="true"></div>
     <div class="enveloppe">
-      <div class="rail"><span class="surtitre">Contact</span></div>
-      <div>
-        <h2 id="contact-titre">Write to us</h2>
-        <p class="intro">An application project to scope, a question about a product or a partnership? Describe your needs in a few lines.</p>
-        <dl class="contact">
-          <div><dt>Email</dt><dd><a href="mailto:contact@legantis.net">contact@legantis.net</a></dd></div>
-          <div><dt>Phone</dt><dd><a href="tel:+212672759097">+212 6 72 75 90 97</a></dd></div>
-          <div><dt>Mail</dt><dd>Oasis Offices Latitudes, Route de l'Oasis, Bureau 304, Maarif, Casablanca, Morocco</dd></div>
-        </dl>
-      </div>
+      <span class="surtitre reveler"><span class="no">05</span>Contact</span>
+      <h2 id="contact-titre" class="reveler"><span>Tell us about</span><span class="contour">your project.</span></h2>
+      <p class="intro reveler">An application project to scope, a question about a product or a partnership? Describe your needs in a few lines.</p>
+      <dl class="contact reveler">
+        <div class="contact-email"><dt class="visuellement-cache">Email</dt><dd><a class="bouton bouton--plein bouton--grand" href="mailto:contact@legantis.net">contact@legantis.net <span class="fleche" aria-hidden="true">→</span></a></dd></div>
+        <div class="contact-tel"><dt class="visuellement-cache">Phone</dt><dd><a href="tel:+212672759097">Or by phone: +212 6 72 75 90 97</a></dd></div>
+        <div class="contact-courrier"><dt>Mail</dt><dd>Oasis Offices Latitudes, Route de l'Oasis, Bureau 304, Maarif, Casablanca, Morocco</dd></div>
+      </dl>
     </div>
   </section>
 </main>
 
 <footer class="pied">
   <div class="enveloppe">
-    <span>© 2026 LEGANTIS DIGITAL SERVICE SAS</span>
-    <nav aria-label="Footer links">
-      <a href="legal/">Legal notice and privacy</a>
-      <a href="../" hreflang="fr" lang="fr">Français</a>
-    </nav>
+    <div class="pied-colonnes">
+      <div class="pied-marque">
+        <a class="marque" href="./" aria-label="Legantis, home">
+          <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#3D36B2"/><path d="M21 13h11v29h17v9H21z" fill="#F6F7F9"/><rect x="41" y="13" width="8" height="8" fill="#E3A33A"/></svg>
+          <b>Legantis</b><small>Digital Service</small>
+        </a>
+        <p>Custom web and mobile applications, designed and built in Casablanca.</p>
+      </div>
+      <div>
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#web">Web applications</a></li>
+          <li><a href="#mobile">Mobile applications</a></li>
+          <li><a href="#metier">Business software</a></li>
+          <li><a href="#conseil">Consulting and takeovers</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#produits">Our products</a></li>
+          <li><a href="#a-paraitre">Forthcoming</a></li>
+          <li><a href="#societe">The company</a></li>
+          <li><a href="legal/">Legal notice and privacy</a></li>
+          <li><a href="../" hreflang="fr" lang="fr">Français</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <address>
+          <a href="mailto:contact@legantis.net">contact@legantis.net</a>
+          <a href="tel:+212672759097">+212 6 72 75 90 97</a>
+          <span>Oasis Offices Latitudes<br>Route de l'Oasis, Bureau 304<br>Maarif, Casablanca, Morocco</span>
+        </address>
+      </div>
+    </div>
+    <div class="pied-bas">
+      <span>© 2026 LEGANTIS DIGITAL SERVICE SAS</span>
+      <span>Designed and built in Casablanca <span class="coeur" aria-hidden="true">◆</span> RC 745587</span>
+      <nav aria-label="Footer links">
+        <a href="legal/">Legal notice</a>
+        <a href="../" hreflang="fr" lang="fr">Français</a>
+      </nav>
+    </div>
   </div>
 </footer>
 </body>

@@ -84,6 +84,7 @@
   </filter>
 </svg>
 <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+<div class="progression" aria-hidden="true"></div>
 
 <header class="barre">
   <div class="enveloppe">
@@ -91,7 +92,7 @@
       <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#3D36B2"/><path d="M21 13h11v29h17v9H21z" fill="#F6F7F9"/><rect x="41" y="13" width="8" height="8" fill="#E3A33A"/></svg>
       <b>Legantis</b><small>Digital Service</small>
     </a>
-    <nav aria-label="Navigation principale">
+    <nav class="nav-bureau" aria-label="Navigation principale">
       <ul class="nav">
         <li><a href="#services">Prestations</a></li>
         <li><a href="#produits">Produits</a></li>
@@ -100,174 +101,240 @@
         <li><a class="langue" href="en/" hreflang="en" lang="en">EN</a></li>
       </ul>
     </nav>
+    <a class="bouton bouton--petit barre-cta" href="mailto:contact@legantis.net">Parler de votre projet</a>
+    <a class="menu-ouvrir" href="#menu" aria-label="Ouvrir le menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg></a>
   </div>
 </header>
+<nav id="menu" class="menu-plein" aria-label="Menu">
+  <a class="menu-fermer" href="#!" aria-label="Fermer le menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg></a>
+  <ul>
+    <li style="--i:0"><a href="#services">Prestations</a></li>
+    <li style="--i:1"><a href="#produits">Produits</a></li>
+    <li style="--i:2"><a href="#societe">La société</a></li>
+    <li style="--i:3"><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="menu-pied">
+    <a href="mailto:contact@legantis.net">contact@legantis.net</a>
+    <a href="en/" hreflang="en" lang="en">English</a>
+  </div>
+</nav>
 
 <main id="contenu">
-  <section class="ouverture" aria-labelledby="titre">
-    <div class="enveloppe">
-      <div>
-        <span class="surtitre">Développement web et mobile · Casablanca</span>
-        <h1 id="titre">Des applications web et mobiles <em>sur mesure</em>, conçues au Maroc.</h1>
-        <p class="chapeau">LEGANTIS DIGITAL SERVICE développe des applications pour les entreprises, les professionnels et les porteurs de projet : plateformes web, applications iPhone et Android, logiciels métier. Nous éditons aussi nos propres titres, Atlasya pour la santé et Rihla pour les langues.</p>
-        <div class="actions">
-          <a class="bouton bouton--plein" href="mailto:contact@legantis.net">Parler de votre projet</a>
-          <a class="bouton bouton--trait" href="#services">Voir nos prestations</a>
-        </div>
+  <section class="ouverture grain" aria-labelledby="titre">
+    <div class="halo" aria-hidden="true"></div>
+    <div class="forme forme--cercle" aria-hidden="true"></div>
+    <div class="forme forme--carre" aria-hidden="true"></div>
+    <svg class="rond-tournant" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+      <path id="cercle-texte" d="M50 50m-37 0a37 37 0 1 1 74 0a37 37 0 1 1-74 0" fill="none"/>
+      <text><textPath href="#cercle-texte">Legantis · Casablanca · Web · Mobile · </textPath></text>
+    </svg>
+    <div class="enveloppe ouverture-corps">
+      <p class="badge">Disponible pour de nouveaux projets · 2026 →</p>
+      <h1 id="titre">
+        <span class="ligne"><span class="mot" style="--i:0">Des</span> <span class="mot" style="--i:1">applications</span></span>
+        <span class="ligne contour"><span class="mot" style="--i:2">web</span> <span class="mot" style="--i:3">et</span> <span class="mot" style="--i:4">mobiles</span></span>
+        <span class="ligne"><span class="mot" style="--i:5">sur</span> <span class="mot" style="--i:6">mesure.</span></span>
+      </h1>
+      <p class="chapeau">Depuis Casablanca, LEGANTIS DIGITAL SERVICE développe des applications pour les entreprises, les professionnels et les porteurs de projet : plateformes web, applications iPhone et Android, logiciels métier. Nous éditons aussi nos propres titres, Atlasya pour la santé et Rihla pour les langues.</p>
+      <div class="actions">
+        <a class="bouton bouton--plein" href="mailto:contact@legantis.net">Parler de votre projet <span class="fleche" aria-hidden="true">→</span></a>
+        <a class="bouton bouton--trait" href="#services">Voir nos prestations</a>
       </div>
-      <aside class="fiche" aria-labelledby="fiche-titre">
-        <h2 id="fiche-titre">Fiche d'identité</h2>
-        <dl>
-          <div><dt>Dénomination</dt><dd>LEGANTIS DIGITAL SERVICE SAS</dd></div>
-          <div><dt>Forme et capital</dt><dd>SAS à associé unique · 10 000 MAD</dd></div>
-          <div><dt>Registre du commerce</dt><dd>Casablanca n° 745587</dd></div>
-          <div><dt>ICE</dt><dd>004026900000030</dd></div>
-          <div><dt>Siège</dt><dd>Oasis Offices Latitudes, Bureau 304, Maarif, Casablanca</dd></div>
-        </dl>
-        <div class="cachet" aria-hidden="true">
-          <b>Legantis Digital Service SAS</b>
-          <span>Capital 10 000 MAD · Casablanca</span>
-          <span>Oasis Offices Latitudes · Bureau 304 · Maarif</span>
-          <span>RC 745587 · IF 73343482 · ICE 004026900000030</span>
-        </div>
-      </aside>
+    </div>
+    <div class="enveloppe ouverture-pied">
+      <p class="compteur"><span class="chiffre-n"><span class="n" style="--n:2">2</span></span><span class="chiffre-l">titres publiés au catalogue</span></p>
+      <a class="descendre" href="#services" aria-label="Descendre aux prestations"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></a>
+    </div>
+  </section>
+
+  <section class="defile" aria-label="Nos domaines, en un coup d'œil">
+    <p>Studio de développement · Casablanca</p>
+    <div class="defile-rangee">
+      <ul>
+        <li>Applications web</li><li>iOS et Android</li><li>Logiciels métier</li><li>Conseil et reprise</li><li>Français et arabe</li><li>Hors connexion</li><li>Code source remis</li>
+        <li aria-hidden="true">Applications web</li><li aria-hidden="true">iOS et Android</li><li aria-hidden="true">Logiciels métier</li><li aria-hidden="true">Conseil et reprise</li><li aria-hidden="true">Français et arabe</li><li aria-hidden="true">Hors connexion</li><li aria-hidden="true">Code source remis</li>
+      </ul>
+    </div>
+    <div class="defile-rangee defile-rangee--inverse" aria-hidden="true">
+      <ul>
+        <li>Code source remis</li><li>Hors connexion</li><li>Français et arabe</li><li>Conseil et reprise</li><li>Logiciels métier</li><li>iOS et Android</li><li>Applications web</li>
+        <li>Code source remis</li><li>Hors connexion</li><li>Français et arabe</li><li>Conseil et reprise</li><li>Logiciels métier</li><li>iOS et Android</li><li>Applications web</li>
+      </ul>
     </div>
   </section>
 
   <section class="section" id="services" aria-labelledby="services-titre">
     <div class="enveloppe">
-      <div class="rail"><span class="surtitre">Prestations</span></div>
-      <div>
-        <h2 id="services-titre">Ce que nous développons <em>pour vous</em></h2>
+      <div class="entete reveler">
+        <span class="surtitre"><span class="no">01</span>Prestations</span>
+        <h2 id="services-titre">Ce que nous développons <em>pour vous.</em></h2>
         <p class="intro">Ce que nous faisons pour nos propres produits, nous le faisons pour votre activité : une application complète, conçue, développée, publiée et suivie par la même équipe, du cahier des charges à la mise en ligne.</p>
-        <ol class="prestations" role="list">
-          <li class="prestation">
-            <h3>Applications web</h3>
-            <p>Plateformes, espaces clients, tableaux de bord, sites et boutiques en ligne. Rapides, installables sur le téléphone comme une application, et capables de fonctionner hors connexion quand le terrain l'exige.</p>
-            <p class="exemples">Plateforme · espace client · back-office · site · boutique</p>
-          </li>
-          <li class="prestation">
-            <h3>Applications mobiles</h3>
-            <p>iPhone et Android à partir d'une seule base de code, publiées sur l'App Store et Google Play : appareil photo, notifications, partage, hors ligne. Nous prenons en charge les exigences des deux boutiques.</p>
-            <p class="exemples">iOS · Android · App Store · Google Play</p>
-          </li>
-          <li class="prestation">
-            <h3>Logiciels métier</h3>
-            <p>Caisse, gestion, suivi d'activité, outils internes : un logiciel taillé pour votre profession, avec vos règles et vos documents (tickets, reçus, factures, exports comptables).</p>
-            <p class="exemples">Caisse · gestion · suivi de terrain · outils internes</p>
-          </li>
-          <li class="prestation">
-            <h3>Conseil et reprise d'existant</h3>
-            <p>Cadrage d'un projet, choix d'architecture, audit de sécurité et de qualité, conformité à la loi 09-08 sur les données personnelles, reprise et modernisation d'une application déjà en place.</p>
-            <p class="exemples">Cadrage · architecture · sécurité · conformité · reprise</p>
-          </li>
+      </div>
+      <ol class="bento" role="list">
+        <li class="prestation prestation--large reveler" id="web">
+          <div class="prestation-tete"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></div>
+          <h3>Applications web</h3>
+          <p>Plateformes, espaces clients, tableaux de bord, sites et boutiques en ligne. Rapides, installables sur le téléphone comme une application, et capables de fonctionner hors connexion quand le terrain l'exige.</p>
+          <ul class="etiquettes"><li>Plateforme</li><li>Espace client</li><li>Back-office</li><li>Site</li><li>Boutique</li></ul>
+        </li>
+        <li class="prestation reveler" id="mobile">
+          <div class="prestation-tete"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></div>
+          <h3>Applications mobiles</h3>
+          <p>iPhone et Android à partir d'une seule base de code, publiées sur l'App Store et Google Play : appareil photo, notifications, partage, hors ligne. Nous prenons en charge les exigences des deux boutiques.</p>
+          <ul class="etiquettes"><li>iOS</li><li>Android</li><li>App Store</li><li>Google Play</li></ul>
+        </li>
+        <li class="prestation reveler" id="metier">
+          <div class="prestation-tete"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M16 14v4M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M8 18h.01M12 18h.01"/></svg></div>
+          <h3>Logiciels métier</h3>
+          <p>Caisse, gestion, suivi d'activité, outils internes : un logiciel taillé pour votre profession, avec vos règles et vos documents (tickets, reçus, factures, exports comptables).</p>
+          <ul class="etiquettes"><li>Caisse</li><li>Gestion</li><li>Suivi de terrain</li><li>Outils internes</li></ul>
+        </li>
+        <li class="prestation prestation--large reveler" id="conseil">
+          <div class="prestation-tete"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></svg></div>
+          <h3>Conseil et reprise d'existant</h3>
+          <p>Cadrage d'un projet, choix d'architecture, audit de sécurité et de qualité, conformité à la loi 09-08 sur les données personnelles, reprise et modernisation d'une application déjà en place.</p>
+          <ul class="etiquettes"><li>Cadrage</li><li>Architecture</li><li>Sécurité</li><li>Conformité</li><li>Reprise</li></ul>
+        </li>
+      </ol>
+
+      <div class="bloc">
+        <div class="bloc-tete reveler">
+          <span class="sous-titre">Pensé pour le Maroc</span>
+          <h3>Rien à adapter après coup.</h3>
+        </div>
+        <div class="atouts reveler">
+          <div class="atout"><h4>Français et arabe</h4><p>Une interface bilingue avec un vrai sens de lecture de droite à gauche, dès que votre public le demande.</p></div>
+          <div class="atout"><h4>Usages du pays</h4><p>Dirhams, paiement à la livraison, villes marocaines, numéros de téléphone locaux : rien à adapter après coup.</p></div>
+          <div class="atout"><h4>Données protégées</h4><p>Chiffrement, sauvegardes, respect de la loi 09-08 (CNDP) et des règles d'Apple et de Google.</p></div>
+        </div>
+      </div>
+
+      <div class="bloc">
+        <div class="bloc-tete reveler">
+          <span class="sous-titre">Comment nous travaillons</span>
+          <h3>Quatre étapes, du cadrage au suivi.</h3>
+        </div>
+        <ol class="frise" role="list">
+          <li class="etape"><span class="pilule">Étape 01</span><h4>Cadrage</h4><p>Nous écoutons votre besoin et le mettons par écrit : écrans, règles, priorités. Vous recevez un devis détaillé.</p></li>
+          <li class="etape"><span class="pilule">Étape 02</span><h4>Conception</h4><p>Maquettes de chaque écran, dans les deux langues s'il le faut, validées avec vous avant la première ligne de code.</p></li>
+          <li class="etape"><span class="pilule">Étape 03</span><h4>Développement</h4><p>Livraisons régulières sur une adresse de test : vous essayez l'application à chaque étape et corrigez le cap.</p></li>
+          <li class="etape"><span class="pilule">Étape 04</span><h4>Mise en ligne et suivi</h4><p>Publication, remise du code source et de la documentation, puis corrections et évolutions dans la durée.</p></li>
         </ol>
+      </div>
 
-        <div class="bloc">
-          <h3 class="sous-titre">Pensé pour le Maroc</h3>
-          <div class="atouts">
-            <div class="atout"><h4>Français et arabe</h4><p>Une interface bilingue avec un vrai sens de lecture de droite à gauche, dès que votre public le demande.</p></div>
-            <div class="atout"><h4>Usages du pays</h4><p>Dirhams, paiement à la livraison, villes marocaines, numéros de téléphone locaux : rien à adapter après coup.</p></div>
-            <div class="atout"><h4>Données protégées</h4><p>Chiffrement, sauvegardes, respect de la loi 09-08 (CNDP) et des règles d'Apple et de Google.</p></div>
+      <p class="note">Ces prestations relèvent des trois activités inscrites au registre du commerce : édition de logiciels, conseil informatique et vente par Internet.</p>
+    </div>
+  </section>
+
+  <section class="section section--2" id="produits" aria-labelledby="produits-titre">
+    <div class="enveloppe">
+      <div class="entete entete--double reveler">
+        <div>
+          <span class="surtitre"><span class="no">02</span>Catalogue</span>
+          <h2 id="produits-titre">Nos produits, en production.</h2>
+          <p class="intro">Deux titres conçus, développés et maintenus par Legantis. Ce que nous proposons à nos clients, nous le pratiquons d'abord sur nos propres produits.</p>
+        </div>
+        <a class="bouton bouton--trait" href="#a-paraitre">Voir ce qui arrive</a>
+      </div>
+      <div class="catalogue">
+        <article class="titre titre--atlasya reveler" aria-labelledby="atlasya-nom">
+          <div class="couverture">
+            <span class="domaine">Santé</span>
+            <div class="couverture-bas">
+              <img src="assets/atlasya.png" alt="" width="56" height="56">
+              <h3 id="atlasya-nom">Atlasya</h3>
+              <p>La plateforme médicale de confiance au Maroc</p>
+            </div>
           </div>
-        </div>
-
-        <div class="bloc">
-          <h3 class="sous-titre">Comment nous travaillons</h3>
-          <ol class="etapes" role="list">
-            <li class="etape"><h4>Cadrage</h4><p>Nous écoutons votre besoin et le mettons par écrit : écrans, règles, priorités. Vous recevez un devis détaillé.</p></li>
-            <li class="etape"><h4>Conception</h4><p>Maquettes de chaque écran, dans les deux langues s'il le faut, validées avec vous avant la première ligne de code.</p></li>
-            <li class="etape"><h4>Développement</h4><p>Livraisons régulières sur une adresse de test : vous essayez l'application à chaque étape et corrigez le cap.</p></li>
-            <li class="etape"><h4>Mise en ligne et suivi</h4><p>Publication, remise du code source et de la documentation, puis corrections et évolutions dans la durée.</p></li>
-          </ol>
-        </div>
-
-        <p class="note">Ces prestations relèvent des trois activités inscrites au registre du commerce : édition de logiciels, conseil informatique et vente par Internet.</p>
+          <div class="titre-corps">
+            <p>Les patients trouvent un médecin par spécialité ou par ville, prennent rendez-vous en ligne et gardent leur suivi santé au même endroit. Les cabinets gèrent leur agenda, leurs dossiers et leurs encaissements avec Atlasya Pro.</p>
+            <dl class="faits">
+              <dt>Domaine</dt><dd>Santé : prise de rendez-vous et logiciel de cabinet</dd>
+              <dt>Plateformes</dt><dd>Web · application mobile en préparation</dd>
+              <dt>Langues</dt><dd>Français, arabe, anglais</dd>
+            </dl>
+            <a class="suivre" href="https://atlasyahealth.com">atlasyahealth.com <span aria-hidden="true">→</span></a>
+          </div>
+        </article>
+        <article class="titre titre--rihla reveler" aria-labelledby="rihla-nom">
+          <div class="couverture">
+            <span class="domaine">Éducation</span>
+            <div class="couverture-bas">
+              <img src="assets/rihla.png" alt="" width="56" height="56">
+              <h3 id="rihla-nom">Rihla</h3>
+              <p>Les langues du monde, gratuites pour toujours</p>
+            </div>
+          </div>
+          <div class="titre-corps">
+            <p>Quatorze langues à apprendre sur la route d'Ibn Battuta, de Grenade à Tokyo : leçons, jeux de révision et carnet de révision espacée. Sans compte ni publicité, et tout fonctionne hors ligne.</p>
+            <dl class="faits">
+              <dt>Domaine</dt><dd>Éducation : apprentissage des langues</dd>
+              <dt>Plateformes</dt><dd>iPhone (App Store) · Web (application installable)</dd>
+              <dt>Prix</dt><dd>Gratuit, sans achat intégré</dd>
+            </dl>
+            <div class="liens">
+              <a class="suivre" href="https://apps.apple.com/app/id6809222617">Télécharger sur l'App Store <span aria-hidden="true">→</span></a>
+              <a class="suivre" href="https://warimvp.github.io/rihla/">Ouvrir la version web <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
       </div>
     </div>
   </section>
 
-  <section class="section" id="produits" aria-labelledby="produits-titre">
+  <section class="chiffres" aria-labelledby="chiffres-titre">
     <div class="enveloppe">
-      <div class="rail"><span class="surtitre">Catalogue</span></div>
-      <div>
-        <h2 id="produits-titre">Nos produits</h2>
-        <p class="intro">Deux titres conçus, développés et maintenus par Legantis. Ce que nous proposons à nos clients, nous le pratiquons d'abord sur nos propres produits.</p>
-        <div class="catalogue">
-          <article class="titre titre--atlasya" aria-labelledby="atlasya-nom">
-            <div class="couverture">
-              <img src="assets/atlasya.png" alt="" width="64" height="64">
-              <h3 id="atlasya-nom">Atlasya</h3>
-              <p>La plateforme médicale de confiance au Maroc</p>
-            </div>
-            <div class="titre-corps">
-              <p>Les patients trouvent un médecin par spécialité ou par ville, prennent rendez-vous en ligne et gardent leur suivi santé au même endroit. Les cabinets gèrent leur agenda, leurs dossiers et leurs encaissements avec Atlasya Pro.</p>
-              <dl class="faits">
-                <dt>Domaine</dt><dd>Santé : prise de rendez-vous et logiciel de cabinet</dd>
-                <dt>Plateformes</dt><dd>Web · application mobile en préparation</dd>
-                <dt>Langues</dt><dd>Français, arabe, anglais</dd>
-              </dl>
-              <a class="suivre" href="https://atlasyahealth.com">atlasyahealth.com <span aria-hidden="true">→</span></a>
-            </div>
-          </article>
-          <article class="titre titre--rihla" aria-labelledby="rihla-nom">
-            <div class="couverture">
-              <img src="assets/rihla.png" alt="" width="64" height="64">
-              <h3 id="rihla-nom">Rihla</h3>
-              <p>Les langues du monde, gratuites pour toujours</p>
-            </div>
-            <div class="titre-corps">
-              <p>Quatorze langues à apprendre sur la route d'Ibn Battuta, de Grenade à Tokyo : leçons, jeux de révision et carnet de révision espacée. Sans compte ni publicité, et tout fonctionne hors ligne.</p>
-              <dl class="faits">
-                <dt>Domaine</dt><dd>Éducation : apprentissage des langues</dd>
-                <dt>Plateformes</dt><dd>iPhone (App Store) · Web (application installable)</dd>
-                <dt>Prix</dt><dd>Gratuit, sans achat intégré</dd>
-              </dl>
-              <div class="liens">
-                <a class="suivre" href="https://apps.apple.com/app/id6809222617">Télécharger sur l'App Store <span aria-hidden="true">→</span></a>
-                <a class="suivre" href="https://warimvp.github.io/rihla/">Ouvrir la version web <span aria-hidden="true">→</span></a>
-              </div>
-            </div>
-          </article>
-        </div>
-      </div>
+      <h2 id="chiffres-titre" class="visuellement-cache">En chiffres</h2>
+      <ul>
+        <li class="chiffre reveler"><span class="chiffre-n"><span class="n" style="--n:2">2</span></span><span class="chiffre-l">titres publiés</span></li>
+        <li class="chiffre reveler"><span class="chiffre-n"><span class="n" style="--n:7">7</span></span><span class="chiffre-l">titres en préparation</span></li>
+        <li class="chiffre reveler"><span class="chiffre-n"><span class="n" style="--n:3">3</span></span><span class="chiffre-l">langues : français, arabe, anglais</span></li>
+        <li class="chiffre reveler"><span class="chiffre-n"><span class="n" style="--n:100">100</span><span class="unite">%</span></span><span class="chiffre-l">du code source remis au client</span></li>
+      </ul>
     </div>
   </section>
 
   <section class="section" id="a-paraitre" aria-labelledby="a-paraitre-titre">
     <div class="enveloppe">
-      <div class="rail"><span class="surtitre">À paraître</span></div>
-      <div>
-        <h2 id="a-paraitre-titre">En préparation</h2>
+      <div class="entete reveler">
+        <span class="surtitre"><span class="no">03</span>À paraître</span>
+        <h2 id="a-paraitre-titre">En préparation.</h2>
         <p class="intro">Les prochains titres du catalogue, en cours de développement. Leurs noms seront annoncés à leur sortie.</p>
-        <div class="parution">
-          <section class="parution-groupe" aria-labelledby="grand-public-titre">
-            <h3 id="grand-public-titre">Pour tous</h3>
-            <ul class="epreuves">
-              <li class="epreuve"><h4>Location immobilière</h4><p>Trouver un logement en location longue durée, puis gérer le bail, les loyers et les quittances entre propriétaire et locataire.</p><span class="support">Web · mobile</span></li>
-              <li class="epreuve"><h4>Seconde main</h4><p>Acheter et vendre entre particuliers, avec messagerie, offres et paiement à la livraison.</p><span class="support">Web · iPhone</span></li>
-              <li class="epreuve"><h4>Enseignement</h4><p>Un espace pour les enseignants indépendants et leurs élèves : classes, exercices et suivi des progrès.</p><span class="support">Web · iPhone</span></li>
-              <li class="epreuve"><h4>Emploi</h4><p>Des offres d'emploi au Maroc avec le salaire affiché, en français et en arabe.</p><span class="support">Web</span></li>
-            </ul>
-          </section>
-          <section class="parution-groupe" aria-labelledby="pro-titre">
-            <h3 id="pro-titre">Pour les professionnels</h3>
-            <ul class="epreuves">
-              <li class="epreuve"><h4>Caisse pour restaurants et cafés</h4><p>Encaissement, tickets, remises et clôture de caisse journalière, en français et en arabe.</p><span class="support">Tablette · web</span></li>
-              <li class="epreuve"><h4>Suivi de chantier</h4><p>Pour les PME du bâtiment : avancement, dépenses et équipes, depuis le téléphone, même hors connexion.</p><span class="support">Mobile · web</span></li>
-              <li class="epreuve"><h4>Gestion de coopérative agricole</h4><p>Adhérents, apports, avances et répartition des revenus, jusqu'au dossier d'assemblée générale.</p><span class="support">Web</span></li>
-            </ul>
-          </section>
-        </div>
+      </div>
+      <div class="parution">
+        <section class="parution-groupe reveler" aria-labelledby="grand-public-titre">
+          <h3 id="grand-public-titre">Pour tous</h3>
+          <ul class="epreuves">
+            <li class="epreuve"><h4>Location immobilière</h4><p>Trouver un logement en location longue durée, puis gérer le bail, les loyers et les quittances entre propriétaire et locataire.</p><span class="support">Web · mobile</span></li>
+            <li class="epreuve"><h4>Seconde main</h4><p>Acheter et vendre entre particuliers, avec messagerie, offres et paiement à la livraison.</p><span class="support">Web · iPhone</span></li>
+            <li class="epreuve"><h4>Enseignement</h4><p>Un espace pour les enseignants indépendants et leurs élèves : classes, exercices et suivi des progrès.</p><span class="support">Web · iPhone</span></li>
+            <li class="epreuve"><h4>Emploi</h4><p>Des offres d'emploi au Maroc avec le salaire affiché, en français et en arabe.</p><span class="support">Web</span></li>
+          </ul>
+        </section>
+        <section class="parution-groupe reveler" aria-labelledby="pro-titre">
+          <h3 id="pro-titre">Pour les professionnels</h3>
+          <ul class="epreuves">
+            <li class="epreuve"><h4>Caisse pour restaurants et cafés</h4><p>Encaissement, tickets, remises et clôture de caisse journalière, en français et en arabe.</p><span class="support">Tablette · web</span></li>
+            <li class="epreuve"><h4>Suivi de chantier</h4><p>Pour les PME du bâtiment : avancement, dépenses et équipes, depuis le téléphone, même hors connexion.</p><span class="support">Mobile · web</span></li>
+            <li class="epreuve"><h4>Gestion de coopérative agricole</h4><p>Adhérents, apports, avances et répartition des revenus, jusqu'au dossier d'assemblée générale.</p><span class="support">Web</span></li>
+          </ul>
+        </section>
       </div>
     </div>
   </section>
 
-  <section class="section" id="societe" aria-labelledby="societe-titre">
-    <div class="enveloppe">
-      <div class="rail"><span class="surtitre">Colophon</span></div>
-      <div>
-        <h2 id="societe-titre">La société</h2>
+  <section class="section section--2" id="societe" aria-labelledby="societe-titre">
+    <div class="enveloppe societe">
+      <div class="societe-texte reveler">
+        <span class="numero-fantome" aria-hidden="true">04</span>
+        <span class="surtitre"><span class="no">04</span>Colophon</span>
+        <h2 id="societe-titre">Une société marocaine, inscrite au registre du commerce.</h2>
+        <p>LEGANTIS DIGITAL SERVICE SAS est une société par actions simplifiée de droit marocain, immatriculée au registre du commerce de Casablanca le 7 septembre 2026, au capital de 10 000 MAD, présidée par Yassir Legmara.</p>
+        <p>Ses trois activités inscrites au registre : édition de logiciels, conseil informatique et vente par Internet. Elle édite Atlasya et Rihla et développe des applications pour ses clients.</p>
+        <p class="note">Le détail figure dans les <a href="mentions-legales/">mentions légales</a>.</p>
+      </div>
+      <aside class="fiche reveler" aria-labelledby="fiche-titre">
+        <h3 id="fiche-titre">Fiche d'identité</h3>
         <dl class="colophon">
           <div><dt>Dénomination</dt><dd>LEGANTIS DIGITAL SERVICE SAS</dd></div>
           <div><dt>Forme juridique</dt><dd>Société par actions simplifiée à associé unique</dd></div>
@@ -280,34 +347,78 @@
           <div><dt>Siège social</dt><dd>Oasis Offices Latitudes, Route de l'Oasis, Bureau 304, Maarif, Casablanca, Maroc</dd></div>
           <div><dt>Domiciliation</dt><dd>MyLegal Offices</dd></div>
         </dl>
-        <p class="note">Le détail figure dans les <a href="mentions-legales/">mentions légales</a>.</p>
-      </div>
+        <div class="cachet" aria-hidden="true">
+          <b>Legantis Digital Service SAS</b>
+          <span>Capital 10 000 MAD · Casablanca</span>
+          <span>Oasis Offices Latitudes · Bureau 304 · Maarif</span>
+          <span>RC 745587 · IF 73343482 · ICE 004026900000030</span>
+        </div>
+      </aside>
     </div>
   </section>
 
-  <section class="section" id="contact" aria-labelledby="contact-titre">
+  <section class="appel grain" id="contact" aria-labelledby="contact-titre">
+    <div class="forme forme--a" aria-hidden="true"></div>
+    <div class="forme forme--b" aria-hidden="true"></div>
     <div class="enveloppe">
-      <div class="rail"><span class="surtitre">Contact</span></div>
-      <div>
-        <h2 id="contact-titre">Nous écrire</h2>
-        <p class="intro">Un projet d'application à cadrer, une question sur un produit ou un partenariat ? Décrivez-nous votre besoin en quelques lignes.</p>
-        <dl class="contact">
-          <div><dt>Email</dt><dd><a href="mailto:contact@legantis.net">contact@legantis.net</a></dd></div>
-          <div><dt>Téléphone</dt><dd><a href="tel:+212672759097">+212 6 72 75 90 97</a></dd></div>
-          <div><dt>Courrier</dt><dd>Oasis Offices Latitudes, Route de l'Oasis, Bureau 304, Maarif, Casablanca, Maroc</dd></div>
-        </dl>
-      </div>
+      <span class="surtitre reveler"><span class="no">05</span>Contact</span>
+      <h2 id="contact-titre" class="reveler"><span>Parlons de</span><span class="contour">votre projet.</span></h2>
+      <p class="intro reveler">Un projet d'application à cadrer, une question sur un produit ou un partenariat ? Décrivez-nous votre besoin en quelques lignes.</p>
+      <dl class="contact reveler">
+        <div class="contact-email"><dt class="visuellement-cache">Email</dt><dd><a class="bouton bouton--plein bouton--grand" href="mailto:contact@legantis.net">contact@legantis.net <span class="fleche" aria-hidden="true">→</span></a></dd></div>
+        <div class="contact-tel"><dt class="visuellement-cache">Téléphone</dt><dd><a href="tel:+212672759097">Ou par téléphone : +212 6 72 75 90 97</a></dd></div>
+        <div class="contact-courrier"><dt>Courrier</dt><dd>Oasis Offices Latitudes, Route de l'Oasis, Bureau 304, Maarif, Casablanca, Maroc</dd></div>
+      </dl>
     </div>
   </section>
 </main>
 
 <footer class="pied">
   <div class="enveloppe">
-    <span>© 2026 LEGANTIS DIGITAL SERVICE SAS</span>
-    <nav aria-label="Liens de pied de page">
-      <a href="mentions-legales/">Mentions légales et confidentialité</a>
-      <a href="en/" hreflang="en" lang="en">English</a>
-    </nav>
+    <div class="pied-colonnes">
+      <div class="pied-marque">
+        <a class="marque" href="./" aria-label="Legantis, accueil">
+          <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#3D36B2"/><path d="M21 13h11v29h17v9H21z" fill="#F6F7F9"/><rect x="41" y="13" width="8" height="8" fill="#E3A33A"/></svg>
+          <b>Legantis</b><small>Digital Service</small>
+        </a>
+        <p>Des applications web et mobiles sur mesure, conçues et développées à Casablanca.</p>
+      </div>
+      <div>
+        <h4>Prestations</h4>
+        <ul>
+          <li><a href="#web">Applications web</a></li>
+          <li><a href="#mobile">Applications mobiles</a></li>
+          <li><a href="#metier">Logiciels métier</a></li>
+          <li><a href="#conseil">Conseil et reprise d'existant</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Société</h4>
+        <ul>
+          <li><a href="#produits">Nos produits</a></li>
+          <li><a href="#a-paraitre">À paraître</a></li>
+          <li><a href="#societe">La société</a></li>
+          <li><a href="mentions-legales/">Mentions légales et confidentialité</a></li>
+          <li><a href="en/" hreflang="en" lang="en">English</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <address>
+          <a href="mailto:contact@legantis.net">contact@legantis.net</a>
+          <a href="tel:+212672759097">+212 6 72 75 90 97</a>
+          <span>Oasis Offices Latitudes<br>Route de l'Oasis, Bureau 304<br>Maarif, Casablanca, Maroc</span>
+        </address>
+      </div>
+    </div>
+    <div class="pied-bas">
+      <span>© 2026 LEGANTIS DIGITAL SERVICE SAS</span>
+      <span>Conçu et développé à Casablanca <span class="coeur" aria-hidden="true">◆</span> RC 745587</span>
+      <nav aria-label="Liens de pied de page">
+        <a href="mentions-legales/">Mentions légales</a>
+        <a href="en/" hreflang="en" lang="en">English</a>
+      </nav>
+    </div>
   </div>
 </footer>
 </body>

@@ -25,6 +25,7 @@
 </head>
 <body>
 <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+<div class="progression" aria-hidden="true"></div>
 
 <header class="barre">
   <div class="enveloppe">
@@ -32,7 +33,7 @@
       <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#3D36B2"/><path d="M21 13h11v29h17v9H21z" fill="#F6F7F9"/><rect x="41" y="13" width="8" height="8" fill="#E3A33A"/></svg>
       <b>Legantis</b><small>Digital Service</small>
     </a>
-    <nav aria-label="Navigation principale">
+    <nav class="nav-bureau" aria-label="Navigation principale">
       <ul class="nav">
         <li><a href="../#services">Prestations</a></li>
         <li><a href="../#produits">Produits</a></li>
@@ -41,8 +42,23 @@
         <li><a class="langue" href="../en/legal/" hreflang="en" lang="en">EN</a></li>
       </ul>
     </nav>
+    <a class="bouton bouton--petit barre-cta" href="mailto:contact@legantis.net">Parler de votre projet</a>
+    <a class="menu-ouvrir" href="#menu" aria-label="Ouvrir le menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg></a>
   </div>
 </header>
+<nav id="menu" class="menu-plein" aria-label="Menu">
+  <a class="menu-fermer" href="#!" aria-label="Fermer le menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg></a>
+  <ul>
+    <li style="--i:0"><a href="../#services">Prestations</a></li>
+    <li style="--i:1"><a href="../#produits">Produits</a></li>
+    <li style="--i:2"><a href="../#societe">La société</a></li>
+    <li style="--i:3"><a href="../#contact">Contact</a></li>
+  </ul>
+  <div class="menu-pied">
+    <a href="mailto:contact@legantis.net">contact@legantis.net</a>
+    <a href="../en/legal/" hreflang="en" lang="en">English</a>
+  </div>
+</nav>
 
 <main id="contenu" class="enveloppe">
   <article class="document">
@@ -87,11 +103,50 @@
 
 <footer class="pied">
   <div class="enveloppe">
-    <span>© 2026 LEGANTIS DIGITAL SERVICE SAS</span>
-    <nav aria-label="Liens de pied de page">
-      <a href="../">Accueil</a>
-      <a href="../en/legal/" hreflang="en" lang="en">English</a>
-    </nav>
+    <div class="pied-colonnes">
+      <div class="pied-marque">
+        <a class="marque" href="../" aria-label="Legantis, accueil">
+          <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#3D36B2"/><path d="M21 13h11v29h17v9H21z" fill="#F6F7F9"/><rect x="41" y="13" width="8" height="8" fill="#E3A33A"/></svg>
+          <b>Legantis</b><small>Digital Service</small>
+        </a>
+        <p>Des applications web et mobiles sur mesure, conçues et développées à Casablanca.</p>
+      </div>
+      <div>
+        <h4>Prestations</h4>
+        <ul>
+          <li><a href="../#web">Applications web</a></li>
+          <li><a href="../#mobile">Applications mobiles</a></li>
+          <li><a href="../#metier">Logiciels métier</a></li>
+          <li><a href="../#conseil">Conseil et reprise d'existant</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Société</h4>
+        <ul>
+          <li><a href="../#produits">Nos produits</a></li>
+          <li><a href="../#a-paraitre">À paraître</a></li>
+          <li><a href="../#societe">La société</a></li>
+          <li><a href="./">Mentions légales et confidentialité</a></li>
+          <li><a href="../en/legal/" hreflang="en" lang="en">English</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <address>
+          <a href="mailto:contact@legantis.net">contact@legantis.net</a>
+          <a href="tel:+212672759097">+212 6 72 75 90 97</a>
+          <span>Oasis Offices Latitudes<br>Route de l'Oasis, Bureau 304<br>Maarif, Casablanca, Maroc</span>
+        </address>
+      </div>
+    </div>
+    <div class="pied-bas">
+      <span>© 2026 LEGANTIS DIGITAL SERVICE SAS</span>
+      <span>Conçu et développé à Casablanca <span class="coeur" aria-hidden="true">◆</span> RC 745587</span>
+      <nav aria-label="Liens de pied de page">
+        <a href="./">Mentions légales</a>
+        <a href="../en/legal/" hreflang="en" lang="en">English</a>
+      </nav>
+    </div>
   </div>
 </footer>
 </body>

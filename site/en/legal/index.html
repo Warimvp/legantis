@@ -25,6 +25,7 @@
 </head>
 <body>
 <a class="lien-evitement" href="#contenu">Skip to content</a>
+<div class="progression" aria-hidden="true"></div>
 
 <header class="barre">
   <div class="enveloppe">
@@ -32,7 +33,7 @@
       <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#3D36B2"/><path d="M21 13h11v29h17v9H21z" fill="#F6F7F9"/><rect x="41" y="13" width="8" height="8" fill="#E3A33A"/></svg>
       <b>Legantis</b><small>Digital Service</small>
     </a>
-    <nav aria-label="Main navigation">
+    <nav class="nav-bureau" aria-label="Main navigation">
       <ul class="nav">
         <li><a href="../#services">Services</a></li>
         <li><a href="../#produits">Products</a></li>
@@ -41,8 +42,23 @@
         <li><a class="langue" href="../../mentions-legales/" hreflang="fr" lang="fr">FR</a></li>
       </ul>
     </nav>
+    <a class="bouton bouton--petit barre-cta" href="mailto:contact@legantis.net">Tell us about your project</a>
+    <a class="menu-ouvrir" href="#menu" aria-label="Open the menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg></a>
   </div>
 </header>
+<nav id="menu" class="menu-plein" aria-label="Menu">
+  <a class="menu-fermer" href="#!" aria-label="Close the menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg></a>
+  <ul>
+    <li style="--i:0"><a href="../#services">Services</a></li>
+    <li style="--i:1"><a href="../#produits">Products</a></li>
+    <li style="--i:2"><a href="../#societe">Company</a></li>
+    <li style="--i:3"><a href="../#contact">Contact</a></li>
+  </ul>
+  <div class="menu-pied">
+    <a href="mailto:contact@legantis.net">contact@legantis.net</a>
+    <a href="../../mentions-legales/" hreflang="fr" lang="fr">Français</a>
+  </div>
+</nav>
 
 <main id="contenu" class="enveloppe">
   <article class="document">
@@ -87,11 +103,50 @@
 
 <footer class="pied">
   <div class="enveloppe">
-    <span>© 2026 LEGANTIS DIGITAL SERVICE SAS</span>
-    <nav aria-label="Footer links">
-      <a href="../">Home</a>
-      <a href="../../mentions-legales/" hreflang="fr" lang="fr">Français</a>
-    </nav>
+    <div class="pied-colonnes">
+      <div class="pied-marque">
+        <a class="marque" href="../" aria-label="Legantis, home">
+          <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#3D36B2"/><path d="M21 13h11v29h17v9H21z" fill="#F6F7F9"/><rect x="41" y="13" width="8" height="8" fill="#E3A33A"/></svg>
+          <b>Legantis</b><small>Digital Service</small>
+        </a>
+        <p>Custom web and mobile applications, designed and built in Casablanca.</p>
+      </div>
+      <div>
+        <h4>Services</h4>
+        <ul>
+          <li><a href="../#web">Web applications</a></li>
+          <li><a href="../#mobile">Mobile applications</a></li>
+          <li><a href="../#metier">Business software</a></li>
+          <li><a href="../#conseil">Consulting and takeovers</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="../#produits">Our products</a></li>
+          <li><a href="../#a-paraitre">Forthcoming</a></li>
+          <li><a href="../#societe">The company</a></li>
+          <li><a href="./">Legal notice and privacy</a></li>
+          <li><a href="../../mentions-legales/" hreflang="fr" lang="fr">Français</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <address>
+          <a href="mailto:contact@legantis.net">contact@legantis.net</a>
+          <a href="tel:+212672759097">+212 6 72 75 90 97</a>
+          <span>Oasis Offices Latitudes<br>Route de l'Oasis, Bureau 304<br>Maarif, Casablanca, Morocco</span>
+        </address>
+      </div>
+    </div>
+    <div class="pied-bas">
+      <span>© 2026 LEGANTIS DIGITAL SERVICE SAS</span>
+      <span>Designed and built in Casablanca <span class="coeur" aria-hidden="true">◆</span> RC 745587</span>
+      <nav aria-label="Footer links">
+        <a href="./">Legal notice</a>
+        <a href="../../mentions-legales/" hreflang="fr" lang="fr">Français</a>
+      </nav>
+    </div>
   </div>
 </footer>
 </body>
