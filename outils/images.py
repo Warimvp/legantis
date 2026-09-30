@@ -88,7 +88,7 @@ for lettre in "DIGITAL SERVICE":  # interlettrage à la main, comme le .marque s
     d.text((x, 452 * S), lettre, font=mono, fill=GRIS)
     x += d.textlength(lettre, font=mono) + 6 * S
 d.rectangle([marge, 512 * S, W - marge, 512 * S + 2 * S], fill=TAMPON)
-d.text((marge, 540 * S), "Atlasya  ·  Rihla  ·  Casablanca", font=sans, fill=TAMPON)
+d.text((marge, 540 * S), "Web  ·  Mobile  ·  Casablanca", font=sans, fill=TAMPON)
 
 tampon = cachet(420 * S, 140 * S, [
     ("LEGANTIS DIGITAL SERVICE SAS", police(etroite, 29 * S), 1.3),

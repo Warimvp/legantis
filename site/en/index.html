@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Legantis — software publisher in Casablanca</title>
-<meta name="description" content="LEGANTIS DIGITAL SERVICE SAS designs, builds and publishes web and mobile applications in Morocco: Atlasya for healthcare, Rihla for languages.">
+<title>Legantis — web and mobile app development in Casablanca</title>
+<meta name="description" content="LEGANTIS DIGITAL SERVICE SAS designs and builds custom web and mobile applications in Morocco, in French and Arabic, and publishes its own titles: Atlasya for healthcare, Rihla for languages.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#F6F7F9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0E0F1B" media="(prefers-color-scheme: dark)">
@@ -19,12 +19,12 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="fr_MA">
 <meta property="og:url" content="https://legantis.net/en/">
-<meta property="og:title" content="Legantis — software publisher in Casablanca">
-<meta property="og:description" content="LEGANTIS DIGITAL SERVICE SAS designs, builds and publishes web and mobile applications in Morocco: Atlasya for healthcare, Rihla for languages.">
+<meta property="og:title" content="Legantis — web and mobile app development in Casablanca">
+<meta property="og:description" content="LEGANTIS DIGITAL SERVICE SAS designs and builds custom web and mobile applications in Morocco, in French and Arabic, and publishes its own titles: Atlasya for healthcare, Rihla for languages.">
 <meta property="og:image" content="https://legantis.net/assets/partage.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Legantis Digital Service — Atlasya, Rihla, Casablanca">
+<meta property="og:image:alt" content="Legantis Digital Service — Web, Mobile, Casablanca">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
 {
@@ -33,6 +33,7 @@
   "@id": "https://legantis.net/#organisation",
   "name": "Legantis",
   "legalName": "LEGANTIS DIGITAL SERVICE SAS",
+  "description": "Design and development of custom web and mobile applications in Morocco, in French and Arabic; publisher of Atlasya and Rihla.",
   "url": "https://legantis.net/en/",
   "logo": "https://legantis.net/assets/apple-touch-icon.png",
   "email": "contact@legantis.net",
@@ -43,11 +44,23 @@
     "addressLocality": "Casablanca",
     "addressCountry": "MA"
   },
+  "areaServed": { "@type": "Country", "name": "Morocco" },
+  "knowsLanguage": ["fr", "ar", "en"],
   "identifier": [
     { "@type": "PropertyValue", "propertyID": "RC Casablanca", "value": "745587" },
     { "@type": "PropertyValue", "propertyID": "ICE", "value": "004026900000030" }
   ],
   "founder": { "@type": "Person", "name": "Yassir Legmara" },
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Services",
+    "itemListElement": [
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Web application development", "description": "Platforms, customer portals, dashboards, websites and online shops." } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "iOS and Android mobile app development", "description": "iPhone and Android applications published on the App Store and Google Play." } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Business software", "description": "Custom point of sale, management, activity tracking and internal tools." } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "IT consulting and application takeovers", "description": "Scoping, architecture, security, compliance with law 09-08, modernisation of existing applications." } }
+    ]
+  },
   "brand": [
     { "@type": "Brand", "name": "Atlasya", "url": "https://atlasyahealth.com" },
     { "@type": "Brand", "name": "Rihla", "url": "https://warimvp.github.io/rihla/", "sameAs": ["https://apps.apple.com/app/id6809222617"] }
@@ -80,8 +93,8 @@
     </a>
     <nav aria-label="Main navigation">
       <ul class="nav">
-        <li><a href="#produits">Products</a></li>
         <li><a href="#services">Services</a></li>
+        <li><a href="#produits">Products</a></li>
         <li><a href="#societe">Company</a></li>
         <li><a href="#contact">Contact</a></li>
         <li><a class="langue" href="../" hreflang="fr" lang="fr">FR</a></li>
@@ -94,12 +107,12 @@
   <section class="ouverture" aria-labelledby="titre">
     <div class="enveloppe">
       <div>
-        <span class="surtitre">Software publisher · Casablanca, Morocco</span>
-        <h1 id="titre"><em>Useful</em> apps, designed and published in Morocco.</h1>
-        <p class="chapeau">LEGANTIS DIGITAL SERVICE designs, builds and publishes web and mobile applications: healthcare with Atlasya, languages with Rihla. We also help companies with their software projects.</p>
+        <span class="surtitre">Web and mobile development · Casablanca, Morocco</span>
+        <h1 id="titre"><em>Custom</em> web and mobile apps, designed and built in Morocco.</h1>
+        <p class="chapeau">LEGANTIS DIGITAL SERVICE builds applications for companies, professionals and founders: web platforms, iPhone and Android apps, business software. We also publish our own titles, Atlasya for healthcare and Rihla for languages.</p>
         <div class="actions">
-          <a class="bouton bouton--plein" href="#produits">See our products</a>
-          <a class="bouton bouton--trait" href="mailto:contact@legantis.net">Write to us</a>
+          <a class="bouton bouton--plein" href="mailto:contact@legantis.net">Tell us about your project</a>
+          <a class="bouton bouton--trait" href="#services">See our services</a>
         </div>
       </div>
       <aside class="fiche" aria-labelledby="fiche-titre">
@@ -121,12 +134,65 @@
     </div>
   </section>
 
+  <section class="section" id="services" aria-labelledby="services-titre">
+    <div class="enveloppe">
+      <div class="rail"><span class="surtitre">Services</span></div>
+      <div>
+        <h2 id="services-titre">What we build <em>for you</em></h2>
+        <p class="intro">What we do for our own products, we do for your business: a complete application, designed, built, published and maintained by the same team, from the brief to launch.</p>
+        <ol class="prestations" role="list">
+          <li class="prestation">
+            <h3>Web applications</h3>
+            <p>Platforms, customer portals, dashboards, websites and online shops. Fast, installable on a phone like a native app, and able to work offline when field conditions require it.</p>
+            <p class="exemples">Platform · customer portal · back office · website · online shop</p>
+          </li>
+          <li class="prestation">
+            <h3>Mobile applications</h3>
+            <p>iPhone and Android from a single code base, published on the App Store and Google Play: camera, notifications, sharing, offline use. We handle both stores' requirements.</p>
+            <p class="exemples">iOS · Android · App Store · Google Play</p>
+          </li>
+          <li class="prestation">
+            <h3>Business software</h3>
+            <p>Point of sale, management, activity tracking, internal tools: software shaped for your trade, with your rules and your documents (receipts, invoices, accounting exports).</p>
+            <p class="exemples">Point of sale · management · field tracking · internal tools</p>
+          </li>
+          <li class="prestation">
+            <h3>Consulting and takeovers</h3>
+            <p>Project scoping, architecture choices, security and quality audits, compliance with Morocco's data protection law 09-08, and taking over or modernising an application already in place.</p>
+            <p class="exemples">Scoping · architecture · security · compliance · takeover</p>
+          </li>
+        </ol>
+
+        <div class="bloc">
+          <h3 class="sous-titre">Built for Morocco</h3>
+          <div class="atouts">
+            <div class="atout"><h4>French and Arabic</h4><p>A bilingual interface with genuine right-to-left reading, whenever your audience needs it.</p></div>
+            <div class="atout"><h4>Local practices</h4><p>Dirhams, cash on delivery, Moroccan cities and local phone numbers: nothing to retrofit later.</p></div>
+            <div class="atout"><h4>Protected data</h4><p>Encryption, backups, compliance with law 09-08 (CNDP) and with Apple's and Google's rules.</p></div>
+          </div>
+        </div>
+
+        <div class="bloc">
+          <h3 class="sous-titre">How we work</h3>
+          <ol class="etapes" role="list">
+            <li class="etape"><h4>Scoping</h4><p>We listen to your needs and write them down: screens, rules, priorities. You receive a detailed quote.</p></li>
+            <li class="etape"><h4>Design</h4><p>Mock-ups of every screen, in both languages if needed, approved with you before the first line of code.</p></li>
+            <li class="etape"><h4>Development</h4><p>Regular deliveries to a test address: you try the application at every step and adjust course.</p></li>
+            <li class="etape"><h4>Launch and follow-up</h4><p>Publication, handover of the source code and documentation, training for your teams, then fixes and improvements over time.</p></li>
+          </ol>
+        </div>
+
+        <p class="note">These services fall under the three activities recorded in the commercial register: software publishing, IT consulting and online sales.</p>
+      </div>
+    </div>
+  </section>
+
   <section class="section" id="produits" aria-labelledby="produits-titre">
     <div class="enveloppe">
       <div class="rail"><span class="surtitre">Catalogue</span></div>
       <div>
         <h2 id="produits-titre">Our products</h2>
-        <p class="intro">Two titles in our catalogue, designed, built and maintained by Legantis.</p>
+        <p class="intro">Two titles designed, built and maintained by Legantis. What we offer our clients, we practise first on our own products.</p>
         <div class="catalogue">
           <article class="titre titre--atlasya" aria-labelledby="atlasya-nom">
             <div class="couverture">
@@ -197,21 +263,6 @@
     </div>
   </section>
 
-  <section class="section" id="services" aria-labelledby="services-titre">
-    <div class="enveloppe">
-      <div class="rail"><span class="surtitre">Expertise</span></div>
-      <div>
-        <h2 id="services-titre">What we do</h2>
-        <p class="intro">Our three activities, as recorded in the commercial register.</p>
-        <div class="services">
-          <div class="service"><h3>Software publishing</h3><p>We design, publish and maintain our own web and mobile applications, from prototype to production.</p></div>
-          <div class="service"><h3>IT consulting</h3><p>We help companies with architecture choices, security, quality and compliance for their applications.</p></div>
-          <div class="service"><h3>Online sales</h3><p>We sell our software and subscriptions online, to consumers and businesses alike.</p></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section class="section" id="societe" aria-labelledby="societe-titre">
     <div class="enveloppe">
       <div class="rail"><span class="surtitre">Colophon</span></div>
@@ -239,7 +290,7 @@
       <div class="rail"><span class="surtitre">Contact</span></div>
       <div>
         <h2 id="contact-titre">Write to us</h2>
-        <p class="intro">A question about a product, a project or a partnership? Get in touch.</p>
+        <p class="intro">An application project to scope, a question about a product or a partnership? Describe your needs in a few lines.</p>
         <dl class="contact">
           <div><dt>Email</dt><dd><a href="mailto:contact@legantis.net">contact@legantis.net</a></dd></div>
           <div><dt>Phone</dt><dd><a href="tel:+212672759097">+212 6 72 75 90 97</a></dd></div>
