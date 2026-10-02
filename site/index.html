@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Legantis — développement d'applications web et mobiles à Casablanca</title>
-<meta name="description" content="LEGANTIS DIGITAL SERVICE SAS conçoit et développe des applications web et mobiles sur mesure au Maroc, en français et en arabe. Devis gratuit et sans engagement. Éditeur d'Atlasya pour la santé et de Rihla pour les langues.">
+<title>Applications web et mobiles sur mesure à Casablanca — Legantis</title>
+<meta name="description" content="Studio de développement à Casablanca, au Maroc : applications web, iPhone et Android sur mesure, en français et en arabe. Devis gratuit.">
+<meta name="robots" content="max-image-preview:large">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#F6F7F9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0E0F1B" media="(prefers-color-scheme: dark)">
@@ -19,8 +20,8 @@
 <meta property="og:locale" content="fr_MA">
 <meta property="og:locale:alternate" content="en_US">
 <meta property="og:url" content="https://legantis.net/">
-<meta property="og:title" content="Legantis — développement d'applications web et mobiles à Casablanca">
-<meta property="og:description" content="LEGANTIS DIGITAL SERVICE SAS conçoit et développe des applications web et mobiles sur mesure au Maroc, en français et en arabe. Devis gratuit et sans engagement. Éditeur d'Atlasya pour la santé et de Rihla pour les langues.">
+<meta property="og:title" content="Applications web et mobiles sur mesure à Casablanca — Legantis">
+<meta property="og:description" content="Studio de développement à Casablanca, au Maroc : applications web, iPhone et Android sur mesure, en français et en arabe. Devis gratuit.">
 <meta property="og:image" content="https://legantis.net/assets/partage.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -29,42 +30,59 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  "@id": "https://legantis.net/#organisation",
-  "name": "Legantis",
-  "legalName": "LEGANTIS DIGITAL SERVICE SAS",
-  "description": "Conception et développement d'applications web et mobiles sur mesure au Maroc, en français et en arabe ; éditeur d'Atlasya et de Rihla.",
-  "url": "https://legantis.net/",
-  "logo": "https://legantis.net/assets/apple-touch-icon.png",
-  "email": "contact@legantis.net",
-  "telephone": "+212672759097",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Oasis Offices Latitudes, Route de l'Oasis, Bureau 304, Maarif",
-    "addressLocality": "Casablanca",
-    "addressCountry": "MA"
-  },
-  "areaServed": { "@type": "Country", "name": "Maroc" },
-  "knowsLanguage": ["fr", "ar", "en"],
-  "identifier": [
-    { "@type": "PropertyValue", "propertyID": "RC Casablanca", "value": "745587" },
-    { "@type": "PropertyValue", "propertyID": "ICE", "value": "004026900000030" }
-  ],
-  "founder": { "@type": "Person", "name": "Yassir Legmara" },
-  "hasOfferCatalog": {
-    "@type": "OfferCatalog",
-    "name": "Prestations",
-    "itemListElement": [
-      { "@type": "Offer", "name": "Devis gratuit", "description": "Étude du besoin et devis détaillé, gratuits et sans engagement.", "price": "0", "priceCurrency": "MAD", "itemOffered": { "@type": "Service", "name": "Étude du besoin et devis de projet d'application" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Développement d'applications web", "description": "Plateformes, espaces clients, tableaux de bord, sites et boutiques en ligne." } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Développement d'applications mobiles iOS et Android", "description": "Applications iPhone et Android publiées sur l'App Store et Google Play." } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Logiciels métier", "description": "Caisse, gestion, suivi d'activité et outils internes sur mesure." } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Conseil informatique et reprise d'existant", "description": "Cadrage, architecture, sécurité, conformité à la loi 09-08, modernisation d'applications existantes." } }
-    ]
-  },
-  "brand": [
-    { "@type": "Brand", "name": "Atlasya", "url": "https://atlasyahealth.com" },
-    { "@type": "Brand", "name": "Rihla", "url": "https://warimvp.github.io/rihla/", "sameAs": ["https://apps.apple.com/app/id6809222617"] }
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://legantis.net/#site",
+      "url": "https://legantis.net/",
+      "name": "Legantis",
+      "alternateName": ["Legantis Digital Service", "LEGANTIS DIGITAL SERVICE SAS"],
+      "inLanguage": ["fr", "en"],
+      "publisher": { "@id": "https://legantis.net/#organisation" }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://legantis.net/#organisation",
+      "name": "Legantis",
+      "alternateName": "Legantis Digital Service",
+      "legalName": "LEGANTIS DIGITAL SERVICE SAS",
+      "description": "Conception et développement d'applications web et mobiles sur mesure au Maroc, en français et en arabe ; éditeur d'Atlasya et de Rihla.",
+      "url": "https://legantis.net/",
+      "logo": "https://legantis.net/assets/apple-touch-icon.png",
+      "foundingDate": "2026-09-07",
+      "email": "contact@legantis.net",
+      "telephone": "+212672759097",
+      "contactPoint": { "@type": "ContactPoint", "contactType": "sales", "email": "contact@legantis.net", "telephone": "+212672759097", "areaServed": "MA", "availableLanguage": ["fr", "ar", "en"] },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Oasis Offices Latitudes, Route de l'Oasis, Bureau 304, Maarif",
+        "addressLocality": "Casablanca",
+        "addressRegion": "Casablanca-Settat",
+        "addressCountry": "MA"
+      },
+      "areaServed": { "@type": "Country", "name": "Maroc" },
+      "knowsLanguage": ["fr", "ar", "en"],
+      "identifier": [
+        { "@type": "PropertyValue", "propertyID": "RC Casablanca", "value": "745587" },
+        { "@type": "PropertyValue", "propertyID": "ICE", "value": "004026900000030" }
+      ],
+      "founder": { "@type": "Person", "name": "Yassir Legmara" },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Prestations",
+        "itemListElement": [
+          { "@type": "Offer", "name": "Devis gratuit", "description": "Étude du besoin et devis détaillé, gratuits et sans engagement.", "price": "0", "priceCurrency": "MAD", "itemOffered": { "@type": "Service", "name": "Étude du besoin et devis de projet d'application" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "@id": "https://legantis.net/application-web-maroc/#service", "name": "Développement d'applications web", "url": "https://legantis.net/application-web-maroc/", "description": "Plateformes, espaces clients, tableaux de bord, sites et boutiques en ligne." } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "@id": "https://legantis.net/application-mobile-casablanca/#service", "name": "Développement d'applications mobiles iOS et Android", "url": "https://legantis.net/application-mobile-casablanca/", "description": "Applications iPhone et Android publiées sur l'App Store et Google Play." } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "@id": "https://legantis.net/logiciel-sur-mesure-maroc/#service", "name": "Logiciels métier", "url": "https://legantis.net/logiciel-sur-mesure-maroc/", "description": "Caisse, gestion, suivi d'activité et outils internes sur mesure." } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Conseil informatique et reprise d'existant", "description": "Cadrage, architecture, sécurité, conformité à la loi 09-08, modernisation d'applications existantes." } }
+        ]
+      },
+      "brand": [
+        { "@type": "Brand", "name": "Atlasya", "url": "https://atlasyahealth.com" },
+        { "@type": "Brand", "name": "Rihla", "url": "https://warimvp.github.io/rihla/", "sameAs": ["https://apps.apple.com/app/id6809222617"] }
+      ]
+    }
   ]
 }
 </script>
@@ -178,18 +196,21 @@
           <div class="prestation-tete"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></div>
           <h3>Applications web</h3>
           <p>Plateformes, espaces clients, tableaux de bord, sites et boutiques en ligne. Rapides, installables sur le téléphone comme une application, et capables de fonctionner hors connexion quand le terrain l'exige.</p>
+          <a class="suivre" href="application-web-maroc/">Application web au Maroc <span aria-hidden="true">→</span></a>
           <ul class="etiquettes"><li>Plateforme</li><li>Espace client</li><li>Back-office</li><li>Site</li><li>Boutique</li></ul>
         </li>
         <li class="prestation reveler" id="mobile">
           <div class="prestation-tete"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></div>
           <h3>Applications mobiles</h3>
           <p>iPhone et Android à partir d'une seule base de code, publiées sur l'App Store et Google Play : appareil photo, notifications, partage, hors ligne. Nous prenons en charge les exigences des deux boutiques.</p>
+          <a class="suivre" href="application-mobile-casablanca/">Application mobile à Casablanca <span aria-hidden="true">→</span></a>
           <ul class="etiquettes"><li>iOS</li><li>Android</li><li>App Store</li><li>Google Play</li></ul>
         </li>
         <li class="prestation reveler" id="metier">
           <div class="prestation-tete"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M16 14v4M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M8 18h.01M12 18h.01"/></svg></div>
           <h3>Logiciels métier</h3>
           <p>Caisse, gestion, suivi d'activité, outils internes : un logiciel taillé pour votre profession, avec vos règles et vos documents (tickets, reçus, factures, exports comptables).</p>
+          <a class="suivre" href="logiciel-sur-mesure-maroc/">Logiciel sur mesure au Maroc <span aria-hidden="true">→</span></a>
           <ul class="etiquettes"><li>Caisse</li><li>Gestion</li><li>Suivi de terrain</li><li>Outils internes</li></ul>
         </li>
         <li class="prestation prestation--large reveler" id="conseil">
@@ -408,9 +429,9 @@
       <div>
         <h3>Prestations</h3>
         <ul>
-          <li><a href="#web">Applications web</a></li>
-          <li><a href="#mobile">Applications mobiles</a></li>
-          <li><a href="#metier">Logiciels métier</a></li>
+          <li><a href="application-web-maroc/">Applications web</a></li>
+          <li><a href="application-mobile-casablanca/">Applications mobiles</a></li>
+          <li><a href="logiciel-sur-mesure-maroc/">Logiciels métier</a></li>
           <li><a href="#conseil">Conseil et reprise d'existant</a></li>
         </ul>
       </div>

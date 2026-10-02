@@ -488,7 +488,7 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
   body > .curseur[data-fond="bande"] { mix-blend-mode: var(--curseur-bande-melange); }
   body > .curseur[data-fond="bande"] .curseur-point .curseur-forme { background-color: var(--curseur-bande-point); box-shadow: var(--curseur-bande-contour); }
   body > .curseur.appui .curseur-point .curseur-forme { scale: .8; }
-  /* Bouton « Curseur standard » du pied de page (dans le HTML des cinq pages, avec l'attribut hidden : invisible sans script, au toucher,
+  /* Bouton « Curseur standard » du pied de page (dans le HTML des huit pages, avec l'attribut hidden : invisible sans script, au toucher,
      en mouvement réduit, en contraste renforcé, et avec une feuille de style plus ancienne) : rend le curseur du système pour la page
      en cours ; sa mise en forme est celle des liens du pied. */
   .lumiere .curseur-standard { display: inline-block; margin: 0; padding: 0; border: 0; background: none; font: inherit; letter-spacing: inherit; color: var(--gris); cursor: pointer; transition: color .2s; }
@@ -523,6 +523,7 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
   .prestation:hover .etiquettes li { border-color: color-mix(in srgb, var(--tampon) 35%, var(--filet)); color: var(--encre); }
 }
 /* projecteur : ::after (le ::before est la lampe du coin) ; la carte est déjà relative et rognée (le liseré est dans son cadre) */
+.prestation .suivre { display: block; align-self: flex-start; margin-top: 18px; }   /* lien vers la page de la prestation (accueil) : sous le texte, au-dessus des étiquettes qui restent en bas ; en bloc, pas en flex : sur deux lignes la flèche suit le texte au lieu de partir au bord de la carte */
 
 /* Sous-parties d'une section */
 .bloc { margin-top: clamp(64px, 8vw, 110px); }
@@ -534,7 +535,7 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 .atouts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
 .atout { position: relative; border-top: 1px solid var(--filet); padding-top: 22px; display: grid; gap: 8px; align-content: start; }
 .atout::before { content: ""; position: absolute; left: 0; top: -2px; width: 44px; height: 3px; background: var(--tampon); }
-.atout h4 { font-weight: 650; font-size: 1.12rem; line-height: 1.3; }
+.atout :is(h3, h4) { font-weight: 650; font-size: 1.12rem; line-height: 1.3; }
 .atout p { color: var(--gris); font-size: 0.96rem; }
 /* projecteur : ::after (le ::before est le trait d'encre) ; l'atout n'a ni fond, ni cadre, ni coins arrondis : le projecteur lui prête un panneau
    qui déborde de la colonne de 16 px de chaque côté et de 14 px en haut et en bas (le liseré ne touche pas le texte), sans toucher à son trait du haut ;
@@ -841,6 +842,49 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
   .offre { grid-template-columns: minmax(0, 1fr); }
 }
 
+/* ── Pages de prestation (application mobile, application web, logiciel sur mesure) ───────────────
+   Mêmes composants que l'accueil (bento, atouts, frise, couverture, appel final) : ne s'ajoutent ici que l'en-tête, le fil d'Ariane,
+   la preuve (texte + couverture du produit) et les liens vers les autres prestations. Les questions fréquentes sont des .atout sur
+   deux colonnes, toujours visibles (pas d'accordéon : le texte reste lisible partout, imprimable, sans état à gérer).
+   Les classes (.fil, .service-tete, .preuve, .suite, .service-cta…) n'existent que dans ces pages ; les règles existantes modifiées, ailleurs
+   dans la feuille, sont .atout :is(h3, h4), .prestation .suivre, .barre .marque small (sous 360 px) et le @media print (voir CLAUDE.md). */
+.fil ol { list-style: none; margin: 0 0 28px; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 10px; font: 500 0.72rem/1.4 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--gris); }
+.fil li + li::before { content: "/"; content: "/" / ""; margin-right: 10px; color: var(--pointille); }
+.fil a { color: var(--gris); text-decoration: none; }
+.fil a:hover { color: var(--encre); }
+.fil [aria-current] { color: var(--encre); }
+.service-tete { border-bottom: 1px solid var(--filet); padding: calc(var(--barre) + clamp(40px, 7vw, 96px)) 0 clamp(56px, 7vw, 96px);
+  background: radial-gradient(ellipse 60% 90% at 100% 0%, color-mix(in srgb, var(--lueur) 11%, transparent), transparent 70%); }
+.service-tete h1 { font-size: clamp(2.5rem, 5.8vw, 4.9rem); max-width: 13em; margin: 18px 0 28px; }
+.service-tete h1 em { font-style: normal; color: var(--tampon); }
+.service-tete .chapeau { max-width: 40rem; margin-bottom: 36px; animation: none; }
+.service-tete .actions { animation: none; }
+.service-tete .etiquettes { margin: 0; padding-top: 30px; }
+.service-tete .garanties, .service-cta .garanties { justify-content: flex-start; margin-top: 22px; }
+.service-cta { margin: clamp(32px, 5vw, 56px) 0 0 64px; }   /* aligné sur le texte des étapes de la frise */
+@media (max-width: 420px) { .service-tete h1 { font-size: min(2.5rem, calc((100vw - 40px) / 8.6)); } }   /* « Développement » tient à 320 px */
+.service .section { padding: clamp(64px, 8vw, 112px) 0; }
+.service .section h2 { font-size: clamp(2.1rem, 4.6vw, 3.7rem); }
+.preuve { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px clamp(32px, 5vw, 72px); align-items: center; }
+.preuve .entete { margin-bottom: 0; }
+.atouts--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 44px clamp(32px, 4vw, 64px); }
+.suite-bloc { padding: clamp(48px, 6vw, 80px) 0; }
+.suite-bloc .sous-titre { display: block; margin-bottom: 22px; }
+.suite { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.suite a { display: grid; align-content: start; gap: 8px; height: 100%; padding: 22px 24px 24px; border: 1px solid var(--filet); border-radius: 6px; background: var(--carte); color: var(--encre); text-decoration: none; transition: border-color .3s, box-shadow .3s; }
+.suite b { font-weight: 650; font-size: 1.15rem; line-height: 1.25; font-stretch: 110%; letter-spacing: -0.02em; }
+.suite span { color: var(--gris); font-size: 0.94rem; }
+.suite a::after { content: "→"; content: "→" / ""; color: var(--tampon); margin-top: 6px; transition: transform .2s; }
+@media (hover: hover) {
+  .suite a:hover { border-color: color-mix(in srgb, var(--tampon) 45%, var(--filet)); box-shadow: var(--aura-carte); }
+  .suite a:hover::after { transform: translateX(4px); }
+}
+.service .appel { min-height: 0; padding: clamp(80px, 10vw, 140px) 0; }
+@media (max-width: 900px) {
+  .preuve, .suite { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) { .service-cta { margin-left: 44px; } }
+
 /* ── Adaptations ───────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -879,6 +923,8 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
 }
 /* à 360 px et moins, le texte de la couverture 4∶3 dépassait de la boîte et était coupé : la hauteur suit le contenu */
 @media (max-width: 413px) { .couverture { aspect-ratio: auto; } }
+/* sous 360 px, l'étiquette « Digital Service » de la barre poussait le bouton du menu hors de l'écran */
+@media (max-width: 359px) { .barre .marque small { display: none; } }
 @media (max-width: 440px) {
   .contact-tel .sep { display: none; }
   .contact-tel dd { column-gap: 28px; }
@@ -894,7 +940,8 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
   .defile { display: none; }
   .bouton--plein { background: none; color: var(--tampon); box-shadow: none; }
   .couverture { color: var(--encre); } .couverture p { color: var(--gris); } .domaine { background: none; border-color: var(--filet); }
-  .prestation, .titre, .epreuve, .etape, .offre, .fiche, .atout { break-inside: avoid; }
+  .prestation, .titre, .epreuve, .etape, .offre, .fiche, .atout, .suite-bloc { break-inside: avoid; }
+  h2, h3, h4, .surtitre, .sous-titre { break-after: avoid; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
