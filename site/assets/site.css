@@ -6,13 +6,26 @@
    La palette est celle des papiers de la société : fond « chaux », encre, tampon indigo (clair et sombre
    selon prefers-color-scheme). Archivo à largeur variable (étendue pour les titres, condensée pour le
    cachet), Spline Sans Mono pour les identifiants.
-   Aucun script : les animations liées au défilement passent par animation-timeline (scroll()/view()),
+   Un seul script, assets/lumiere.js (effets à la souris) : il pose la classe .lumiere sur <html> quand la souris est
+   fine et que le mouvement n'est pas réduit, et toute la CSS qui en dépend est écrite sous cette classe (le curseur personnalisé :
+   sous html.curseur et body > .curseur) ; sans lui, tout reste comme ci-dessous. Les animations liées au défilement, elles, passent par animation-timeline (scroll()/view()),
    en amélioration progressive derrière @supports ; sans prise en charge, tout est simplement affiché.
    Lumière d'encre (ajoutée le même jour, reprise des effets lumineux de nexus) : un halo qui suit la souris dans
-   l'ouverture (grille de capteurs + :has(), voir « Halo qui suit la souris »), et des lueurs à l'encre du tampon
-   intégrées à chaque composant (jetons --lueur, --eclat, --aura-*) : en sombre elles éclairent, en clair elles
-   teintent, jamais de tache grise. Les survols décoratifs sont réservés aux appareils à souris (@media (hover: hover)),
-   pour ne pas rester collés après un tapotement. */
+   l'ouverture (lumiere.js ; repli sans script : grille de capteurs + :has(), voir « Halo qui suit la souris »), un
+   projecteur qui suit le curseur dans chaque carte, bord allumé (lumiere.js, sans repli : voir « Projecteur des cartes »),
+   un curseur personnalisé, point et anneau (lumiere.js, sans repli : le curseur système reste : voir « Curseur personnalisé »),
+   et des lueurs à l'encre du tampon intégrées à chaque composant (jetons --lueur, --eclat, --aura-*) : en sombre elles
+   éclairent, en clair elles teintent, jamais de tache grise. Les survols décoratifs sont réservés aux appareils à
+   souris (@media (hover: hover)), pour ne pas rester collés après un tapotement. */
+
+/* Police de repli calée sur Archivo (Arial + size-adjust mesuré sur les textes du site) : quand Archivo arrive, la mise en page ne bouge plus.
+   unicode-range = sous-ensemble latin d'Archivo : les glyphes qu'il n'a pas (→ ◆ ✓) restent servis par system-ui, comme avant.
+   À recalibrer si les textes changent beaucoup (un size-adjust faussé aggrave le CLS). Sans Arial (Android), la règle est sans effet. */
+@font-face { font-family: "Archivo Repli"; src: local("Arial"); font-weight: 400 500; font-stretch: 100%; size-adjust: 98.4%; ascent-override: 89.2%; descent-override: 21.3%; line-gap-override: 0%; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Archivo Repli"; src: local("Arial Bold"), local("Arial-BoldMT"); font-weight: 600 800; font-stretch: 100%; size-adjust: 95.4%; ascent-override: 92.0%; descent-override: 22.0%; line-gap-override: 0%; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Archivo Repli"; src: local("Arial Bold"), local("Arial-BoldMT"); font-weight: 600 800; font-stretch: 112%; size-adjust: 108.9%; ascent-override: 80.6%; descent-override: 19.3%; line-gap-override: 0%; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Archivo Repli"; src: local("Arial Bold"), local("Arial-BoldMT"); font-weight: 600 800; font-stretch: 118%; size-adjust: 115.7%; ascent-override: 75.9%; descent-override: 18.2%; line-gap-override: 0%; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Archivo Repli"; src: local("Arial Bold"), local("Arial-BoldMT"); font-weight: 600 800; font-stretch: 72%; size-adjust: 75.4%; ascent-override: 116.4%; descent-override: 27.8%; line-gap-override: 0%; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 
 :root {
   --chaux: #F6F7F9;
@@ -32,6 +45,25 @@
   --melange-grain: multiply;
   --halo: .16;
   --halo-suivi: .09;   /* halo qui suit la souris : sous le pointeur, son cœur doit rester plus clair que --filet */
+  --halo-coeur: .16;   /* cœur du halo quand lumiere.js le suit (opacité) : teinte le papier en indigo, sans le griser */
+  --gris-allume: color-mix(in oklab, var(--gris) 50%, var(--encre));   /* chapeau et légende sous ce cœur : plus contrastés (plus foncés en clair, plus clairs en sombre) pour rester à 4,5:1 */
+  --projecteur-rayon: 280px;   /* projecteur des cartes (lumiere.js) : rayon de la lumière qui suit le curseur dans une carte */
+  --projecteur: color-mix(in srgb, var(--lueur) 70%, transparent);   /* son intensité au curseur AVANT le masque, qui la ramène à 16 % dans la carte (environ 11 % d'encre en clair, 10 % en sombre) et la garde presque entière sur le liseré du bord */
+  --projecteur-titre: color-mix(in srgb, color-mix(in srgb, var(--lueur) 55%, var(--eclat)) 80%, transparent);   /* cartes des produits : leurs couvertures sont de la couleur de l'encre claire, l'encre pure n'y laisserait rien voir ; une encre éclaircie se voit sur la couverture et teinte encore le papier */
+
+  /* Curseur personnalisé (lumiere.js) : tailles de la forme du point selon l'état, et de l'anneau ; opacité de l'anneau (avant le mélange « difference ») */
+  --curseur-point: 12px;
+  --curseur-anneau: 32px;
+  --curseur-disque: 48px;
+  --curseur-vue: 64px;
+  --curseur-barre-l: 4px;
+  --curseur-barre-h: 22px;
+  --curseur-anneau-opacite: .3;
+  --curseur-bande-melange: normal;                 /* sur la bande des chiffres : en clair, le curseur n'y est plus un inverse (son inverse a la luminance du fond) mais une forme d'encre cernée de blanc */
+  --curseur-bande-point: var(--encre);
+  --curseur-bande-contour: 0 0 0 1px rgb(255 255 255 / .7);
+  --curseur-indigo-fond: rgb(12 10 70 / .3);    /* sur les boutons pleins : le disque reste dans la palette (son inverse tournait au jaune-olive) ; en clair le bouton est indigo à texte blanc : voile d'indigo profond, cerné de clair, qui n'ôte rien au contraste du texte */
+  --curseur-indigo-bord: rgb(255 255 255 / .6);
 
   /* Lumière d'encre : une seule source, le tampon ; --eclat est le plus clair du thème (cœur des lumières en clair) */
   --lueur: var(--tampon);
@@ -46,7 +78,7 @@
   --atlasya: #252981;
   --rihla: #4E46C8;
 
-  --f-texte: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-texte: "Archivo", "Archivo Repli", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --f-mono: "Spline Sans Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   --largeur: 1200px;
@@ -74,6 +106,15 @@
     --melange-grain: screen;
     --halo: .22;
     --halo-suivi: .22;
+    --halo-coeur: .17;
+    --gris-allume: color-mix(in oklab, var(--gris) 35%, var(--encre));
+    --projecteur: color-mix(in srgb, var(--lueur) 60%, transparent);
+    --projecteur-titre: var(--projecteur);
+    --curseur-bande-melange: difference;           /* en sombre, la bande est un lavande clair : l'inverse du blanc (olive sombre) y est à 3,4:1 et plus, avec le contour gris des boutons pleins */
+    --curseur-bande-point: #fff;
+    --curseur-bande-contour: 0 0 0 1.5px #808080;
+    --curseur-indigo-fond: rgb(14 15 27 / .18);    /* en sombre le bouton est lavande clair : voile sombre cerné de sombre */
+    --curseur-indigo-bord: rgb(14 15 27 / .7);
     --eclat: var(--encre);
     --aura-bouton: 0 0 24px -2px color-mix(in srgb, var(--tampon) 42%, transparent);
     --aura-bouton-survol: 0 0 42px 2px color-mix(in srgb, var(--tampon) 55%, transparent);
@@ -86,6 +127,11 @@
    le halo reste alors à sa place de repos, calée sur le début de la colonne de contenu */
 @property --halo-x { syntax: "<number>"; initial-value: 0; inherits: false; }
 @property --halo-y { syntax: "<number>"; initial-value: 0; inherits: false; }
+/* Position du curseur dans le cadre intérieur de la carte survolée (écrite par lumiere.js sur cette carte seulement) ; la valeur
+   initiale, loin hors de toute carte, ne laisse aucune lumière tant que le script n'a rien écrit. Non héritées : l'écriture à
+   chaque mouvement ne recalcule que la carte et son pseudo-élément (qui les reprend par `inherit`), pas ses enfants. */
+@property --sx { syntax: "<length>"; initial-value: -1000px; inherits: false; }
+@property --sy { syntax: "<length>"; initial-value: -1000px; inherits: false; }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: calc(var(--barre) + 8px); }
@@ -178,7 +224,7 @@ h2 em { font-style: normal; color: var(--tampon); }
 
 /* Menu plein écran (mobile) : ouvert par #menu, refermé dès qu'un lien change l'ancre */
 .menu-plein { display: none; }
-.menu-plein:target { display: flex; position: fixed; inset: 0; z-index: 60; background: var(--chaux); flex-direction: column; justify-content: center; padding: 100px clamp(20px, 6vw, 48px) 110px; }
+.menu-plein:target { display: flex; position: fixed; inset: 0; z-index: 60; background: var(--chaux); flex-direction: column; justify-content: center; padding: 100px clamp(20px, 6vw, 48px) 110px; overflow-y: auto; overscroll-behavior: contain; }
 .menu-plein ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
 .menu-plein li a { display: inline-block; font-weight: 700; font-size: clamp(2.5rem, 11vw, 4.4rem); font-stretch: 118%; letter-spacing: -0.045em; line-height: 1; color: var(--encre); text-decoration: none; animation: glisser .5s var(--sortie) both; animation-delay: calc(var(--i) * 70ms); }
 .menu-plein li a:hover { color: var(--tampon); }
@@ -187,6 +233,14 @@ h2 em { font-style: normal; color: var(--tampon); }
 .menu-pied { position: absolute; left: clamp(20px, 6vw, 48px); right: clamp(20px, 6vw, 48px); bottom: 40px; display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; font: 500 0.8rem/1.4 var(--f-mono); animation: apparaitre .6s ease .5s both; }
 .menu-pied a { color: var(--gris); text-decoration: none; }
 .menu-pied a:hover { color: var(--encre); }
+/* menu ouvert : la page derrière (opaque, mais encore focalisable) n'est plus atteignable au clavier ; limité aux largeurs où le menu existe */
+@media (max-width: 900px) { @supports selector(:has(*)) { body:has(#menu:target) :is(.lien-evitement, .barre, main, footer) { visibility: hidden; } } }
+/* écran bas (paysage, zoom 200 %) : le menu démarre en haut et défile, son pied est dans le flux */
+@media (max-height: 520px), (max-height: 640px) and (min-width: 500px) {
+  .menu-plein:target { justify-content: flex-start; padding-top: 88px; padding-bottom: 32px; }
+  .menu-plein .menu-pied { position: static; margin-top: 32px; }
+  .menu-plein .menu-devis { margin-top: 28px; }
+}
 @keyframes glisser { from { opacity: 0; transform: translateX(-60px); } }
 @keyframes apparaitre { from { opacity: 0; } }
 
@@ -234,9 +288,11 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 @keyframes flotter-inverse { 50% { transform: translateY(40px) rotate(-15deg); } }
 @keyframes flotter-halo { to { transform: translate(38vw, 30vh); } }
 
-/* Halo qui suit la souris : la tache lumineuse de nexus-studio, à l'encre du tampon, sans script.
-   Réservé aux souris qui acceptent le mouvement et aux navigateurs qui connaissent :has() ; ailleurs le halo garde
-   sa dérive (tactile, navigateurs sans :has()) ou reste immobile (mouvement réduit).
+/* Halo qui suit la souris : la tache lumineuse de nexus-studio, à l'encre du tampon. Deux mécanismes.
+   1. Avec lumiere.js (classe .lumiere sur <html>) : le script suit le pointeur au pixel, dans le repère de l'ouverture,
+      et retire la grille de capteurs du DOM ; voir le bloc « Halo par script » plus bas.
+   2. Repli sans script, ci-dessous : réservé aux souris qui acceptent le mouvement et aux navigateurs qui connaissent
+      :has() ; ailleurs le halo garde sa dérive (tactile, navigateurs sans :has()) ou reste immobile (mouvement réduit).
    Une grille de 16 × 10 capteurs vides (.capteurs > i, aria-hidden) couvre l'ouverture. Le titre, le chapeau, le pied
    et le rond tournant laissent passer le pointeur (pointer-events: none) ; leurs liens le gardent et restent cliquables.
    La case survolée fixe --halo-x (colonne) et --halo-y (rangée) sur .ouverture, d'un coup, et les garde une heure après
@@ -244,18 +300,18 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
    de la dernière case, même si le pointeur part sur un lien ou quitte l'ouverture. Courbe : ease-out standard, plus
    régulière que celle de nexus quand la cible avance par cases. Avant le premier survol, le halo reste à sa place de
    repos (celle de .halo). Le halo garde son calque (will-change) pour ne pas être rerastérisé à chaque case.
-   Prix : sur ordinateur, le texte de l'ouverture ne se sélectionne plus à la souris. Coût : ~0,5 ms de style par case.
+   Prix de ce repli : le texte de l'ouverture ne se sélectionne pas à la souris. Coût mesuré : ~0,5 ms de style par recalcul, constant dans la durée ; la valeur de translate doit rester linéaire (100cqw, jamais % dans max()/min()), sinon chaque transition en imbrique une autre (0,65 puis 2,4 ms par recalcul en 16 s).
    Si on change la grille, changer aussi grid-template, les 100% / 16 et 100% / 10, les règles ci-dessous et les deux @property. */
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  @supports selector(:has(*)) {
+  @supports selector(:has(*)) and (width: 1cqw) {
     .capteurs { display: grid; grid-template: repeat(10, 1fr) / repeat(16, 1fr); position: absolute; inset: 0; z-index: 1; -webkit-user-select: none; user-select: none; }
     .ouverture:has(> .capteurs) :is(.ouverture-corps, .ouverture-pied, .rond-tournant) { pointer-events: none; }
     .ouverture:has(> .capteurs) :is(.ouverture-corps, .ouverture-pied) a { pointer-events: auto; }
-    .ouverture:has(> .capteurs) { transition: --halo-x 0s 3600s, --halo-y 0s 3600s; }
+    .ouverture:has(> .capteurs) { container-type: inline-size; transition: --halo-x 0s 3600s, --halo-y 0s 3600s; }
     .ouverture:has(> .capteurs > :hover) { transition-delay: 0s; }
     /* min(1, …) vaut 0 tant qu'aucune case n'a été survolée (place de repos de .halo), 1 ensuite (centre de la case) */
     .ouverture:has(> .capteurs) .halo { --halo-x: inherit; --halo-y: inherit; animation: none; will-change: translate;
-      translate: calc((1 - min(1, var(--halo-x))) * (max(0px, (100% - var(--largeur)) / 2) + 180px) + min(1, var(--halo-x)) * (var(--halo-x) - .5) * 100% / 16)
+      translate: calc((1 - min(1, var(--halo-x))) * (max(0px, (100cqw - var(--largeur)) / 2) + 180px) + min(1, var(--halo-x)) * (var(--halo-x) - .5) * 100% / 16)
                  calc((1 - min(1, var(--halo-y))) * 140px + min(1, var(--halo-y)) * (var(--halo-y) - .5) * 100% / 10);
       transition: translate .8s ease-out; }
     .ouverture:has(> .capteurs) .halo::before { opacity: var(--halo-suivi); }
@@ -286,6 +342,39 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
     .ouverture:has(> .capteurs > :nth-child(n+129):nth-child(-n+144):hover) { --halo-y: 9; }
     .ouverture:has(> .capteurs > :nth-child(n+145):nth-child(-n+160):hover) { --halo-y: 10; }
   }
+}
+
+/* Halo par script (classe .lumiere posée sur <html> par lumiere.js : souris fine, mouvement non réduit, contrastes non
+   renforcés). Le script retire la grille de capteurs du DOM (aucune règle :has() ne correspond plus, le texte de l'ouverture
+   redevient sélectionnable) et écrit le `translate` du halo : la position du pointeur dans le repère de .ouverture.
+   Le retard doux est une transition sur `translate`, composée par le processeur graphique : aucune boucle, rien ne tourne
+   quand la souris s'arrête. Au repos, avant le premier mouvement, tout est celui du repli (même place, même opacité :
+   aucun saut à l'activation du script). Au premier mouvement, l'ouverture s'« allume » (.allumee) : un cœur plus clair se
+   superpose à la large tache (::after, dégradé sans flou ; en sombre il éclaire, en clair il teinte en indigo) et le chapeau
+   comme la légende du compteur passent à --gris-allume, pour garder 4,5:1 sous ce cœur (sans cela, 3,9:1 au plus mauvais
+   pixel). Seuls translate et opacity s'animent en continu ; la couleur de ces deux textes ne change qu'une fois. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .lumiere .halo { animation: none; will-change: translate; transition: translate .9s ease-out; }
+  .lumiere .halo::before { opacity: var(--halo-suivi); }
+  .lumiere .halo::after { content: ""; position: absolute; left: -300px; top: -300px; width: 600px; height: 600px; opacity: 0; transition: opacity .8s ease-out;
+    background: radial-gradient(closest-side, var(--tampon),
+                                color-mix(in srgb, var(--tampon) 84%, transparent) 25%,
+                                color-mix(in srgb, var(--tampon) 49%, transparent) 50%,
+                                color-mix(in srgb, var(--tampon) 20%, transparent) 75%,
+                                transparent); }
+  .lumiere .ouverture.allumee .halo::after { opacity: var(--halo-coeur); }
+  .lumiere .chapeau, .lumiere .compteur .chiffre-l { transition: color .8s ease-out; }
+  .lumiere .ouverture.allumee :is(.chapeau, .chiffre-l) { color: var(--gris-allume); }
+  /* La barre fixe passe devant l'ouverture : quand le pointeur est près d'elle, le cœur est juste derrière ses textes. « Digital
+     Service » (gris) passe au gris contrasté ; le lien de langue, au survol et en sombre, perd son indigo (le cœur est de la même
+     encre : 3,8:1) mais garde le trait indigo de son cadre ; le rond tournant (encre à 75 %) passe à l'encre pleine, en sombre. */
+  .lumiere .barre .marque small { transition: color .8s ease-out; }
+  .lumiere:has(.ouverture.allumee) .barre .marque small { color: var(--gris-allume); }
+  .lumiere .rond-tournant { transition: opacity .8s ease-out; }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (prefers-color-scheme: dark) {
+  .lumiere:has(.ouverture.allumee) .barre .nav .langue:hover { color: var(--encre); }
+  .lumiere .ouverture.allumee .rond-tournant { opacity: 1; }
 }
 
 /* ── Bandeau défilant ──────────────────────────────────────── */
@@ -327,6 +416,91 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 @keyframes progresser { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes barre-voile { to { background: color-mix(in srgb, var(--chaux) 84%, transparent); border-color: var(--filet); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); } }
 
+/* Projecteur des cartes (lumiere.js, classe .lumiere) : sous le curseur, une lumière douce à l'encre (--lueur) suit la souris dans la
+   carte et le bord de la carte s'allume. Une seule recette pour les six cartes (.prestation, .offre, .titre, .epreuve, .atout, .fiche),
+   un seul pseudo-élément par carte, posé par-dessus le contenu sans recevoir le pointeur : un dégradé radial centré en (--sx, --sy),
+   le curseur dans le cadre intérieur de la carte (écrit par le script sur la carte survolée seulement). Un masque en exclusion (la
+   carte entière à 84 %, contre son cadre entier) laisse le dégradé presque entier sur le liseré de 1 px du bord et le ramène à 16 %
+   dans la carte : le même dégradé fait le trait lumineux et la lueur. Extinction en fondu quand le curseur sort (opacité seule, le
+   dégradé garde sa dernière place) ; le survol est affaire de :hover, le script n'écrit que la position. Le liseré est dans le cadre
+   intérieur : .prestation et .titre rognent leur contenu (overflow: hidden), un trait posé sur leur bordure serait coupé.
+   Support de chaque carte (pseudo-éléments déjà pris, rien n'est déplacé) : ::after partout, sauf .fiche, qui prend ::before pour que
+   le cachet, posé après, reste par-dessus. .prestation a son ::before (lampe du coin), .epreuve le sien (voile du bas), .atout le sien
+   (trait d'encre) ; les autres n'en avaient aucun. Le texte est éclairé avec le fond (le tout reste à 4,5:1 sous le cœur, mesuré). */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .lumiere :is(.prestation, .offre, .titre, .epreuve, .atout)::after,
+  .lumiere .fiche::before {
+    content: ""; position: absolute; inset: 0; padding: 1px; border-radius: inherit; pointer-events: none;
+    --sx: inherit; --sy: inherit;
+    background: radial-gradient(circle var(--projecteur-rayon) at calc(var(--sx) + var(--dx, 0px)) calc(var(--sy) + var(--dy, 0px)), var(--projecteur), color-mix(in srgb, var(--projecteur) 62%, transparent) 30%, color-mix(in srgb, var(--projecteur) 26%, transparent) 62%, transparent);
+    -webkit-mask: linear-gradient(rgb(0 0 0 / .84) 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(rgb(0 0 0 / .84) 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0; transition: opacity .45s var(--sortie) .12s;   /* l'extinction attend 0,12 s : une carte qui se soulève sous le pointeur (prestation) le perd un instant à son bord bas et ferait clignoter le liseré */
+  }
+  .lumiere :is(.prestation, .offre, .titre, .epreuve, .atout):hover::after,
+  .lumiere .fiche:hover::before { opacity: 1; transition-delay: 0s; }
+}
+
+/* Curseur personnalisé (lumiere.js) : un point et un anneau remplacent le curseur système, qui n'est masqué que sous html.curseur,
+   classe posée par le script seulement quand tout le permet (pointeur fin avec survol, mouvement non réduit, contrastes non
+   renforcés, souris déjà vue) et retirée dès que l'une de ces conditions tombe, ou que la souris sort de la fenêtre ou se pose
+   sur une barre de défilement. Le conteneur est créé par le script (aria-hidden, sans événements, user-select: none pour ne pas
+   ajouter une ligne vide à « tout sélectionner », au-dessus de tout, menu mobile compris) ; le même nom de classe sert à <html>
+   et au conteneur, d'où les sélecteurs `body > .curseur` pour le second. Mélange « difference » en blanc, comme nexus-studio : le curseur est l'inverse de
+   ce qu'il survole (presque noir sur le papier, presque blanc sur l'encre) ; il est porté par le conteneur, car un enfant ne se
+   mélangerait qu'à son propre contexte d'empilement. Chaque porteur (.curseur-point, .curseur-anneau) est un élément sans taille
+   que le script déplace par transform ; la forme visible (.curseur-forme) y est centrée par `translate: -50% -50%`, et sa taille
+   se transitionne sans que son centre bouge (pas de saut au changement d'état). États (data-etat sur le conteneur, posé au
+   pointerover) : repos (point de 12 px, anneau de 32 px à 30 %) ; lien (disque de 48 px, l'anneau s'efface) ; texte (barre de
+   4 × 22 px) ; vue (anneau de 64 px : couvertures des produits) ; appui (la forme rétrécit). Le libellé de la vue (data-curseur dans
+   le HTML, dans la langue de la page : « Voir », « View ») s'écrit dans l'anneau par ::after, quand rien de lisible n'est dessous.
+   Les conditions de l'activation sont aussi écrites ici, pour que le CSS tienne même si le script réagit avec un instant de retard. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (forced-colors: none) {
+  html.curseur, html.curseur :is(a, button, summary, [role="button"], label, input, select, textarea) { cursor: none; }
+  body > .curseur { position: fixed; left: 0; top: 0; width: 0; height: 0; z-index: 2147483647; pointer-events: none; -webkit-user-select: none; user-select: none; mix-blend-mode: difference;
+    opacity: 0; visibility: hidden; transition: opacity .2s ease-out, visibility 0s .2s; }
+  body > .curseur.visible { opacity: 1; visibility: visible; transition: opacity .2s ease-out; }
+  .curseur-point, .curseur-anneau { position: absolute; left: 0; top: 0; width: 0; height: 0; will-change: transform; }
+  .curseur-forme { position: absolute; left: 0; top: 0; translate: -50% -50%; display: grid; place-items: center; box-sizing: border-box; border: 1px solid #fff; border-radius: 50%;
+    transition: width .32s var(--sortie), height .32s var(--sortie), border-radius .32s var(--sortie), background-color .25s, opacity .25s, scale .2s var(--sortie); }
+  .curseur-point .curseur-forme { width: var(--curseur-point); height: var(--curseur-point); background: #fff; }
+  .curseur-anneau .curseur-forme { width: var(--curseur-anneau); height: var(--curseur-anneau); opacity: var(--curseur-anneau-opacite); }
+  .curseur-point .curseur-forme::after { content: attr(data-libelle); opacity: 0; transition: opacity .12s;
+    font: 500 .6875rem/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; color: #fff; }
+  body > .curseur.libelle .curseur-point .curseur-forme::after { opacity: 1; transition: opacity .2s .1s; }
+  body > .curseur[data-etat="lien"] .curseur-point .curseur-forme { width: var(--curseur-disque); height: var(--curseur-disque); }
+  body > .curseur[data-etat="texte"] .curseur-point .curseur-forme { width: var(--curseur-barre-l); height: var(--curseur-barre-h); border-radius: 2px; }
+  body > .curseur[data-etat="vue"] .curseur-point .curseur-forme { width: var(--curseur-vue); height: var(--curseur-vue); background-color: transparent; }
+  body > .curseur:not([data-etat="repos"]) .curseur-anneau .curseur-forme { opacity: 0; scale: 1.5; }
+  /* Là où « difference » ne suffit pas : l'inverse du blanc a presque la luminance d'un indigo moyen (2,4:1 sur le coin éclairci de la
+     bande des chiffres en clair, 2,5:1 sur la couverture de Rihla). Sur les couvertures (fonds sombres, déjà faites pour du texte
+     blanc) l'anneau creux, son libellé et un mince contour sombre passent en mélange normal ; sur la bande des chiffres, en clair, le
+     curseur devient une forme d'encre cernée de blanc (jetons --curseur-bande-*, qui rendent en sombre le « difference » avec un contour
+     gris) ; sur les boutons pleins, un contour gris moyen (|fond − 128| : sombre là où le fond est moyen) cerne la forme sans la
+     changer, et le disque reste un inverse, pour que le texte du bouton se lise dessous. Ailleurs, rien. */
+  body > .curseur[data-etat="vue"] { mix-blend-mode: normal; }
+  body > .curseur[data-etat="vue"] .curseur-point .curseur-forme { transition-duration: .32s, .32s, .32s, .1s, .25s, .2s; box-shadow: 0 0 0 1px rgb(0 0 0 / .55); }
+  body > .curseur[data-etat="vue"] .curseur-point .curseur-forme::after { text-shadow: 0 0 2px rgb(0 0 0 / .55), 0 0 6px rgb(0 0 0 / .35); }
+  body > .curseur[data-fond="indigo"] { mix-blend-mode: normal; }
+  body > .curseur[data-fond="indigo"] .curseur-point .curseur-forme { background-color: var(--curseur-indigo-fond); border-color: var(--curseur-indigo-bord); }
+  body > .curseur[data-fond="bande"] { mix-blend-mode: var(--curseur-bande-melange); }
+  body > .curseur[data-fond="bande"] .curseur-point .curseur-forme { background-color: var(--curseur-bande-point); box-shadow: var(--curseur-bande-contour); }
+  body > .curseur.appui .curseur-point .curseur-forme { scale: .8; }
+  /* Bouton « Curseur standard » du pied de page (dans le HTML des cinq pages, avec l'attribut hidden : invisible sans script, au toucher,
+     en mouvement réduit, en contraste renforcé, et avec une feuille de style plus ancienne) : rend le curseur du système pour la page
+     en cours ; sa mise en forme est celle des liens du pied. */
+  .lumiere .curseur-standard { display: inline-block; margin: 0; padding: 0; border: 0; background: none; font: inherit; letter-spacing: inherit; color: var(--gris); cursor: pointer; transition: color .2s; }
+  .lumiere .curseur-standard:hover { color: var(--encre); }
+  .lumiere .curseur-standard[aria-pressed="true"] { color: var(--tampon); text-decoration: underline; text-underline-offset: 3px; }
+}
+@media (prefers-contrast: more) {
+  html.curseur, html.curseur :is(a, button, summary, [role="button"], label, input, select, textarea) { cursor: revert; }
+  body > .curseur { display: none; }
+}
+@media print { body > .curseur, .lumiere .curseur-standard { display: none; } }
+
 /* Prestations : grille bento, chaque carte numérotée avec son icône et ses étiquettes */
 .bento { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; counter-reset: prestation; }
 .prestation { counter-increment: prestation; position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; min-height: 300px; padding: 30px 30px 28px; background: var(--carte); border: 1px solid var(--filet); border-radius: 6px; transition: border-color .4s, transform .4s, box-shadow .4s; }
@@ -348,6 +522,7 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
   .prestation:hover .prestation-tete svg { opacity: 1; transform: scale(1.1); }
   .prestation:hover .etiquettes li { border-color: color-mix(in srgb, var(--tampon) 35%, var(--filet)); color: var(--encre); }
 }
+/* projecteur : ::after (le ::before est la lampe du coin) ; la carte est déjà relative et rognée (le liseré est dans son cadre) */
 
 /* Sous-parties d'une section */
 .bloc { margin-top: clamp(64px, 8vw, 110px); }
@@ -361,6 +536,12 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 .atout::before { content: ""; position: absolute; left: 0; top: -2px; width: 44px; height: 3px; background: var(--tampon); }
 .atout h4 { font-weight: 650; font-size: 1.12rem; line-height: 1.3; }
 .atout p { color: var(--gris); font-size: 0.96rem; }
+/* projecteur : ::after (le ::before est le trait d'encre) ; l'atout n'a ni fond, ni cadre, ni coins arrondis : le projecteur lui prête un panneau
+   qui déborde de la colonne de 16 px de chaque côté et de 14 px en haut et en bas (le liseré ne touche pas le texte), sans toucher à son trait du haut ;
+   --dx et --dy ramènent le centre du dégradé du cadre de l'atout au cadre du panneau */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .lumiere .atout::after { inset: -14px -16px; border-radius: 8px; --dx: 16px; --dy: 14px; }
+}
 
 /* Méthode : frise verticale, faisceau lumineux qui se trace au défilement, points et pilules qui s'allument */
 .frise { position: relative; list-style: none; margin: 0; padding: 8px 0 0 64px; counter-reset: etape; }
@@ -410,11 +591,20 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
   .titre:hover .couverture::before { transform: scale(1.05); }
   .titre:hover .couverture::after { opacity: 1; }
 }
+/* projecteur : ::after de la carte (par-dessus la couverture, qui a ses deux pseudo-éléments) ; la carte n'était pas positionnée ; encre éclaircie en clair (--projecteur-titre) */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .lumiere .titre { position: relative; --projecteur: var(--projecteur-titre); }
+}
 .domaine { align-self: flex-start; font: 500 0.68rem/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 12px; border-radius: 999px; border: 1px solid rgb(255 255 255 / .28); background: rgb(0 0 0 / .18); backdrop-filter: blur(6px); }
 .couverture-bas { display: grid; gap: 8px; }
 .couverture img { width: 56px; height: 56px; border-radius: 13px; margin-bottom: 14px; box-shadow: 0 0 0 1px rgb(255 255 255 / .2), 0 12px 26px -12px rgb(0 0 0 / .55); }
 .couverture h3 { font-weight: 700; font-size: clamp(2.2rem, 3.6vw, 3.1rem); line-height: 1; font-stretch: 118%; letter-spacing: -0.04em; }
 .couverture p { font: 500 0.98rem/1.4 var(--f-mono); color: rgb(255 255 255 / .82); }
+/* sous le projecteur, la légende passe à .94 : la lumière éclaircit le fond de la couverture (Rihla tombait à 4,4:1 en sombre) */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .lumiere .couverture p { transition: color .45s var(--sortie); }
+  .lumiere .titre:hover .couverture p { color: rgb(255 255 255 / .94); }
+}
 /* Atlasya : la trame de points et le tracé de pouls de son icône, qui luit (copie floutée du tracé dans la même image) */
 .titre--atlasya .couverture { background: var(--atlasya); }
 .titre--atlasya .couverture::before {
@@ -476,6 +666,7 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 @media (hover: hover) and (prefers-color-scheme: dark) {
   .epreuve:hover { box-shadow: var(--aura-carte); }
 }
+/* projecteur : ::after (le ::before est le voile du bas) ; le liseré se pose dans le cadre, à l'intérieur du cadre pointillé */
 .epreuve h4 { font-weight: 650; font-size: 1.3rem; line-height: 1.15; font-stretch: 110%; letter-spacing: -0.02em; }
 .epreuve p { color: var(--gris); font-size: 0.96rem; }
 .epreuve .support { justify-self: start; margin-top: 8px; padding: 6px 11px; border-radius: 999px; background: var(--tampon-pale); color: var(--tampon); font: 500 0.66rem/1.4 var(--f-mono); letter-spacing: 0.1em; text-transform: uppercase; }
@@ -505,6 +696,7 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 .note { margin-top: 26px; font-size: 0.92rem; color: var(--gris); max-width: var(--mesure); }
 .fiche { position: relative; background: var(--carte); border: 1px solid var(--filet); border-radius: 8px; padding: 24px 28px 28px; box-shadow: var(--ombre); }
 .fiche h3 { font: 500 0.7rem/1.4 var(--f-mono); letter-spacing: 0.16em; text-transform: uppercase; margin: 0 0 12px; padding-bottom: 14px; border-bottom: 1px solid var(--filet); }
+/* projecteur : ::before de la fiche (libre), pour que le cachet, posé après, reste par-dessus le liseré ; pas d'isolation ajoutée, elle changerait le mélange du cachet */
 .colophon { margin: 0; display: grid; }
 .colophon div { display: grid; grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr); align-items: baseline; padding: 9px 0; }
 .colophon dt { display: flex; align-items: baseline; font-size: 0.86rem; color: var(--gris); }
@@ -577,7 +769,7 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 .pied .marque b { transition: color .5s; }
 .pied .marque:hover b { color: var(--tampon); }
 .pied-marque p { color: var(--gris); font-size: 0.94rem; max-width: 26ch; }
-.pied h4 { font: 500 0.7rem/1.4 var(--f-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--tampon); margin: 0 0 22px; }
+.pied h3 { font: 500 0.7rem/1.4 var(--f-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--tampon); margin: 0 0 22px; }
 .pied ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 13px; font-size: 0.93rem; }
 .pied a { color: var(--gris); text-decoration: none; transition: color .2s; }
 .pied a:hover { color: var(--encre); }
@@ -617,6 +809,10 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
 }
 @media (hover: hover) and (prefers-color-scheme: dark) {
   .offre:hover { box-shadow: var(--aura-carte), 0 34px 90px -40px color-mix(in srgb, var(--lueur) 75%, transparent); }
+}
+/* projecteur : ::after de la carte (libre) ; la carte n'était pas positionnée */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .lumiere .offre { position: relative; }
 }
 .offre h3 { font-weight: 700; font-size: clamp(2rem, 3.6vw, 3.1rem); line-height: 1; font-stretch: 116%; letter-spacing: -0.04em; margin: 16px 0 20px; }
 .offre h3 em { font-style: normal; color: var(--tampon); }
@@ -681,9 +877,24 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
   .descendre { display: none; }
   .appel .forme--b { bottom: 0; }
 }
+/* à 360 px et moins, le texte de la couverture 4∶3 dépassait de la boîte et était coupé : la hauteur suit le contenu */
+@media (max-width: 413px) { .couverture { aspect-ratio: auto; } }
 @media (max-width: 440px) {
   .contact-tel .sep { display: none; }
   .contact-tel dd { column-gap: 28px; }
+}
+/* Impression / PDF : sans cela, les apparitions au défilement (.reveler) restent invisibles (6 pages blanches sur 12), les chiffres s'impriment à 0 et le texte blanc des chiffres disparaît (fond non imprimé) */
+@media print {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .barre, .progression, .lien-evitement, .menu-plein, .halo, .capteurs, .curseur, .forme, .rond-tournant, .descendre, .numero-fantome, .grain::after, .filtres { display: none !important; }
+  .ouverture, .appel { min-height: 0; overflow: visible; }
+  .ouverture { padding-top: 24px; } .document, .appel { padding-top: 24px; }
+  .chiffres { background: none; color: var(--encre); box-shadow: none; border-top: 1px solid var(--filet); border-bottom: 1px solid var(--filet); }
+  .chiffre-n .n { color: inherit; } .chiffre-n .n::before { content: none; }
+  .defile { display: none; }
+  .bouton--plein { background: none; color: var(--tampon); box-shadow: none; }
+  .couverture { color: var(--encre); } .couverture p { color: var(--gris); } .domaine { background: none; border-color: var(--filet); }
+  .prestation, .titre, .epreuve, .etape, .offre, .fiche, .atout { break-inside: avoid; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
