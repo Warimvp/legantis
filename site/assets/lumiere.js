@@ -9,9 +9,16 @@
    l'arrête sinon, et le redémarre au retour. Seuls les pointeurs de type souris comptent (pas le stylet, pas le doigt).
    Les effets qui suivent le pointeur s'abonnent au suivi commun : un seul écouteur passif, une seule mise à jour par image.
    Trois effets : le halo de l'ouverture, le projecteur qui suit le curseur dans chaque carte, et le curseur personnalisé
-   (un point et un anneau, qui remplacent le curseur système tant que tout le permet). */
+   (un point et un anneau, qui remplacent le curseur système dans les zones vides tant que tout le permet, et ne sont qu'un
+   ornement autour du pointeur natif sur les liens et le texte). */
 (function () {
   'use strict';
+
+  /* Curseur personnalisé : true = point et anneau REMPLACENT le curseur du système dans les zones vides (au repos) ; le pointeur natif
+     reste sur les liens, les boutons et le texte, où l'anneau n'est qu'un ornement. false = mode ornement : le curseur du système n'est
+     jamais masqué, ni nulle part, ni pour personne ; il ne reste que l'anneau, tel un halo autour du pointeur (le point et le libellé
+     de la vue disparaissent) et le bouton « Curseur standard » n'a plus d'objet. Voir « Curseur personnalisé » dans CLAUDE.md. */
+  var REMPLACER_CURSEUR_SYSTEME = true;
 
   if (!window.matchMedia) return;
 
@@ -133,9 +140,10 @@
   /* Le halo suit la souris au pixel, dans le repère de .ouverture (et non dans celui de la fenêtre : après un défilement,
      les deux ne coïncident plus). Le retard doux vient d'une transition CSS sur `translate` (voir site.css) : composée par
      le processeur graphique, aucune boucle ici. Avant le premier mouvement, le halo reste à sa place de repos ; quand la
-     souris sort de l'ouverture, il garde sa dernière position. La classe « allumee » (cœur plus clair, textes qui passent à
-     un gris plus contrasté) n'existe que pendant que la souris est dans l'ouverture : elle est retirée à la sortie de
-     l'ouverture, de la fenêtre, ou quand l'ouverture quitte l'écran, et les textes retrouvent leur couleur de repos. */
+     souris sort de l'ouverture, il garde sa dernière position. La classe « allumee » (cœur plus clair ; les textes gris de la
+     barre fixe passent à un gris plus contrasté, ceux de l'ouverture ne bougent pas) n'existe que pendant que la souris est
+     dans l'ouverture : elle est retirée à la sortie de l'ouverture, de la fenêtre, ou quand l'ouverture quitte l'écran, et les
+     textes de la barre retrouvent leur couleur de repos. */
   (function () {
     var ouverture = document.querySelector('.ouverture');
     var halo = ouverture && ouverture.querySelector('.halo');
@@ -296,25 +304,29 @@
   })();
 
   /* ── Curseur personnalisé ──────────────────────────────────── */
-  /* Un point (qui suit presque à l'instant) et un anneau (qui traîne, comme tenu par un ressort) remplacent le curseur système
-     (voir « Curseur personnalisé » dans site.css). Le script crée un conteneur .curseur (aria-hidden, sans événements) contenant
-     les deux, au premier mouvement d'une vraie souris seulement : jamais un point à (0, 0), jamais rien pour un doigt.
-     Il pose alors la classe « curseur » sur <html> : elle seule masque le curseur système, et elle est retirée dès que le
-     curseur personnalisé ne l'est plus (doigt ou stylet, souris sortie de la fenêtre ou posée sur une barre de défilement,
-     réglage système changé).
+  /* Un point (qui suit presque à l'instant) et un anneau (qui traîne, comme tenu par un ressort) accompagnent le pointeur (voir
+     « Curseur personnalisé » dans site.css). Le script crée un conteneur .curseur (aria-hidden, sans événements) contenant les
+     deux, au premier mouvement d'une vraie souris seulement : jamais un point à (0, 0), jamais rien pour un doigt.
+     Dans les zones vides (état « repos »), le point et l'anneau REMPLACENT le curseur système : le script pose la classe « curseur »
+     sur <html>, qui le masque (cursor: none) ; elle est retirée dès que le curseur personnalisé ne l'est plus (doigt ou stylet,
+     souris sortie de la fenêtre ou posée sur une barre de défilement, réglage système changé). Sur les liens, les boutons et le
+     texte, le pointeur natif reste affiché (la CSS lui rend son curseur) : le conteneur porte alors la classe « natif », le point
+     s'efface et l'anneau n'est plus qu'un ornement autour du pointeur du système. REMPLACER_CURSEUR_SYSTEME = false (en tête de
+     fichier) : jamais de classe « curseur », donc jamais de curseur masqué ; l'état est « natif » partout.
      Les deux éléments ne bougent que par transform. La boucle d'animation est une seule requestAnimationFrame, indépendante de
      la fréquence d'images (ressort amorti critique, intégré exactement sur le temps écoulé), et elle s'arrête dès que le point et
      l'anneau ont rejoint la souris, qu'ils retrouvent alors au centre exact. L'état (repos, lien, vue, texte) est cherché par
      closest() à chaque pointerover, pas à chaque mouvement ; l'appui est une classe. Le libellé de la vue (« Voir », « View ») est
      lu dans l'attribut data-curseur de la couverture, donc écrit dans la langue de la page, dans le HTML.
      Le pointeur du système peut avoir été agrandi ou recoloré par le visiteur (réglage d'accessibilité) : la page ne peut pas le
-     savoir, et ce curseur le remplace. Le bouton « Curseur standard » du pied de page (dans le HTML, affiché par la CSS quand
-     les effets sont permis) rend le curseur du système pour la page en cours ; rien n'est mémorisé. */
+     savoir, et dans les zones vides ce curseur le remplace ; c'est pourquoi il est plus gros qu'avant (20 px) et son anneau plus
+     présent. Le bouton « Curseur standard » du pied de page (dans le HTML, affiché par la CSS quand les effets sont permis) rend
+     le curseur du système pour la page en cours ; rien n'est mémorisé. */
   (function () {
     var LIENS = 'a[href], button, summary, [role="button"], label';
     var VUE = '.couverture';
     var TEXTE = 'p, li, dd, dt, h1, h2, h3, h4, address, .fiche';
-    var SOUS_LE_LIBELLE = TEXTE + ', .domaine, img';   // dans la vue, ce qui porte du texte ou une image : pas de libellé par-dessus
+    var SOUS_LE_LIBELLE = TEXTE + ', .domaine, img';   // dans la vue, ce qui porte du texte ou une image : pas de libellé par-dessus, et le pointeur natif y reste (la CSS le lui rend : même liste)
     var SUR_BANDE = '.chiffres';                  // surfaces d'indigo moyen, où l'inverse du blanc a presque la même luminance : le curseur s'y adapte (voir site.css)
     var SUR_INDIGO = '.bouton--plein, .barre-cta';
     var RAIDEUR_POINT = 70;    // rad/s : le point a environ 14 ms de retard
@@ -329,6 +341,7 @@
     var bouton = null;
     var sansStyle = false;     // la feuille de style n'a pas habillé le conteneur (cache périmé, requête média inconnue) : pas de curseur
     var etat = '';
+    var natif = !REMPLACER_CURSEUR_SYSTEME;   // le pointeur natif est affiché sous le curseur : le point s'efface, l'anneau reste (voir chercher())
     var fond = '';
     var libelle = '';
     var vuEn = -1;
@@ -381,7 +394,7 @@
 
     function creer() {
       conteneur = document.createElement('div');
-      conteneur.className = 'curseur';
+      conteneur.className = REMPLACER_CURSEUR_SYSTEME ? 'curseur' : 'curseur natif';
       conteneur.setAttribute('aria-hidden', 'true');
       conteneur.setAttribute('data-etat', 'repos');
       anneau = porteur('curseur-anneau');
@@ -392,8 +405,12 @@
       document.body.appendChild(conteneur);
       /* Garde-fou : un conteneur que la CSS n'habille pas (feuille en cache plus ancienne que le script : GitHub Pages sert avec
          dix minutes de cache ; navigateur qui ignore une des requêtes média) resterait dans le flux, en bas de page, et ferait
-         défiler la page au gré de la souris. On le retire et on n'essaie plus : le site reste celui du repli. */
-      if (getComputedStyle(conteneur).position !== 'fixed') {
+         défiler la page au gré de la souris. On le retire et on n'essaie plus : le site reste celui du repli. Deux sentinelles, lues
+         dans la même tâche que la création (rien n'est peint entre les deux : pas de clignotement) : le conteneur est `position: fixed`
+         (feuille d'après l'arrivée des effets) et le jeton --curseur-anneau-lien existe (feuille d'après la revue du curseur, qui
+         règle le pointeur natif ; une feuille plus ancienne masquerait le pointeur sur les liens). Ne pas renommer ce jeton sans
+         changer ici. */
+      if (!getComputedStyle(racine).getPropertyValue('--curseur-anneau-lien').trim() || getComputedStyle(conteneur).position !== 'fixed') {
         document.body.removeChild(conteneur);
         conteneur = point = anneau = formePoint = null;
         sansStyle = true;
@@ -414,7 +431,7 @@
       ecrire(point, pt);
       ecrire(anneau, an);
       getComputedStyle(conteneur).opacity;   // fixe l'état de départ : sans cela, la création et l'apparition se confondent (pas de fondu)
-      racine.classList.add('curseur');
+      if (REMPLACER_CURSEUR_SYSTEME) racine.classList.add('curseur');   // mode ornement : le curseur du système n'est jamais masqué
       conteneur.classList.remove('appui');   // un glissement de barre de défilement n'envoie pas toujours le pointerup
       conteneur.classList.add('visible');
       visible = true;
@@ -432,10 +449,14 @@
       conteneur.classList.remove('appui');
     }
 
-    function appliquer(nouvelEtat, nouveauLibelle, nouveauFond) {
+    function appliquer(nouvelEtat, nouveauLibelle, nouveauFond, nouveauNatif) {
       if (nouvelEtat !== etat) {
         etat = nouvelEtat;
         conteneur.setAttribute('data-etat', nouvelEtat);
+      }
+      if (nouveauNatif !== natif) {
+        natif = nouveauNatif;
+        if (natif) conteneur.classList.add('natif'); else conteneur.classList.remove('natif');
       }
       if (nouveauFond !== fond) {
         fond = nouveauFond;
@@ -452,26 +473,29 @@
       }
     }
 
-    /* L'état vient de la cible : lien (le point devient un disque), vue (grand anneau : couvertures des produits), texte
-       (barre verticale), sinon repos. Les liens passent avant le reste : un lien dans un texte reste un lien.
-       Le libellé de la vue (data-curseur de la couverture : « Voir », « View ») ne s'écrit que si rien de lisible n'est dessous :
-       sur le titre, la légende, l'étiquette ou l'icône de la couverture, il se superposerait au texte. Aucun lien n'en porte :
-       le texte du lien serait toujours sous le mot. */
+    /* L'état vient de la cible : lien (l'anneau grossit), vue (couvertures des produits), texte, sinon repos. Les liens passent avant
+       le reste : un lien dans un texte reste un lien. Le pointeur natif n'est masqué que dans les zones vides : au repos, et sur la
+       vue quand rien de lisible n'est dessous (où s'écrit alors le libellé « Voir », « View » lu dans data-curseur de la couverture :
+       il ne se superpose donc jamais au pointeur natif). Partout ailleurs (lien, texte, ce que la vue porte de lisible) la CSS rend
+       au pointeur son curseur du système, et `natif` vaut vrai : le point s'efface et l'anneau reste. Ces listes sont écrites
+       aussi dans la CSS (« html.curseur », juste avant les règles du conteneur) : les tenir identiques. */
     function chercher(cible) {
       var nom = 'repos';
       var texte = '';
       var surface = '';
+      var pointeurNatif = false;   // pointeur du système affiché sous le curseur
       var n;
       if (cible && cible.closest) {
-        if (cible.closest(LIENS)) nom = 'lien';
+        if (cible.closest(LIENS)) { nom = 'lien'; pointeurNatif = true; }
         else if ((n = cible.closest(VUE))) {
           nom = 'vue';
-          if (!cible.closest(SOUS_LE_LIBELLE)) texte = n.getAttribute('data-curseur') || '';
-        } else if (cible.closest(TEXTE)) nom = 'texte';
+          if (cible.closest(SOUS_LE_LIBELLE)) pointeurNatif = true; else texte = n.getAttribute('data-curseur') || '';
+        } else if (cible.closest(TEXTE)) { nom = 'texte'; pointeurNatif = true; }
         if (cible.closest(SUR_BANDE)) surface = 'bande';
         else if (cible.closest(SUR_INDIGO)) surface = 'indigo';
       }
-      appliquer(nom, texte, surface);
+      if (!REMPLACER_CURSEUR_SYSTEME) { pointeurNatif = true; texte = ''; }   // mode ornement : le pointeur natif est toujours là, le libellé le recouvrirait
+      appliquer(nom, texte, surface, pointeurNatif);
     }
 
     /* Une image : le point et l'anneau avancent vers la souris, lue à cet instant. Quand les deux sont arrivés, ils sont posés
@@ -557,7 +581,10 @@
         document.addEventListener('dragstart', surRelache, PASSIF);
         window.addEventListener('pointerup', surRelache, PASSIF);
         bouton = document.querySelector('.curseur-standard');
-        if (bouton) bouton.addEventListener('click', basculer, PASSIF);
+        if (bouton) {
+          bouton.addEventListener('click', basculer, PASSIF);
+          if (!REMPLACER_CURSEUR_SYSTEME) bouton.style.display = 'none';   // mode ornement : le curseur du système est déjà partout, le bouton n'a plus d'objet
+        }
         abonner(reveil);
       },
       arreter: function () {
@@ -570,6 +597,7 @@
         window.removeEventListener('pointerup', surRelache, PASSIF);
         if (bouton) {
           bouton.removeEventListener('click', basculer, PASSIF);
+          bouton.style.removeProperty('display');
           bouton.setAttribute('aria-pressed', 'false');
           bouton = null;
         }
@@ -580,6 +608,7 @@
         if (conteneur && conteneur.parentNode) conteneur.parentNode.removeChild(conteneur);
         conteneur = point = anneau = formePoint = null;
         etat = fond = libelle = '';
+        natif = !REMPLACER_CURSEUR_SYSTEME;
         vuEn = -1;
         limiteX = limiteY = Infinity;
       }
