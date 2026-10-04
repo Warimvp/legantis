@@ -262,7 +262,7 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 .compteur { display: grid; gap: 4px; }
 .compteur .chiffre-n { font-size: 2.3rem; color: var(--tampon); }
 .compteur .chiffre-l { color: color-mix(in oklab, var(--gris) 75%, var(--encre)); opacity: 1; }   /* reste lisible quand le halo passe dessous */
-.descendre { color: var(--gris); opacity: .6; animation: rebondir 2s ease-in-out infinite; }
+.descendre { color: var(--gris); opacity: .78; animation: rebondir 2s ease-in-out infinite; }
 .descendre svg { width: 26px; height: 26px; }
 .rond-tournant { position: absolute; z-index: 1; top: calc(var(--barre) + 56px); right: clamp(24px, calc((100% - var(--largeur)) / 2 - 60px), 110px); width: 132px; height: 132px; opacity: .75; animation: tourner 20s linear infinite; }
 .rond-tournant text { font: 500 8.4px var(--f-mono); letter-spacing: 0.12em; text-transform: uppercase; fill: var(--encre); }
