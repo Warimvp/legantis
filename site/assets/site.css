@@ -488,7 +488,7 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
   body > .curseur[data-fond="bande"] { mix-blend-mode: var(--curseur-bande-melange); }
   body > .curseur[data-fond="bande"] .curseur-point .curseur-forme { background-color: var(--curseur-bande-point); box-shadow: var(--curseur-bande-contour); }
   body > .curseur.appui .curseur-point .curseur-forme { scale: .8; }
-  /* Bouton « Curseur standard » du pied de page (dans le HTML des huit pages, avec l'attribut hidden : invisible sans script, au toucher,
+  /* Bouton « Curseur standard » du pied de page (dans le HTML des neuf pages, avec l'attribut hidden : invisible sans script, au toucher,
      en mouvement réduit, en contraste renforcé, et avec une feuille de style plus ancienne) : rend le curseur du système pour la page
      en cours ; sa mise en forme est celle des liens du pied. */
   .lumiere .curseur-standard { display: inline-block; margin: 0; padding: 0; border: 0; background: none; font: inherit; letter-spacing: inherit; color: var(--gris); cursor: pointer; transition: color .2s; }
@@ -865,6 +865,9 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
 @media (max-width: 420px) { .service-tete h1 { font-size: min(2.5rem, calc((100vw - 40px) / 8.6)); } }   /* « Développement » tient à 320 px */
 .service .section { padding: clamp(64px, 8vw, 112px) 0; }
 .service .section h2 { font-size: clamp(2.1rem, 4.6vw, 3.7rem); }
+.service h1, .service .section h2 { overflow-wrap: anywhere; }   /* filet de sécurité : un mot plus long que la colonne se coupe au lieu d'élargir la page */
+@media (max-width: 420px) { .service .section h2 { font-size: min(2.1rem, calc((100vw - 40px) / 10.5)); } }   /* « recommandations » tient à 320 px */
+@media (max-width: 420px) { .service .etape h4 { font-size: min(1.9rem, calc((100vw - 104px) / 9.4)); overflow-wrap: anywhere; } }   /* intertitre de la frise : « Recommandations » tient entre 320 et 360 px (colonne de 44 px de moins que le texte) */
 .preuve { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px clamp(32px, 5vw, 72px); align-items: center; }
 .preuve .entete { margin-bottom: 0; }
 .atouts--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 44px clamp(32px, 4vw, 64px); }
