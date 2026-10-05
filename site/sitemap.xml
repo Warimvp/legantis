@@ -12,15 +12,43 @@
   </url>
   <url>
     <loc>https://legantis.net/application-mobile-casablanca/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/application-mobile-casablanca/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/mobile-app-casablanca/"/>
+  </url>
+  <url>
+    <loc>https://legantis.net/en/mobile-app-casablanca/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/application-mobile-casablanca/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/mobile-app-casablanca/"/>
   </url>
   <url>
     <loc>https://legantis.net/application-web-maroc/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/application-web-maroc/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/web-app-morocco/"/>
+  </url>
+  <url>
+    <loc>https://legantis.net/en/web-app-morocco/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/application-web-maroc/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/web-app-morocco/"/>
   </url>
   <url>
     <loc>https://legantis.net/logiciel-sur-mesure-maroc/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/logiciel-sur-mesure-maroc/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/custom-software-morocco/"/>
+  </url>
+  <url>
+    <loc>https://legantis.net/en/custom-software-morocco/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/logiciel-sur-mesure-maroc/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/custom-software-morocco/"/>
   </url>
   <url>
     <loc>https://legantis.net/conseil-reprise-application-maroc/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/conseil-reprise-application-maroc/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/app-consulting-takeover-morocco/"/>
+  </url>
+  <url>
+    <loc>https://legantis.net/en/app-consulting-takeover-morocco/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/conseil-reprise-application-maroc/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/app-consulting-takeover-morocco/"/>
   </url>
   <url>
     <loc>https://legantis.net/mentions-legales/</loc>
