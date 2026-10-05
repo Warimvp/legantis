@@ -51,6 +51,26 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/app-consulting-takeover-morocco/"/>
   </url>
   <url>
+    <loc>https://legantis.net/etude-de-cas-atlasya/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/etude-de-cas-atlasya/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/case-study-atlasya/"/>
+  </url>
+  <url>
+    <loc>https://legantis.net/en/case-study-atlasya/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/etude-de-cas-atlasya/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/case-study-atlasya/"/>
+  </url>
+  <url>
+    <loc>https://legantis.net/etude-de-cas-rihla/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/etude-de-cas-rihla/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/case-study-rihla/"/>
+  </url>
+  <url>
+    <loc>https://legantis.net/en/case-study-rihla/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/etude-de-cas-rihla/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/case-study-rihla/"/>
+  </url>
+  <url>
     <loc>https://legantis.net/mentions-legales/</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/mentions-legales/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/legal/"/>

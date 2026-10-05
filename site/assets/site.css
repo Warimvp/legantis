@@ -896,6 +896,7 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
 .service-tete .etiquettes { margin: 0; padding-top: 30px; }
 .service-tete .garanties, .service-cta .garanties { justify-content: flex-start; margin-top: 22px; }
 .service-cta { margin: clamp(32px, 5vw, 56px) 0 0 64px; }   /* aligné sur le texte des étapes de la frise */
+.atouts--2 + .service-cta { margin-left: 0; }   /* études de cas : sous une grille de cartes, pas sous la frise (spécificité 0,2,0 : l'emporte aussi sur le @media ≤ 600 px) */
 @media (max-width: 420px) { .service-tete h1 { font-size: min(2.5rem, calc((100vw - 40px) / 8.6)); } }   /* « Développement » tient à 320 px */
 .service .section { padding: clamp(64px, 8vw, 112px) 0; }
 .service .section h2 { font-size: clamp(2.1rem, 4.6vw, 3.7rem); }
