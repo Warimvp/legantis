@@ -31,6 +31,16 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/web-app-morocco/"/>
   </url>
   <url>
+    <loc>https://legantis.net/creation-site-web-casablanca/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/creation-site-web-casablanca/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/website-development-casablanca/"/>
+  </url>
+  <url>
+    <loc>https://legantis.net/en/website-development-casablanca/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/creation-site-web-casablanca/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/website-development-casablanca/"/>
+  </url>
+  <url>
     <loc>https://legantis.net/logiciel-sur-mesure-maroc/</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/logiciel-sur-mesure-maroc/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/custom-software-morocco/"/>

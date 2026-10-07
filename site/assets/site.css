@@ -212,6 +212,16 @@ h2 em { font-style: normal; color: var(--tampon); }
 .nav a:not(.langue):hover::after { right: 0; }
 .nav .langue { font: 500 0.74rem/1 var(--f-mono); letter-spacing: 0.06em; color: var(--encre); border: 1px solid var(--filet); padding: 7px 10px; border-radius: 999px; }
 .nav .langue:hover { border-color: var(--tampon); color: var(--tampon); }
+/* Menu des prestations (barre) : « Prestations » ouvre la liste des cinq pages de prestation au survol et au focus clavier, sans script ; le lien
+   parent reste un vrai lien vers #services (toucher, clavier sans survol). Le liseré animé des liens de la barre n'est pas repris dans la liste. */
+.nav-sous { position: relative; }
+.sous-nav { list-style: none; margin: 0; padding: 8px; position: absolute; top: 100%; left: -14px; z-index: 5; min-width: 250px; display: grid; gap: 2px; background: var(--carte); border: 1px solid var(--filet); border-radius: 8px; box-shadow: var(--ombre);
+  opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .2s, transform .2s, visibility 0s .2s; }
+.sous-nav::before { content: ""; position: absolute; left: 0; right: 0; top: -16px; height: 16px; }   /* comble le vide entre le lien et la liste : le survol ne se perd pas en descendant */
+.nav-sous:hover .sous-nav, .nav-sous:focus-within .sous-nav { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+.nav .sous-nav a { display: block; padding: 10px 14px; border-radius: 6px; color: var(--encre); white-space: nowrap; }
+.nav .sous-nav a::after { content: none; }
+.nav .sous-nav a:hover, .nav .sous-nav a:focus-visible { background: var(--tampon-pale); color: var(--tampon); }
 .menu-ouvrir { display: none; color: var(--encre); padding: 8px; margin-right: -8px; }
 .menu-ouvrir svg { width: 26px; height: 26px; }
 
@@ -221,6 +231,10 @@ h2 em { font-style: normal; color: var(--tampon); }
 .menu-plein ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
 .menu-plein li a { display: inline-block; font-weight: 700; font-size: clamp(2.5rem, 11vw, 4.4rem); font-stretch: 118%; letter-spacing: -0.045em; line-height: 1; color: var(--encre); text-decoration: none; animation: glisser .5s var(--sortie) both; animation-delay: calc(var(--i) * 70ms); }
 .menu-plein li a:hover { color: var(--tampon); }
+/* les cinq pages de prestation sous « Prestations » : plus petites que les liens du menu, mêmes règles de liste */
+.menu-plein .menu-sous { margin: 14px 0 6px; gap: 10px; padding-left: 4px; }
+.menu-plein .menu-sous a { font-size: clamp(1.2rem, 5.2vw, 1.55rem); font-weight: 600; font-stretch: 100%; letter-spacing: -0.02em; color: var(--gris); animation: none; }
+.menu-plein .menu-sous a:hover { color: var(--tampon); }
 .menu-fermer { position: absolute; top: 24px; right: clamp(20px, 6vw, 48px); color: var(--encre); padding: 8px; }
 .menu-fermer svg { width: 26px; height: 26px; }
 .menu-pied { position: absolute; left: clamp(20px, 6vw, 48px); right: clamp(20px, 6vw, 48px); bottom: 40px; display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; font: 500 0.8rem/1.4 var(--f-mono); animation: apparaitre .6s ease .5s both; }
@@ -229,7 +243,7 @@ h2 em { font-style: normal; color: var(--tampon); }
 /* menu ouvert : la page derrière (opaque, mais encore focalisable) n'est plus atteignable au clavier ; limité aux largeurs où le menu existe */
 @media (max-width: 900px) { @supports selector(:has(*)) { body:has(#menu:target) :is(.lien-evitement, .barre, main, footer) { visibility: hidden; } } }
 /* écran bas (paysage, zoom 200 %) : le menu démarre en haut et défile, son pied est dans le flux */
-@media (max-height: 520px), (max-height: 640px) and (min-width: 500px) {
+@media (max-height: 760px) {
   .menu-plein:target { justify-content: flex-start; padding-top: 88px; padding-bottom: 32px; }
   .menu-plein .menu-pied { position: static; margin-top: 32px; }
   .menu-plein .menu-devis { margin-top: 28px; }
@@ -921,6 +935,7 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
 @media (max-width: 900px) {
   .preuve, .suite { grid-template-columns: minmax(0, 1fr); }
 }
+@media (min-width: 901px) { .suite:has(> li:nth-child(4)) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }   /* quatre prestations voisines : 2 × 2 */
 @media (max-width: 600px) { .service-cta { margin-left: 44px; } }
 
 /* ── Adaptations ───────────────────────────────────────────── */
@@ -980,6 +995,7 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
   .couverture { color: var(--encre); } .couverture p { color: var(--gris); } .domaine { background: none; border-color: var(--filet); }
   .prestation, .titre, .epreuve, .etape, .offre, .fiche, .atout, .suite-bloc { break-inside: avoid; }
   h2, h3, h4, .surtitre, .sous-titre { break-after: avoid; }
+  .bloc-tete { break-inside: avoid; break-after: avoid; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
