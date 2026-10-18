@@ -1,6 +1,6 @@
 """Contrôle du site, piloté par le sitemap (une URL du sitemap = une page contrôlée) : liens internes et ancres, un h1 et un canonical
 égal à l'URL par page, titre et description présents et uniques, og:title/og:description cohérents, JSON-LD valide, hreflang
-fr/en/x-default réciproques, lien de pied vers les pages « Création de site web ».
+fr/en/ar/x-default réciproques et identiques au sitemap, lien de pied vers les pages « Création de site web », pages arabes en dir=rtl.
     python3 outils/controles_site.py [dossier-du-site]        (sans argument : ../site)
 Sortie : « tout passe » ou la liste des échecs. Éprouvé sur des copies cassées (ancre absente, titre dupliqué, URL de sitemap sans fichier,
 hreflang non réciproque, lien de pied retiré). Ne mesure pas la largeur des titres en pixels (voir CLAUDE.md : Chromium, Arial 20 px / 14 px)."""
@@ -57,17 +57,33 @@ for u, p in pages.items():
 for k, v in seen.items():
     if len(v) > 1: echecs.append(f'doublon {k[:60]}: {v}')
 
-FR_NEW = BASE + 'creation-site-web-casablanca/'; EN_NEW = BASE + 'en/website-development-casablanca/'
+FR_NEW = BASE + 'creation-site-web-casablanca/'; EN_NEW = BASE + 'en/website-development-casablanca/'; AR_NEW = BASE + 'ar/website-development-casablanca/'
+# langues déclarées par le sitemap pour chaque URL (xhtml:link) : le <head> de la page doit porter les mêmes, plus x-default
+alt_sitemap = {}
+for bloc in re.findall(r'<url>.*?</url>', sm, re.S):
+    loc = re.search(r'<loc>([^<]+)</loc>', bloc).group(1)
+    alt_sitemap[loc] = {l: h for l, h in re.findall(r'hreflang="([^"]+)" href="([^"]+)"', bloc)}
 for u, p in pages.items():
     resolus = [urljoin(u, h).split('#')[0] for h in p.hrefs]
-    attendu = EN_NEW if '/en/' in u or u == BASE + 'en/' else FR_NEW
-    if u not in (FR_NEW, EN_NEW) and resolus.count(attendu) < 1: echecs.append(f'{u}: pas de lien vers {attendu}')
+    attendu = AR_NEW if '/ar/' in u else EN_NEW if '/en/' in u or u == BASE + 'en/' else FR_NEW
+    if u not in (FR_NEW, EN_NEW, AR_NEW) and resolus.count(attendu) < 1 and not (attendu == AR_NEW and FR_NEW in resolus):
+        echecs.append(f'{u}: pas de lien vers {attendu}')   # une page arabe sans équivalent arabe renvoie vers la page française
     for lang, href in p.alt:
         if href in pages and u not in [h for _, h in pages[href].alt]: echecs.append(f'{u}: hreflang {lang} -> {href} non réciproque')
     if p.alt:
         langs = sorted(l for l, _ in p.alt)
-        if langs != ['en', 'fr', 'x-default']: echecs.append(f'{u}: hreflang {langs}')
-# le sitemap porte les alternates réciproques des deux nouvelles pages
-if f'<loc>{FR_NEW}</loc>' not in sm or f'<loc>{EN_NEW}</loc>' not in sm: echecs.append('sitemap: nouvelles pages absentes')
+        attendues = sorted(set(alt_sitemap.get(u, {})) | {'x-default'})
+        if langs != attendues: echecs.append(f'{u}: hreflang {langs} ≠ sitemap {attendues}')
+        for lang, href in p.alt:
+            if lang != 'x-default' and alt_sitemap.get(u, {}).get(lang) != href: echecs.append(f'{u}: hreflang {lang} {href} ≠ sitemap')
+# le sitemap porte les alternates réciproques des pages Création de site web (FR, EN, AR)
+if not all(f'<loc>{x}</loc>' in sm for x in (FR_NEW, EN_NEW, AR_NEW)): echecs.append('sitemap: pages Création de site web absentes')
+# les pages arabes : lang="ar" dir="rtl", og:locale ar_MA
+for u, p in pages.items():
+    if '/ar/' in u:
+        h = open(fichier(u), encoding='utf-8').read()
+        if '<html lang="ar" dir="rtl">' not in h: echecs.append(f'{u}: <html lang="ar" dir="rtl"> manquant')
+        if p.meta.get('og:locale') != 'ar_MA': echecs.append(f'{u}: og:locale {p.meta.get("og:locale")}')
+    elif re.search(r'<html[^>]*dir="rtl"', open(fichier(u), encoding='utf-8').read()): echecs.append(f'{u}: dir="rtl" sur une page non arabe')
 print(len(pages), 'pages du sitemap,', n, 'liens internes contrôlés')
 print('ÉCHECS:' if echecs else 'tout passe', *echecs, sep='\n  ')

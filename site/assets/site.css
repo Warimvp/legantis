@@ -27,6 +27,13 @@
 @font-face { font-family: "Archivo Repli"; src: local("Arial Bold"), local("Arial-BoldMT"); font-weight: 600 800; font-stretch: 118%; size-adjust: 115.7%; ascent-override: 75.9%; descent-override: 18.2%; line-gap-override: 0%; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 @font-face { font-family: "Archivo Repli"; src: local("Arial Bold"), local("Arial-BoldMT"); font-weight: 600 800; font-stretch: 72%; size-adjust: 75.4%; ascent-override: 116.4%; descent-override: 27.8%; line-gap-override: 0%; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 
+/* Polices servies par le site lui-même (plus de Google Fonts : aucune requête tierce, aucune adresse IP transmise à Google).
+   Fichiers woff2 de Google Fonts (licence OFL), sous-ensemble latin seulement, dans assets/fonts/. Un caractère hors latin
+   (U+0100 et plus, œ excepté) tombe sur la police de secours, comme les glyphes que ces polices n'ont pas : si un texte en a
+   besoin, ajouter le fichier latin-ext de la famille. font-display: swap + repli calibré « Archivo Repli » ci-dessus. */
+@font-face { font-family: "Archivo"; src: url("fonts/archivo-latin.woff2") format("woff2"); font-weight: 400 800; font-stretch: 62% 125%; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Spline Sans Mono"; src: url("fonts/spline-sans-mono-latin.woff2") format("woff2"); font-weight: 500; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
 :root {
   --chaux: #F6F7F9;
   --chaux-2: #EEF0F4;
@@ -1015,3 +1022,60 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
   .defile li { padding: 0 12px; }
   .defile li::after { margin-left: 24px; }
 }
+
+/* ── Arabe : lecture de droite à gauche (pages /ar/) ───────────────────────────────────────────
+   Tout est sous html[dir="rtl"] : les pages françaises et anglaises ne sont pas touchées. Les flex et grilles se retournent seuls ;
+   ne sont réécrits ici que les réglages physiques (gauche/droite) des composants des pages de prestation, de la barre, du menu et du pied.
+   Pas de police arabe embarquée : le site se veut léger, les systèmes ont tous une bonne police arabe (system-ui) ; Archivo garde le latin.
+   Un composant qui reçoit un left/right/margin-left/padding-left dans la feuille doit recevoir ici son miroir. */
+/* Famille « Arabe » : la police arabe du système, nommée explicitement. Sans elle Chrome rend l'arabe en Arial tant qu'Archivo n'est pas arrivé, puis en
+   Geeza Pro : les largeurs changent, les titres passent de 2 à 3 lignes, CLS mesuré 0,2 sur mobile. Avec elle la police est la même avant et après
+   (CLS 0,016). Aucun fichier à télécharger : si aucun nom n'existe sur l'appareil, la famille est ignorée et le système choisit (repli sans garantie). */
+@font-face { font-family: "Arabe"; src: local("Geeza Pro"), local("Segoe UI"), local("Noto Sans Arabic"), local("Noto Naskh Arabic"), local("Droid Arabic Naskh"), local("Tahoma"), local("Arial"); unicode-range: U+0020, U+00A0, U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF; }   /* l'espace en fait partie : dans les étiquettes mono, l'espace de Spline Sans Mono (0,6 em) écartait les mots arabes */
+html[dir="rtl"] { --f-texte: "Arabe", "Archivo", "Archivo Repli", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; --f-mono: "Arabe", "Spline Sans Mono", system-ui, sans-serif, ui-monospace; }
+/* l'arabe est lisible à une taille un peu plus grande que le latin (hauteur d'œil plus petite) : +6 % partout (tailles en rem), et les étiquettes en petites capitales mono, trop fines en arabe, montent à 0,88 rem */
+html[dir="rtl"] { font-size: 106.25%; }
+html[dir="rtl"] :is(.surtitre, .sous-titre, .pied h3, .pilule, .garanties, .fil ol, .faits dt, .etiquettes li, .suivre, .pied-bas, .domaine, .couverture p, .menu-pied, .contact dt) { font-size: 0.88rem; }
+html[dir="rtl"] .appel h2 { font-size: clamp(2.6rem, 8vw, 6.6rem); line-height: 1.2; }   /* le titre géant de l'appel final, réduit : l'arabe est plus haut et plus dense que le latin étendu */
+/* un espacement entre lettres coupe les liaisons de l'écriture arabe ; le logo (latin) et le sélecteur de langue le gardent */
+html[dir="rtl"] :not(.marque, .marque *, .langue) { letter-spacing: normal !important; }
+html[dir="rtl"] *::before, html[dir="rtl"] *::after { letter-spacing: normal !important; }
+/* interligne : 0,88 à 1 écrase l'arabe (points et hampes se chevauchent) */
+html[dir="rtl"] :is(h1, h2, h3, h4) { line-height: 1.3; }
+html[dir="rtl"] .menu-plein li a { line-height: 1.3; }
+html[dir="rtl"] .contour { -webkit-text-stroke: 0; color: var(--tampon); text-shadow: none; }   /* un contour creux déchire les liaisons arabes */
+html[dir="rtl"] .marque { direction: ltr; }   /* le logo reste « icône + Legantis », comme partout */
+html[dir="rtl"] .lien-evitement { left: auto; right: -9999px; }
+html[dir="rtl"] .lien-evitement:focus { left: auto; right: 16px; }
+html[dir="rtl"] .progression { transform-origin: 100% 50%; }
+html[dir="rtl"] .surtitre .no { margin-right: 0; margin-left: 1.1em; }
+html[dir="rtl"] .nav a:not(.langue)::after { left: 100%; right: 0; transition: left .3s; }
+html[dir="rtl"] .nav a:not(.langue):hover::after { left: 0; right: 0; }
+html[dir="rtl"] .sous-nav { left: auto; right: -14px; }
+html[dir="rtl"] .menu-ouvrir { margin-right: 0; margin-left: -8px; }
+html[dir="rtl"] .menu-fermer { right: auto; left: clamp(20px, 6vw, 48px); }
+html[dir="rtl"] .menu-plein .menu-sous { padding-left: 0; padding-right: 4px; }
+html[dir="rtl"] .menu-plein li a { animation-name: glisser-rtl; }
+@keyframes glisser-rtl { from { opacity: 0; transform: translateX(60px); } }
+html[dir="rtl"] .bouton:hover .fleche, html[dir="rtl"] .suivre:hover span { transform: translateX(-4px); }
+html[dir="rtl"] .atout::before { left: auto; right: 0; }
+html[dir="rtl"] .frise { padding: 8px 64px 0 0; }
+html[dir="rtl"] .frise::before { left: auto; right: 15px; }
+html[dir="rtl"] .frise::after { left: auto; right: 14px; }
+html[dir="rtl"] .etape::before { left: auto; right: -56px; }
+html[dir="rtl"] .etape::after { left: auto; right: -10px; }
+html[dir="rtl"] .fil li + li::before { margin-right: 0; margin-left: 10px; }
+html[dir="rtl"] .garanties li::before { margin-right: 0; margin-left: 8px; }
+html[dir="rtl"] .service-tete { background: radial-gradient(ellipse 60% 90% at 0% 0%, color-mix(in srgb, var(--lueur) 11%, transparent), transparent 70%); }
+html[dir="rtl"] .service-cta { margin: clamp(32px, 5vw, 56px) 64px 0 0; }
+html[dir="rtl"] .atouts--2 + .service-cta { margin-right: 0; }
+html[dir="rtl"] .suite a::after { content: "←"; content: "←" / ""; }
+html[dir="rtl"] .pied-marque { padding-right: 0; border-right: 0; padding-left: 32px; border-left: 1px solid var(--filet); }
+@media (hover: hover) { html[dir="rtl"] .suite a:hover::after { transform: translateX(-4px); } }
+@media (max-width: 600px) {
+  html[dir="rtl"] .frise { padding: 8px 44px 0 0; }
+  html[dir="rtl"] .etape::before { left: auto; right: -37px; }
+  html[dir="rtl"] .etape::after { left: auto; right: -6px; }
+  html[dir="rtl"] .service-cta { margin-right: 44px; margin-left: 0; }
+}
+@media (max-width: 1024px) { html[dir="rtl"] .pied-marque { grid-column: 1 / -1; border-left: 0; padding-left: 0; } }
