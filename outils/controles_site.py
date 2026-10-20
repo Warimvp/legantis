@@ -1,6 +1,6 @@
 """Contrôle du site, piloté par le sitemap (une URL du sitemap = une page contrôlée) : liens internes et ancres, un h1 et un canonical
 égal à l'URL par page, titre et description présents et uniques, og:title/og:description cohérents, JSON-LD valide, hreflang
-fr/en/ar/x-default réciproques et identiques au sitemap, lien de pied vers les pages « Création de site web », pages arabes en dir=rtl, un lien LinkedIn et un lien Instagram par page, sameAs des accueils.
+fr/en/ar/x-default réciproques et identiques au sitemap, lien de pied vers les pages « Création de site web », pages arabes en dir=rtl, un lien LinkedIn et un lien Instagram par page, sameAs des accueils, texte alternatif non vide sur chaque image.
     python3 outils/controles_site.py [dossier-du-site]        (sans argument : ../site)
 Sortie : « tout passe » ou la liste des échecs. Éprouvé sur des copies cassées (ancre absente, titre dupliqué, URL de sitemap sans fichier,
 hreflang non réciproque, lien de pied retiré). Ne mesure pas la largeur des titres en pixels (voir CLAUDE.md : Chromium, Arial 20 px / 14 px)."""
@@ -12,12 +12,13 @@ BASE = 'https://legantis.net/'
 sm = open(os.path.join(RACINE, 'sitemap.xml'), encoding='utf-8').read()
 urls = [BASE + u for u in re.findall(r'<loc>https://legantis.net/([^<]*)</loc>', sm)]
 class P(HTMLParser):
-    def __init__(s): super().__init__(); s.ids=set(); s.hrefs=[]; s.h1=0; s.meta={}; s.title=None; s._t=None; s.jsonld=[]; s._j=False; s.canon=None; s.alt=[]
+    def __init__(s): super().__init__(); s.ids=set(); s.imgs=[]; s.hrefs=[]; s.h1=0; s.meta={}; s.title=None; s._t=None; s.jsonld=[]; s._j=False; s.canon=None; s.alt=[]
     def handle_starttag(s, t, a):
         a = dict(a)
         if 'id' in a: s.ids.add(a['id'])
         if t == 'a' and 'href' in a: s.hrefs.append(a['href'])
         if t == 'h1': s.h1 += 1
+        if t == 'img': s.imgs.append(a)
         if t == 'title': s._t = ''
         if t == 'meta': s.meta[a.get('name') or a.get('property')] = a.get('content')
         if t == 'link' and a.get('rel') == 'canonical': s.canon = a['href']
@@ -85,6 +86,10 @@ for u, p in pages.items():
         if '<html lang="ar" dir="rtl">' not in h: echecs.append(f'{u}: <html lang="ar" dir="rtl"> manquant')
         if p.meta.get('og:locale') != 'ar_MA': echecs.append(f'{u}: og:locale {p.meta.get("og:locale")}')
     elif re.search(r'<html[^>]*dir="rtl"', open(fichier(u), encoding='utf-8').read()): echecs.append(f'{u}: dir="rtl" sur une page non arabe')
+# images : un texte alternatif non vide (Bing signale « alt manquant » sur alt="" ; ici les icônes Atlasya et Rihla sont des images de contenu)
+for u, p in pages.items():
+    for i in p.imgs:
+        if not (i.get('alt') or '').strip(): echecs.append(f'{u}: image sans texte alternatif ({i.get("src")})')
 # réseaux : un seul lien LinkedIn et un seul lien Instagram par page du sitemap (pied), et le sameAs des deux accueils les porte, identique FR et EN
 LI = 'https://www.linkedin.com/company/legantis-digital-service-sas/'; IG = 'https://www.instagram.com/legantis.ma/'
 for u, p in pages.items():
