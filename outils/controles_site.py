@@ -1,6 +1,6 @@
 """Contrôle du site, piloté par le sitemap (une URL du sitemap = une page contrôlée) : liens internes et ancres, un h1 et un canonical
 égal à l'URL par page, titre et description présents et uniques, og:title/og:description cohérents, JSON-LD valide, hreflang
-fr/en/ar/x-default réciproques et identiques au sitemap, lien de pied vers les pages « Création de site web », pages arabes en dir=rtl.
+fr/en/ar/x-default réciproques et identiques au sitemap, lien de pied vers les pages « Création de site web », pages arabes en dir=rtl, un lien LinkedIn et un lien Instagram par page, sameAs des accueils.
     python3 outils/controles_site.py [dossier-du-site]        (sans argument : ../site)
 Sortie : « tout passe » ou la liste des échecs. Éprouvé sur des copies cassées (ancre absente, titre dupliqué, URL de sitemap sans fichier,
 hreflang non réciproque, lien de pied retiré). Ne mesure pas la largeur des titres en pixels (voir CLAUDE.md : Chromium, Arial 20 px / 14 px)."""
@@ -85,5 +85,19 @@ for u, p in pages.items():
         if '<html lang="ar" dir="rtl">' not in h: echecs.append(f'{u}: <html lang="ar" dir="rtl"> manquant')
         if p.meta.get('og:locale') != 'ar_MA': echecs.append(f'{u}: og:locale {p.meta.get("og:locale")}')
     elif re.search(r'<html[^>]*dir="rtl"', open(fichier(u), encoding='utf-8').read()): echecs.append(f'{u}: dir="rtl" sur une page non arabe')
+# réseaux : un seul lien LinkedIn et un seul lien Instagram par page du sitemap (pied), et le sameAs des deux accueils les porte, identique FR et EN
+LI = 'https://www.linkedin.com/company/legantis-digital-service-sas/'; IG = 'https://www.instagram.com/legantis.ma/'
+for u, p in pages.items():
+    for nom, lien in (('LinkedIn', LI), ('Instagram', IG)):
+        if p.hrefs.count(lien) != 1: echecs.append(f'{u}: {p.hrefs.count(lien)} lien(s) {nom} (1 attendu)')
+def same_as(p):
+    for j in p.jsonld:
+        try: g = json.loads(j).get('@graph', [])
+        except Exception: continue
+        for e in g:
+            if e.get('@type') == 'Organization': return e.get('sameAs')
+sa = {u: same_as(pages[u]) for u in (BASE, BASE + 'en/') if u in pages}
+for u, v in sa.items():
+    if v != [LI, IG]: echecs.append(f'{u}: sameAs {v} (attendu LinkedIn puis Instagram)')
 print(len(pages), 'pages du sitemap,', n, 'liens internes contrôlés')
 print('ÉCHECS:' if echecs else 'tout passe', *echecs, sep='\n  ')
