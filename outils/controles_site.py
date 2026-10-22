@@ -108,5 +108,20 @@ def same_as(p):
 sa = {u: same_as(pages[u]) for u in (BASE, BASE + 'en/') if u in pages}
 for u, v in sa.items():
     if v != [LI, IG]: echecs.append(f'{u}: sameAs {v} (attendu LinkedIn puis Instagram)')
+# horaires (lundi au samedi, 9 h – 18 h, dimanche fermé) : la ligne du pied (dans l'<address>) de chaque page du sitemap, dans sa langue, et le hoursAvailable du contactPoint des deux accueils
+HORAIRES = {'fr': 'Du lundi au samedi<br>9&nbsp;h – 18&nbsp;h', 'en': 'Monday to Saturday<br>9 am – 6 pm, Morocco time', 'ar': 'من الاثنين إلى السبت<br><bdi dir="ltr">9:00 – 18:00</bdi>'}
+for u in pages:
+    lang = 'ar' if '/ar/' in u else 'en' if '/en/' in u else 'fr'
+    m = re.search(r'<address>(.*?)</address>', open(fichier(u), encoding='utf-8').read(), re.S)
+    if not m or ('<span>' + HORAIRES[lang] + '</span>') not in m.group(1): echecs.append(f'{u}: ligne d\'horaires ({lang}) absente ou modifiée dans le pied')
+HORAIRES_LD = {'@type': 'OpeningHoursSpecification', 'dayOfWeek': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], 'opens': '09:00', 'closes': '18:00'}
+def horaires_ld(p):
+    for j in p.jsonld:
+        try: g = json.loads(j).get('@graph', [])
+        except Exception: continue
+        for e in g:
+            if e.get('@type') == 'Organization': return (e.get('contactPoint') or {}).get('hoursAvailable')
+for u in (BASE, BASE + 'en/'):
+    if u in pages and horaires_ld(pages[u]) != HORAIRES_LD: echecs.append(f'{u}: contactPoint.hoursAvailable {horaires_ld(pages[u])} (attendu lundi–samedi 09:00–18:00)')
 print(len(pages), 'pages du sitemap,', n, 'liens internes contrôlés')
 print('ÉCHECS:' if echecs else 'tout passe', *echecs, sep='\n  ')
