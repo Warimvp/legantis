@@ -92,13 +92,22 @@ for u, p in pages.items():
         if not (i.get('alt') or '').strip(): echecs.append(f'{u}: image sans texte alternatif ({i.get("src")})')
 # réseaux : un seul lien LinkedIn et un seul lien Instagram par page du sitemap (pied), chacun avec son logo, et le sameAs des deux accueils les porte, identique FR et EN
 LI = 'https://www.linkedin.com/company/legantis-digital-service-sas/'; IG = 'https://www.instagram.com/legantis.ma/'
+#   emplacements (22/10/2026, demande du user : « les rendre plus visibles ») : le bas de page de chaque page (nav « Liens de pied de page »), la colonne Contact du pied (`<span class="pied-reseaux">` dans l'<address>) et, sur les DEUX ACCUEILS seulement, la section Contact (`<div class="contact-tel contact-reseaux">`) : 3 liens par réseau sur un accueil, 2 ailleurs
+ACCUEILS = (BASE, BASE + 'en/')
 for u, p in pages.items():
     h = open(fichier(u), encoding='utf-8').read()
     for nom, lien in (('LinkedIn', LI), ('Instagram', IG)):
-        if p.hrefs.count(lien) != 1: echecs.append(f'{u}: {p.hrefs.count(lien)} lien(s) {nom} (1 attendu)')
+        motif = r'<a class="reseau" href="' + re.escape(lien) + r'"><svg class="logo-reseau"[^>]*aria-hidden="true"[^>]*><path d="[^"]{40,}"/></svg>' + nom + '</a>'
+        attendu = 3 if u in ACCUEILS else 2
+        if p.hrefs.count(lien) != attendu: echecs.append(f'{u}: {p.hrefs.count(lien)} lien(s) {nom} ({attendu} attendus)')
         # le logo (svg décoratif, tracé non vide) est dans le lien, avant l'intitulé qui reste le nom accessible
-        if not re.search(r'<a class="reseau" href="' + re.escape(lien) + r'"><svg class="logo-reseau"[^>]*aria-hidden="true"[^>]*><path d="[^"]{40,}"/></svg>' + nom + '</a>', h):
-            echecs.append(f'{u}: logo {nom} absent ou mal formé dans le lien')
+        if len(re.findall(motif, h)) != attendu: echecs.append(f'{u}: logo {nom} absent ou mal formé dans un des {attendu} liens')
+        # un lien dans chaque emplacement : bas de page, colonne Contact du pied, section Contact (accueils)
+        bas = re.search(r'<nav aria-label="[^"]*">(.*?)</nav>', h[h.index('class="pied-bas"'):], re.S)
+        if not bas or not re.search(motif, bas.group(1)): echecs.append(f'{u}: lien {nom} absent du bas de page')
+        adr = re.search(r'<address>(.*?)</address>', h, re.S)
+        if not adr or not re.search(r'<span class="pied-reseaux">.*?' + motif + '.*?</span>', adr.group(1), re.S): echecs.append(f'{u}: lien {nom} absent de la colonne Contact du pied')
+        if u in ACCUEILS and not re.search(r'<div class="contact-tel contact-reseaux">.*?' + motif + r'.*?</div>', h, re.S): echecs.append(f'{u}: lien {nom} absent de la section Contact')
 def same_as(p):
     for j in p.jsonld:
         try: g = json.loads(j).get('@graph', [])
