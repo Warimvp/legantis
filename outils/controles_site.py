@@ -1,6 +1,6 @@
 """Contrôle du site, piloté par le sitemap (une URL du sitemap = une page contrôlée) : liens internes et ancres, un h1 et un canonical
 égal à l'URL par page, titre et description présents et uniques, og:title/og:description cohérents, JSON-LD valide, hreflang
-fr/en/ar/x-default réciproques et identiques au sitemap, lien de pied vers les pages « Création de site web », pages arabes en dir=rtl, un lien LinkedIn et un lien Instagram par page, sameAs des accueils, texte alternatif non vide sur chaque image.
+fr/en/ar/x-default réciproques et identiques au sitemap, lien de pied vers les pages « Création de site web », pages arabes en dir=rtl, un lien LinkedIn et un lien Instagram (avec leur logo) par page, sameAs des accueils, texte alternatif non vide sur chaque image.
     python3 outils/controles_site.py [dossier-du-site]        (sans argument : ../site)
 Sortie : « tout passe » ou la liste des échecs. Éprouvé sur des copies cassées (ancre absente, titre dupliqué, URL de sitemap sans fichier,
 hreflang non réciproque, lien de pied retiré). Ne mesure pas la largeur des titres en pixels (voir CLAUDE.md : Chromium, Arial 20 px / 14 px)."""
@@ -90,11 +90,15 @@ for u, p in pages.items():
 for u, p in pages.items():
     for i in p.imgs:
         if not (i.get('alt') or '').strip(): echecs.append(f'{u}: image sans texte alternatif ({i.get("src")})')
-# réseaux : un seul lien LinkedIn et un seul lien Instagram par page du sitemap (pied), et le sameAs des deux accueils les porte, identique FR et EN
+# réseaux : un seul lien LinkedIn et un seul lien Instagram par page du sitemap (pied), chacun avec son logo, et le sameAs des deux accueils les porte, identique FR et EN
 LI = 'https://www.linkedin.com/company/legantis-digital-service-sas/'; IG = 'https://www.instagram.com/legantis.ma/'
 for u, p in pages.items():
+    h = open(fichier(u), encoding='utf-8').read()
     for nom, lien in (('LinkedIn', LI), ('Instagram', IG)):
         if p.hrefs.count(lien) != 1: echecs.append(f'{u}: {p.hrefs.count(lien)} lien(s) {nom} (1 attendu)')
+        # le logo (svg décoratif, tracé non vide) est dans le lien, avant l'intitulé qui reste le nom accessible
+        if not re.search(r'<a class="reseau" href="' + re.escape(lien) + r'"><svg class="logo-reseau"[^>]*aria-hidden="true"[^>]*><path d="[^"]{40,}"/></svg>' + nom + '</a>', h):
+            echecs.append(f'{u}: logo {nom} absent ou mal formé dans le lien')
 def same_as(p):
     for j in p.jsonld:
         try: g = json.loads(j).get('@graph', [])

@@ -844,6 +844,9 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 .pied address { font-style: normal; color: var(--gris); font-size: 0.93rem; line-height: 1.6; display: grid; gap: 13px; }
 .pied-bas { border-top: 1px solid var(--filet); padding-top: 26px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px; font: 500 0.72rem/1.5 var(--f-mono); letter-spacing: 0.03em; color: var(--gris); }
 .pied-bas nav { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+/* Logos des réseaux (LinkedIn, Instagram) : glyphes pleins en ligne, à la couleur du texte du lien (donc au survol aussi), avant l'intitulé qui reste lisible ; le gap suit le sens de lecture, en arabe comme en français. */
+.pied-bas .reseau { display: inline-flex; align-items: center; gap: .55em; }
+.logo-reseau { width: 1.3em; height: 1.3em; fill: currentColor; flex: none; }
 .pied-bas .coeur { color: var(--tampon); }
 
 /* ── Pages légales et 404 ──────────────────────────────────── */
