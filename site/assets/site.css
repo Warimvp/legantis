@@ -80,6 +80,7 @@
   /* Couleurs des produits, relevées sur leurs icônes : identiques dans les deux thèmes */
   --atlasya: #252981;
   --rihla: #4E46C8;
+  --ostad: #4E46C8;
 
   --f-texte: "Archivo", "Archivo Repli", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --f-mono: "Spline Sans Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -674,6 +675,17 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 .titre--rihla .couverture::before {
   background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><g fill='none' stroke='%23F7F0E3' stroke-width='1.1'><rect x='21' y='21' width='58' height='58'/><rect x='21' y='21' width='58' height='58' transform='rotate(45 50 50)'/><rect x='31' y='31' width='38' height='38'/><rect x='31' y='31' width='38' height='38' transform='rotate(45 50 50)'/><circle cx='50' cy='50' r='9'/></g></svg>") right -80px top -80px / 340px no-repeat;
   opacity: .24;
+}
+/* Ostad : l'anneau de son icône, en cercles concentriques */
+.titre--ostad .couverture { background: var(--ostad); }
+.titre--ostad .couverture::before {
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><g fill='none' stroke='%23F7F0E3' stroke-width='1.1'><circle cx='50' cy='50' r='38'/><circle cx='50' cy='50' r='28'/><circle cx='50' cy='50' r='18'/><circle cx='50' cy='50' r='8'/></g></svg>") right -80px top -80px / 340px no-repeat;
+  opacity: .24;
+}
+/* Nombre impair de titres : le dernier prend toute la largeur, couverture à gauche et texte à droite */
+@media (min-width: 901px) {
+  .catalogue > .titre:last-child:nth-child(odd) { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto; }
+  .catalogue > .titre:last-child:nth-child(odd) .couverture { aspect-ratio: auto; min-height: 340px; }
 }
 .titre-corps { padding: 26px 28px 30px; display: grid; gap: 22px; align-content: start; }
 .titre-corps > p { color: var(--gris); }
