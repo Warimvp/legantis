@@ -21,8 +21,8 @@ chargerait un script de Cloudflare dans la page.
 3. **Déploiement** : `npx wrangler deploy`. Wrangler propose de créer le sous-domaine `workers.dev` du compte au premier déploiement ; il affiche
    ensuite l'adresse du Worker, `https://legantis-devis.<sous-domaine>.workers.dev`.
 4. **Secret** : `npx wrangler secret put RESEND_API_KEY` (coller la clé ; elle n'est jamais écrite dans le dépôt).
-5. **Adresse dans le site** : remplacer `legantis-devis.REMPLACER.workers.dev` par l'adresse réelle dans `action=` de `site/index.html` et
-   `site/en/index.html`. `python3 outils/controles_site.py` échoue tant que `REMPLACER` y figure.
+5. **Adresse dans le site** : l'adresse affichée à l'étape 3 va dans `action=` de `site/index.html` et `site/en/index.html`
+   (fait le 23/10/2026 : `https://legantis-devis.rihla-serveur.workers.dev/`). `python3 outils/controles_site.py` refuse le texte provisoire `REMPLACER`.
 6. **Essai réel** : envoyer le formulaire depuis le site, vérifier l'arrivée dans `contact@legantis.net` (et pas dans les indésirables), que
    « Répondre » écrit au visiteur, et que la réponse du Worker ne pose aucun cookie (`curl -si -X POST …` : pas de `Set-Cookie`).
 7. Fusionner la branche : `main` se déploie sur GitHub Pages à chaque push.
