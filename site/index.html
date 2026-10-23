@@ -241,12 +241,13 @@
       </ol>
 
       <section class="offre" id="devis" aria-labelledby="devis-titre">
+        <p class="devis-statut devis-statut--ok" id="devis-envoye" role="status" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span><b>Merci, votre demande est bien partie.</b> Nous revenons vers vous sous 48 heures ouvrées, à l'adresse e-mail que vous avez indiquée.</span></p>
+        <p class="devis-statut devis-statut--echec" id="devis-echec" role="alert" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 8v5m0 4h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg><span><b>Votre demande n'a pas pu être envoyée.</b> Réessayez dans un instant, ou écrivez-nous à <a href="mailto:contact@legantis.net">contact@legantis.net</a>.</span></p>
         <div class="offre-texte reveler">
           <span class="surtitre">Offert</span>
           <h3 id="devis-titre">Votre devis, <em>gratuit</em> et sans engagement.</h3>
           <p>Décrivez-nous votre projet en quelques lignes. Nous revenons vers vous sous 48 heures ouvrées pour en parler, puis nous vous remettons un devis détaillé, avec le prix et le délai. Vous décidez ensuite, librement.</p>
           <div class="offre-actions">
-            <a class="bouton bouton--plein" href="mailto:contact@legantis.net?subject=Demande%20de%20devis&amp;body=Bonjour%2C%0D%0A%0D%0AVotre%20activit%C3%A9%20%3A%20%0D%0ACe%20que%20vous%20souhaitez%20d%C3%A9velopper%20%3A%20%0D%0ASupports%20vis%C3%A9s%20%28web%2C%20iPhone%2C%20Android%29%20%3A%20%0D%0AD%C3%A9lai%20souhait%C3%A9%20%3A%20%0D%0A%0D%0AMerci.">Demander mon devis gratuit <span class="fleche" aria-hidden="true">→</span></a>
             <div class="cachet cachet--offre" aria-hidden="true"><b>Devis gratuit</b><span>Sans engagement</span></div>
           </div>
         </div>
@@ -256,6 +257,23 @@
           <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><b>Un devis détaillé</b><span>Les écrans, les fonctions, le prix et le délai, par écrit : vous savez ce que vous payez.</span></li>
           <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><b>Code source remis</b><span>À la mise en ligne, nous vous remettons le code source et la documentation.</span></li>
         </ul>
+        <form class="devis-form" method="post" action="https://legantis-devis.REMPLACER.workers.dev/" aria-labelledby="devis-titre">
+          <input type="hidden" name="langue" value="fr">
+          <div class="champ"><label for="devis-nom">Votre nom</label><input id="devis-nom" name="nom" type="text" autocomplete="name" required maxlength="100"></div>
+          <div class="champ"><label for="devis-email">Votre e-mail</label><input id="devis-email" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="254"></div>
+          <div class="champ"><label for="devis-tel">Téléphone <small>(facultatif)</small></label><input id="devis-tel" name="telephone" type="tel" inputmode="tel" autocomplete="tel" maxlength="30"></div>
+          <div class="champ"><label for="devis-delai">Délai souhaité <small>(facultatif)</small></label>
+            <select id="devis-delai" name="delai"><option value="">À préciser ensemble</option><option value="vite">Dès que possible</option><option value="1mois">Sous 1 mois</option><option value="3mois">Sous 3 mois</option><option value="libre">Pas de date précise</option></select></div>
+          <fieldset class="champ champ--large"><legend>Supports visés <small>(facultatif)</small></legend>
+            <div class="cases"><label class="case"><input type="checkbox" name="supports" value="web"> Web</label><label class="case"><input type="checkbox" name="supports" value="iphone"> iPhone</label><label class="case"><input type="checkbox" name="supports" value="android"> Android</label></div></fieldset>
+          <div class="champ champ--large"><label for="devis-projet">Votre projet</label><textarea id="devis-projet" name="projet" rows="5" required minlength="10" maxlength="4000" placeholder="Votre activité, ce que vous souhaitez développer, pour qui…"></textarea></div>
+          <div class="visuellement-cache" aria-hidden="true"><label>Ne pas remplir ce champ<input type="text" name="site_web" tabindex="-1" autocomplete="off"></label></div>
+          <div class="devis-bas">
+            <button class="bouton bouton--plein" type="submit">Envoyer ma demande <span class="fleche" aria-hidden="true">→</span></button>
+            <p class="devis-note">Vos informations servent uniquement à répondre à votre demande ; elles sont reçues par LEGANTIS DIGITAL SERVICE SAS et ne sont ni cédées ni utilisées pour de la prospection. Droits d'accès, de rectification et d'opposition (loi 09-08) : <a href="mailto:contact@legantis.net">contact@legantis.net</a>. <a href="mentions-legales/#donnees">En savoir plus</a>.</p>
+          </div>
+        </form>
+        <p class="devis-ecrire">Vous préférez écrire directement ? <a href="mailto:contact@legantis.net?subject=Demande%20de%20devis&amp;body=Bonjour%2C%0D%0A%0D%0AVotre%20activit%C3%A9%20%3A%20%0D%0ACe%20que%20vous%20souhaitez%20d%C3%A9velopper%20%3A%20%0D%0ASupports%20vis%C3%A9s%20%28web%2C%20iPhone%2C%20Android%29%20%3A%20%0D%0AD%C3%A9lai%20souhait%C3%A9%20%3A%20%0D%0A%0D%0AMerci.">contact@legantis.net</a></p>
       </section>
 
       <div class="bloc">

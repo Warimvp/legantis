@@ -1,0 +1,20 @@
+{
+	// Worker du formulaire de devis de legantis.net (voir README.md). Déployé par `npx wrangler@4 deploy` depuis ce dossier.
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "legantis-devis",
+	"main": "src/index.js",
+	"compatibility_date": "2026-10-13",
+	"workers_dev": true,
+	"vars": {
+		"SITE_ORIGIN": "https://legantis.net",
+		"MAIL_TO": "contact@legantis.net",
+		"MAIL_FROM": "Formulaire legantis.net <formulaire@legantis.net>"
+	},
+	// Pas de journal : le Worker voit des données personnelles (nom, e-mail, message) et ne doit rien en garder.
+	"observability": { "enabled": false },
+	// Au plus 5 envois par minute et par adresse IP (et par site Cloudflare : approximatif, cf. la documentation du binding).
+	"ratelimits": [
+		{ "name": "LIMITE", "namespace_id": "4801", "simple": { "limit": 5, "period": 60 } }
+	]
+	// Secret (à poser avec `npx wrangler@4 secret put RESEND_API_KEY`, jamais ici) : RESEND_API_KEY
+}

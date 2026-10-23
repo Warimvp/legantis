@@ -232,12 +232,13 @@
       </ol>
 
       <section class="offre" id="devis" aria-labelledby="devis-titre">
+        <p class="devis-statut devis-statut--ok" id="devis-envoye" role="status" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span><b>Thank you, your request is on its way.</b> We will get back to you within two business days, at the email address you gave us.</span></p>
+        <p class="devis-statut devis-statut--echec" id="devis-echec" role="alert" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 8v5m0 4h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg><span><b>Your request could not be sent.</b> Please try again in a moment, or write to us at <a href="mailto:contact@legantis.net">contact@legantis.net</a>.</span></p>
         <div class="offre-texte reveler">
           <span class="surtitre">Free</span>
           <h3 id="devis-titre">Your quote, <em>free</em> and with no obligation.</h3>
           <p>Describe your project in a few lines. We get back to you within two business days to discuss it, then send you a detailed quote with the price and the timeline. You then decide, freely.</p>
           <div class="offre-actions">
-            <a class="bouton bouton--plein" href="mailto:contact@legantis.net?subject=Quote%20request&amp;body=Hello%2C%0D%0A%0D%0AYour%20business%3A%20%0D%0AWhat%20you%20would%20like%20to%20build%3A%20%0D%0APlatforms%20%28web%2C%20iPhone%2C%20Android%29%3A%20%0D%0ADesired%20timeline%3A%20%0D%0A%0D%0AThank%20you.">Request my free quote <span class="fleche" aria-hidden="true">→</span></a>
             <div class="cachet cachet--offre" aria-hidden="true"><b>Free quote</b><span>No obligation</span></div>
           </div>
         </div>
@@ -247,6 +248,23 @@
           <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><b>A detailed quote</b><span>Screens, features, price and timeline, in writing: you know what you are paying for.</span></li>
           <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><b>Source code handed over</b><span>At launch, we hand over the source code and the documentation.</span></li>
         </ul>
+        <form class="devis-form" method="post" action="https://legantis-devis.REMPLACER.workers.dev/" aria-labelledby="devis-titre">
+          <input type="hidden" name="langue" value="en">
+          <div class="champ"><label for="devis-nom">Your name</label><input id="devis-nom" name="nom" type="text" autocomplete="name" required maxlength="100"></div>
+          <div class="champ"><label for="devis-email">Your email</label><input id="devis-email" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="254"></div>
+          <div class="champ"><label for="devis-tel">Phone <small>(optional)</small></label><input id="devis-tel" name="telephone" type="tel" inputmode="tel" autocomplete="tel" maxlength="30"></div>
+          <div class="champ"><label for="devis-delai">Desired timeline <small>(optional)</small></label>
+            <select id="devis-delai" name="delai"><option value="">To be discussed</option><option value="vite">As soon as possible</option><option value="1mois">Within 1 month</option><option value="3mois">Within 3 months</option><option value="libre">No fixed date</option></select></div>
+          <fieldset class="champ champ--large"><legend>Platforms <small>(optional)</small></legend>
+            <div class="cases"><label class="case"><input type="checkbox" name="supports" value="web"> Web</label><label class="case"><input type="checkbox" name="supports" value="iphone"> iPhone</label><label class="case"><input type="checkbox" name="supports" value="android"> Android</label></div></fieldset>
+          <div class="champ champ--large"><label for="devis-projet">Your project</label><textarea id="devis-projet" name="projet" rows="5" required minlength="10" maxlength="4000" placeholder="Your business, what you would like to build, for whom…"></textarea></div>
+          <div class="visuellement-cache" aria-hidden="true"><label>Leave this field empty<input type="text" name="site_web" tabindex="-1" autocomplete="off"></label></div>
+          <div class="devis-bas">
+            <button class="bouton bouton--plein" type="submit">Send my request <span class="fleche" aria-hidden="true">→</span></button>
+            <p class="devis-note">Your details are used only to answer your request; they are received by LEGANTIS DIGITAL SERVICE SAS and are neither passed on nor used for marketing. Rights of access, rectification and objection (law 09-08): <a href="mailto:contact@legantis.net">contact@legantis.net</a>. <a href="legal/#personal-data">Learn more</a>.</p>
+          </div>
+        </form>
+        <p class="devis-ecrire">Prefer to write directly? <a href="mailto:contact@legantis.net?subject=Quote%20request&amp;body=Hello%2C%0D%0A%0D%0AYour%20business%3A%20%0D%0AWhat%20you%20would%20like%20to%20build%3A%20%0D%0APlatforms%20%28web%2C%20iPhone%2C%20Android%29%3A%20%0D%0ADesired%20timeline%3A%20%0D%0A%0D%0AThank%20you.">contact@legantis.net</a></p>
       </section>
 
       <div class="bloc">

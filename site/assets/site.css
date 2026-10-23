@@ -46,6 +46,8 @@
   --tampon-pale: #ECEBFA;
   --sur-tampon: #FFFFFF;
   --focus: #3D36B2;
+  --alerte: #B3261E;   /* message d'échec et champ invalide du formulaire de devis (6:1 sur --chaux) */
+  --bord-champ: color-mix(in oklab, var(--gris) 76%, var(--chaux));   /* contour des champs du formulaire : 3:1 au moins sur le fond de la carte (composant d'interface) */
   --trame: rgb(22 23 46 / .07);
   --ombre: 0 1px 2px rgb(22 23 46 / .04), 0 24px 48px -30px rgb(22 23 46 / .3);
   --melange-cachet: multiply;
@@ -104,6 +106,7 @@
     --tampon-pale: #1F1D45;
     --sur-tampon: #0E0F1B;
     --focus: #ABA6FF;
+    --alerte: #FF8F86;
     --trame: rgb(255 255 255 / .04);
     --ombre: 0 1px 2px rgb(0 0 0 / .3), 0 24px 48px -30px rgb(0 0 0 / .8);
     --melange-cachet: screen;
@@ -904,6 +907,39 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
   .cachet--offre { animation: coup-de-tampon linear both; animation-timeline: view(); animation-range: entry 100% cover 50%; }
 }
 
+/* Formulaire de devis (carte #devis des deux accueils). Envoyé en POST à un Worker Cloudflare (dossier worker/) qui renvoie le visiteur vers
+   /#devis-envoye ou /#devis-echec (EN : /en/#…) : le message est un <p> caché que :target affiche, sans script ; envoyé, il remplace le
+   formulaire. Propriétés logiques seulement (aucun miroir à écrire dans le bloc « Arabe »). Les champs gardent le curseur du système
+   (voir TEXTE dans lumiere.js). */
+.devis-form { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px clamp(20px, 3vw, 36px); padding-top: clamp(26px, 3vw, 38px); border-top: 1px solid var(--filet); }
+.devis-form .champ { display: grid; gap: 8px; align-content: start; min-width: 0; margin: 0; padding: 0; border: 0; }
+.devis-form .champ--large, .devis-bas { grid-column: 1 / -1; }
+.devis-form label, .devis-form legend { padding: 0; font: 500 0.75rem/1.4 var(--f-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gris); }
+.devis-form :is(label, legend) small { font: inherit; letter-spacing: inherit; text-transform: none; opacity: .85; }
+.devis-form :is(input:not([type="checkbox"]), select, textarea) { width: 100%; box-sizing: border-box; padding: 12px 14px; font: inherit; font-size: 1rem; line-height: 1.4; color: var(--encre); background: var(--chaux); border: 1.5px solid var(--bord-champ); border-radius: 6px; transition: border-color .2s, box-shadow .2s; }
+.devis-form textarea { min-height: 8rem; resize: vertical; }
+.devis-form :is(input, select, textarea):focus-visible { border-radius: 6px; outline: 2px solid var(--focus); outline-offset: 2px; border-color: var(--focus); }
+@supports selector(:user-invalid) {
+  .devis-form :is(input, textarea):user-invalid { border-color: var(--alerte); }
+}
+.devis-form .cases { display: flex; flex-wrap: wrap; gap: 10px 26px; padding-top: 2px; }
+.devis-form .case { cursor: pointer; display: inline-flex; align-items: center; gap: 10px; font: inherit; font-size: 1rem; letter-spacing: 0; text-transform: none; color: var(--encre); }
+.devis-form .case input { width: 1.25rem; height: 1.25rem; margin: 0; accent-color: var(--tampon); }
+.devis-bas { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; }
+.devis-bas button.bouton { font-family: inherit; cursor: pointer; }
+.devis-note { margin: 0; max-width: 64ch; font-size: 0.86rem; line-height: 1.55; color: var(--gris); }
+.devis-ecrire { grid-column: 1 / -1; margin: -6px 0 0; font-size: 0.94rem; color: var(--gris); }
+.devis-statut { display: none; grid-column: 1 / -1; align-items: flex-start; gap: 14px; margin: 0; padding: 18px 22px; border: 1px solid var(--tampon); border-radius: 6px; background: var(--tampon-pale); }
+.devis-statut:target { display: flex; }
+.devis-statut:focus { outline: 0; }   /* le navigateur y pose le focus à l'arrivée sur l'ancre (lecteurs d'écran) ; rien à manipuler, donc pas d'anneau */
+.devis-statut svg { flex: none; width: 22px; height: 22px; margin-top: 2px; fill: none; stroke: var(--tampon); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.devis-statut--echec { border-color: var(--alerte); background: color-mix(in srgb, var(--alerte) 9%, var(--carte)); }
+.devis-statut--echec svg { stroke: var(--alerte); }
+.offre:has(#devis-envoye:target) :is(.devis-form, .devis-ecrire) { display: none; }
+@media (max-width: 700px) {
+  .devis-form { grid-template-columns: minmax(0, 1fr); }
+}
+
 /* Appel final : garanties sous le bouton, email et téléphone côte à côte */
 .garanties { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 24px; font: 500 0.72rem/1.4 var(--f-mono); letter-spacing: 0.1em; text-transform: uppercase; color: color-mix(in oklab, var(--gris) 75%, var(--encre)); }   /* lisible sous l'aura du grand bouton */
 .garanties li::before { content: "✓"; color: var(--tampon); margin-right: 8px; }
@@ -1010,7 +1046,7 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
 /* Impression / PDF : sans cela, les apparitions au défilement (.reveler) restent invisibles (6 pages blanches sur 12), les chiffres s'impriment à 0 et le texte blanc des chiffres disparaît (fond non imprimé) */
 @media print {
   *, *::before, *::after { animation: none !important; transition: none !important; }
-  .barre, .progression, .lien-evitement, .menu-plein, .halo, .capteurs, .curseur, .forme, .rond-tournant, .descendre, .numero-fantome, .grain::after, .filtres { display: none !important; }
+  .barre, .progression, .lien-evitement, .menu-plein, .halo, .capteurs, .curseur, .forme, .rond-tournant, .descendre, .numero-fantome, .grain::after, .filtres, .devis-form, .devis-ecrire, .devis-statut { display: none !important; }
   .ouverture, .appel { min-height: 0; overflow: visible; }
   .ouverture { padding-top: 24px; } .document, .appel { padding-top: 24px; }
   .chiffres { background: none; color: var(--encre); box-shadow: none; border-top: 1px solid var(--filet); border-bottom: 1px solid var(--filet); }

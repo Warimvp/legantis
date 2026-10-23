@@ -325,7 +325,7 @@
   (function () {
     var LIENS = 'a[href], button, summary, [role="button"], label';
     var VUE = '.couverture';
-    var TEXTE = 'p, li, dd, dt, h1, h2, h3, h4, address, .fiche';
+    var TEXTE = 'p, li, dd, dt, h1, h2, h3, h4, address, .fiche, input, textarea, select';   // champs du formulaire de devis : le navigateur leur donne son curseur (barre de texte, flèche), la CSS n'a rien à écrire
     var SOUS_LE_LIBELLE = TEXTE + ', .domaine, img';   // dans la vue, ce qui porte du texte ou une image : pas de libellé par-dessus, et le pointeur natif y reste (la CSS le lui rend : même liste)
     var SUR_BANDE = '.chiffres';                  // surfaces d'indigo moyen, où l'inverse du blanc a presque la même luminance : le curseur s'y adapte (voir site.css)
     var SUR_INDIGO = '.bouton--plein, .barre-cta';

@@ -1,0 +1,13 @@
+{
+	"name": "legantis-devis",
+	"private": true,
+	"type": "module",
+	"description": "Worker Cloudflare du formulaire de devis de legantis.net",
+	"scripts": {
+		"test": "node --test test/*.test.js",
+		"deploy": "wrangler deploy"
+	},
+	"devDependencies": {
+		"wrangler": "^4.36.0"
+	}
+}

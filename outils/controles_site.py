@@ -132,5 +132,36 @@ def horaires_ld(p):
             if e.get('@type') == 'Organization': return (e.get('contactPoint') or {}).get('hoursAvailable')
 for u in (BASE, BASE + 'en/'):
     if u in pages and horaires_ld(pages[u]) != HORAIRES_LD: echecs.append(f'{u}: contactPoint.hoursAvailable {horaires_ld(pages[u])} (attendu lundi–samedi 09:00–18:00)')
+# formulaire de devis (23/10/2026) : carte #devis des deux accueils, POST vers le Worker de worker/ (qui renvoie vers #devis-envoye / #devis-echec).
+#   Contrôlé : méthode et adresse du Worker (le texte de remplacement REMPLACER fait échouer : la branche ne se fusionne qu'avec la vraie adresse), les champs du HTML
+#   = ceux que le Worker lit (lus dans worker/src/index.js), la langue de la page, un <label for> par champ, le champ piège caché, les deux messages, et les mentions
+#   légales : plus de « ni formulaire », les prestataires du Worker nommés (Cloudflare, Resend) et la messagerie (Hostinger).
+WORKER_SRC = os.path.join(RACINE, '..', 'worker', 'src', 'index.js')
+champs_worker = set(re.findall(r"donnees\.(?:get|getAll)\('([a-z_]+)'\)", open(WORKER_SRC, encoding='utf-8').read())) if os.path.exists(WORKER_SRC) else None
+for u, lang in ((BASE, 'fr'), (BASE + 'en/', 'en')):
+    if u not in pages: continue
+    h = open(fichier(u), encoding='utf-8').read()
+    m = re.search(r'<form class="devis-form"([^>]*)>(.*?)</form>', h, re.S)
+    if not m: echecs.append(f'{u}: formulaire de devis absent'); continue
+    ouv, corps = m.group(1), m.group(2)
+    action = (re.search(r'action="([^"]*)"', ouv) or [None, ''])[1]
+    if 'method="post"' not in ouv: echecs.append(f'{u}: le formulaire de devis n\'est pas en method="post"')
+    if 'REMPLACER' in action: echecs.append(f'{u}: action du formulaire = {action} (remplacer par l\'adresse workers.dev du Worker déployé)')
+    elif not re.fullmatch(r'https://[a-z0-9-]+(\.[a-z0-9-]+)*\.workers\.dev/', action): echecs.append(f'{u}: action du formulaire {action!r} (adresse workers.dev attendue)')
+    noms = set(re.findall(r'<(?:input|select|textarea)\b[^>]*\bname="([^"]+)"', corps))
+    if champs_worker is not None and noms != champs_worker: echecs.append(f'{u}: champs du formulaire {sorted(noms)} ≠ champs lus par le Worker {sorted(champs_worker)}')
+    if f'<input type="hidden" name="langue" value="{lang}">' not in corps: echecs.append(f'{u}: champ caché langue={lang} absent')
+    for ident in re.findall(r'<(?:input|select|textarea)\b[^>]*\bid="([^"]+)"', corps):
+        if f'<label for="{ident}">' not in corps: echecs.append(f'{u}: champ #{ident} sans <label for>')
+    if not re.search(r'<div class="visuellement-cache" aria-hidden="true"><label>[^<]*<input type="text" name="site_web" tabindex="-1" autocomplete="off"></label></div>', corps): echecs.append(f'{u}: champ piège site_web absent ou visible')
+    for ident in ('devis-envoye', 'devis-echec'):
+        if ident not in pages[u].ids: echecs.append(f'{u}: message #{ident} absent')
+    if not re.search(r'<button class="bouton bouton--plein" type="submit">', corps): echecs.append(f'{u}: bouton d\'envoi absent')
+for u, mots in ((BASE + 'mentions-legales/', ('Cloudflare', 'Resend', 'Hostinger', 'id="donnees"', 'ni cookie')), (BASE + 'en/legal/', ('Cloudflare', 'Resend', 'Hostinger', 'id="personal-data"', 'no cookies'))):
+    if u not in pages: continue
+    h = open(fichier(u), encoding='utf-8').read()
+    for mot in mots:
+        if mot not in h: echecs.append(f'{u}: « {mot} » absent des données personnelles')
+    if re.search(r'ni formulaire|no forms|aucune donnée personnelle|no personal data', h): echecs.append(f'{u}: dit encore qu\'il n\'y a ni formulaire ni donnée personnelle')
 print(len(pages), 'pages du sitemap,', n, 'liens internes contrôlés')
 print('ÉCHECS:' if echecs else 'tout passe', *echecs, sep='\n  ')
