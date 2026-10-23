@@ -163,5 +163,18 @@ for u, mots in ((BASE + 'mentions-legales/', ('Cloudflare', 'Resend', 'Hostinger
     for mot in mots:
         if mot not in h: echecs.append(f'{u}: « {mot} » absent des données personnelles')
     if re.search(r'ni formulaire|no forms|aucune donnée personnelle|no personal data', h): echecs.append(f'{u}: dit encore qu\'il n\'y a ni formulaire ni donnée personnelle')
+# boutons « Devis gratuit » (23/10/2026) : barre, menu mobile, pied et boutons pleins ouvrent le formulaire #devis, plus de mailto prérempli.
+#   Cible : #devis sur les deux accueils ; ../#devis ailleurs (accueil FR pour les pages FR, accueil EN pour les pages EN) ; ../../#devis sur les pages arabes (accueil FR : pas d'accueil arabe).
+#   Les liens qui affichent l'adresse e-mail (contact, ligne « Vous préférez écrire directement ? ») gardent leur mailto : ils n'ont pas ces classes.
+CTA_UNIQUES = ('barre-cta', 'menu-devis', 'pied-devis')
+for u in pages:
+    h = open(fichier(u), encoding='utf-8').read()
+    cible = '#devis' if u in ACCUEILS else '../../#devis' if '/ar/' in u else '../#devis'
+    for cls in CTA_UNIQUES:
+        liens = re.findall(r'<a class="[^"]*\b' + cls + r'\b[^"]*" href="([^"]*)"', h)
+        if liens != [cible]: echecs.append(f'{u}: lien « {cls} » = {liens} (attendu une fois {cible})')
+    for classes, href in re.findall(r'<a class="([^"]*)" href="([^"]*)"', h):
+        if any(c in classes.split() for c in CTA_UNIQUES + ('bouton--plein',)) and href.startswith('mailto:'): echecs.append(f'{u}: bouton « {classes} » ouvre encore un mailto')
+        if 'bouton--plein' in classes.split() and href.startswith(('#devis', '../#devis', '../../#devis')) and href != cible: echecs.append(f'{u}: bouton « {classes} » vise {href} (attendu {cible})')
 print(len(pages), 'pages du sitemap,', n, 'liens internes contrôlés')
 print('ÉCHECS:' if echecs else 'tout passe', *echecs, sep='\n  ')
