@@ -48,6 +48,7 @@
   --focus: #3D36B2;
   --alerte: #B3261E;   /* message d'échec et champ invalide du formulaire de devis (6:1 sur --chaux) */
   --bord-champ: color-mix(in oklab, var(--gris) 76%, var(--chaux));   /* contour des champs du formulaire : 3:1 au moins sur le fond de la carte (composant d'interface) */
+  --defile-mot: color-mix(in srgb, var(--encre) 50%, transparent);   /* mots du bandeau défilant : 3,25:1 sur --chaux-2 (grand texte, 3:1 exigé ; à 24 % ils tombaient à 1,66:1, relevé par Lighthouse le 26/10/2026) */
   --trame: rgb(22 23 46 / .07);
   --ombre: 0 1px 2px rgb(22 23 46 / .04), 0 24px 48px -30px rgb(22 23 46 / .3);
   --melange-cachet: multiply;
@@ -99,6 +100,7 @@
     --chaux-2: #121327;
     --carte: #161728;
     --encre: #E8E8F2;
+    --defile-mot: color-mix(in srgb, var(--encre) 40%, transparent);   /* 3,3:1 sur --chaux-2 sombre */
     --gris: #A2A4BA;
     --filet: #292B42;
     --pointille: #4F5170;
@@ -407,7 +409,7 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 .defile-rangee { display: flex; overflow: hidden; -webkit-mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
 .defile-rangee ul { display: flex; flex: none; list-style: none; margin: 0; padding: 0; white-space: nowrap; animation: defiler 38s linear infinite; }
 .defile-rangee--inverse ul { animation-direction: reverse; }
-.defile li { display: flex; align-items: center; padding: 0 30px; font-weight: 600; font-size: clamp(1.6rem, 3.4vw, 2.8rem); font-stretch: 118%; letter-spacing: -0.03em; line-height: 1.2; color: color-mix(in srgb, var(--encre) 24%, transparent); transition: color .3s; }
+.defile li { display: flex; align-items: center; padding: 0 30px; font-weight: 600; font-size: clamp(1.6rem, 3.4vw, 2.8rem); font-stretch: 118%; letter-spacing: -0.03em; line-height: 1.2; color: var(--defile-mot); transition: color .3s; }
 @media (hover: hover) {
   .defile:hover ul { animation-play-state: paused; }   /* au tapotement, le bandeau resterait figé */
   .defile li:hover { color: var(--encre); }
