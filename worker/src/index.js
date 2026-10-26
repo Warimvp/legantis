@@ -12,6 +12,8 @@ const RESEND = 'https://api.resend.com/emails';
 // Listes blanches : on ne recopie dans le mail que des valeurs connues (les libellés sont ceux du formulaire).
 const SUPPORTS = { web: 'Web', iphone: 'iPhone', android: 'Android' };
 const DELAIS = { vite: 'Dès que possible', '1mois': 'Sous 1 mois', '3mois': 'Sous 3 mois', libre: 'Pas de date précise' };
+// Type de projet = les cinq prestations du site, plus « autre ». Facultatif ici : une page en cache d'avant ce champ (26/10/2026) doit encore pouvoir envoyer.
+const TYPES = { site: 'Site web', web: 'Application web', mobile: 'Application mobile', logiciel: 'Logiciel métier', conseil: 'Conseil ou reprise d\'une application', autre: 'Autre, ou à définir ensemble' };
 
 // Chemins de retour fixes : jamais d'adresse fournie par le visiteur (pas de redirection ouverte).
 const RETOUR = { fr: '/', en: '/en/' };
@@ -47,19 +49,23 @@ function lire(donnees) {
   const nom = texte(donnees.get('nom'), 100);
   const email = texte(donnees.get('email'), 254);
   const telephone = texte(donnees.get('telephone'), 30);
+  const entreprise = texte(donnees.get('entreprise'), 120);
+  const type = Object.hasOwn(TYPES, donnees.get('type')) ? donnees.get('type') : '';
   const projet = texte(donnees.get('projet'), 4000, true);
   const supports = [...new Set(donnees.getAll('supports'))].filter(s => Object.hasOwn(SUPPORTS, s));
   const delai = Object.hasOwn(DELAIS, donnees.get('delai')) ? donnees.get('delai') : '';
   const langue = donnees.get('langue') === 'en' ? 'en' : 'fr';
   const valide = nom.length >= 1 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && projet.length >= 10;
-  return { nom, email, telephone, projet, supports, delai, langue, valide };
+  return { nom, email, telephone, entreprise, type, projet, supports, delai, langue, valide };
 }
 
 function corps(d) {
   return [
     'Demande de devis reçue par le formulaire de legantis.net (page ' + (d.langue === 'en' ? 'anglaise' : 'française') + ').',
     '',
+    'Type de projet : ' + (d.type ? TYPES[d.type] : 'non précisé'),
     'Nom : ' + d.nom,
+    'Entreprise : ' + (d.entreprise || 'non indiquée'),
     'E-mail : ' + d.email,
     'Téléphone : ' + (d.telephone || 'non indiqué'),
     'Supports : ' + (d.supports.length ? d.supports.map(s => SUPPORTS[s]).join(', ') : 'non précisés'),
@@ -80,7 +86,7 @@ async function envoyer(d, env) {
       from: env.MAIL_FROM,
       to: [env.MAIL_TO],
       reply_to: d.email,
-      subject: ('Demande de devis — ' + d.nom).slice(0, 120),
+      subject: ('Demande de devis — ' + (d.type ? TYPES[d.type] + ' — ' : '') + d.nom).slice(0, 120),
       text: corps(d),
     }),
     signal: AbortSignal.timeout(8000),

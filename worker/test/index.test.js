@@ -44,6 +44,36 @@ test('un devis valide part par Resend et renvoie vers #devis-envoye (FR)', async
   for (const morceau of ['Nom : Amina Benali', 'E-mail : amina@exemple.ma', 'Téléphone : +212 6 12 34 56 78', 'Délai souhaité : Sous 3 mois', 'Supports : non précisés', 'salon de coiffure']) assert.ok(corps.text.includes(morceau), morceau);
 });
 
+// VALIDE n'a ni type ni entreprise : c'est le formulaire d'avant le 26/10/2026, qu'une page en cache peut encore envoyer
+test('une page d\'avant les champs type et entreprise envoie toujours', async () => {
+  const r = await worker.fetch(post(VALIDE), ENV);
+  assert.equal(lieu(r), 'https://legantis.net/#devis-envoye');
+  assert.equal(envois.length, 1);
+  assert.ok(envois[0].corps.text.includes('Type de projet : non précisé'));
+  assert.ok(envois[0].corps.text.includes('Entreprise : non indiquée'));
+});
+
+test('type de projet et entreprise : recopiés, le type seulement s\'il est connu', async () => {
+  await worker.fetch(post({ ...VALIDE, type: 'mobile', entreprise: 'Salon Amina' }), ENV);
+  assert.equal(envois[0].corps.subject, 'Demande de devis — Application mobile — Amina Benali');
+  assert.ok(envois[0].corps.text.includes('Type de projet : Application mobile\n'));
+  assert.ok(envois[0].corps.text.includes('Entreprise : Salon Amina\n'));
+  for (const mauvais of ['<script>', 'constructor', '__proto__', 'Mobile']) {
+    envois.length = 0;
+    await worker.fetch(post({ ...VALIDE, type: mauvais }), ENV);
+    assert.equal(envois[0].corps.subject, 'Demande de devis — Amina Benali', mauvais);
+    assert.ok(envois[0].corps.text.includes('Type de projet : non précisé'), mauvais);
+  }
+});
+
+test('entreprise : une seule ligne, bornée à 120 caractères', async () => {
+  await worker.fetch(post({ ...VALIDE, entreprise: 'Salon\r\nBcc: pirate@exemple.com ' + 'x'.repeat(300) }), ENV);
+  const ligne = envois[0].corps.text.split('\n').find(l => l.startsWith('Entreprise : '));
+  assert.ok(!ligne.includes('\r'));
+  assert.ok(envois[0].corps.text.includes('Entreprise : Salon  Bcc: pirate@exemple.com'));
+  assert.ok(ligne.length <= 'Entreprise : '.length + 120, String(ligne.length));
+});
+
 test('la page anglaise revient sur /en/', async () => {
   const r = await worker.fetch(post({ ...VALIDE, langue: 'en' }), ENV);
   assert.equal(lieu(r), 'https://legantis.net/en/#devis-envoye');
