@@ -696,6 +696,17 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 .couverture:has(.ecran) .couverture-bas { max-width: 50%; }   /* à 55 %, l'accroche touchait le coin bas du téléphone incliné vers 1024 px */
 @media (hover: hover) and (prefers-reduced-motion: no-preference) { .titre:hover .couverture .ecran { translate: 0 -10px; } }
 html[dir="rtl"] .couverture .ecran { rotate: -4deg; }
+/* Galerie (études de cas, V2) : de vraies captures dans le même cadre de téléphone, légende sous chacune (un <p> : lumiere.js le traite en texte).
+   Deux colonnes au téléphone, jusqu'à quatre au-delà ; aucune largeur fixe, donc aucun défilement horizontal. */
+.galerie { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 36px 24px; margin-top: clamp(32px, 4vw, 48px); }
+@media (max-width: 520px) { .galerie { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 16px; } }
+.galerie figure { margin: 0; display: grid; gap: 14px; justify-items: center; align-content: start; }
+.galerie-cadre { width: 100%; max-width: 230px; aspect-ratio: 420 / 909; padding: 5px; border-radius: 32px; background: #0B0C14;
+  box-shadow: 0 0 0 1px var(--filet), 0 26px 50px -26px color-mix(in srgb, var(--encre) 50%, transparent); }
+.galerie-cadre img { display: block; width: 100%; height: auto; border-radius: 27px; }
+.galerie figcaption p { margin: 0; max-width: 30ch; text-align: center; font-size: 0.9rem; line-height: 1.5; color: var(--gris); }
+.galerie-note { margin: 22px 0 0; font: 500 0.72rem/1.6 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--gris); }
+@media (max-width: 520px) { .galerie-cadre { border-radius: 24px; padding: 4px; } .galerie-cadre img { border-radius: 20px; } }
 /* Nombre impair de titres : le dernier prend toute la largeur, couverture à gauche et texte à droite */
 @media (min-width: 901px) {
   .catalogue > .titre:last-child:nth-child(odd) { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto; }

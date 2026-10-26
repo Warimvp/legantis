@@ -115,6 +115,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/case-study-rihla/"/>
   </url>
   <url>
+    <loc>https://legantis.net/etude-de-cas-ostad/</loc>
+    <lastmod>2026-10-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/etude-de-cas-ostad/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/case-study-ostad/"/>
+  </url>
+  <url>
+    <loc>https://legantis.net/en/case-study-ostad/</loc>
+    <lastmod>2026-10-26</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/etude-de-cas-ostad/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/case-study-ostad/"/>
+  </url>
+  <url>
     <loc>https://legantis.net/mentions-legales/</loc>
     <lastmod>2026-10-26</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/mentions-legales/"/>
