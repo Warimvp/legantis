@@ -72,7 +72,7 @@ Pour chaque projet, indiquer que c'est un **produit de Legantis** (si Sortlist d
 
 **Rihla** — Éducation
 - Court : Application gratuite d'apprentissage des langues, sans compte, sur iPhone et sur le web.
-- Long : Leçons, jeux de révision et carnet de révision espacée ; quinze langues sur le web, quatorze sur l'iPhone ; interface en français ou en arabe ; aucun compte, aucun achat intégré, aucune publicité à ce jour ; tout fonctionne hors ligne sur l'iPhone. Étude de cas : https://legantis.net/etude-de-cas-rihla/
+- Long : Leçons, jeux de révision et carnet de révision espacée ; quinze langues, sur l'iPhone (version 1.1, publiée le 10/10/2026) comme sur le web ; interface en français ou en arabe ; aucun compte, aucun achat intégré, aucune publicité à ce jour ; tout fonctionne hors ligne sur l'iPhone. Étude de cas : https://legantis.net/etude-de-cas-rihla/
 - Ne pas écrire : Android, « hors ligne » sans préciser l'iPhone, « sans publicité pour toujours », chiffre d'usage.
 
 **Ostad** — Éducation
