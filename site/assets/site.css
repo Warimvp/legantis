@@ -421,8 +421,6 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 .section { position: relative; padding: clamp(80px, 10vw, 150px) 0; }
 .section--2 { background: var(--chaux-2); border-top: 1px solid var(--filet); border-bottom: 1px solid var(--filet); }
 .entete { display: grid; gap: 20px; margin-bottom: clamp(44px, 6vw, 84px); }
-.entete--double { grid-template-columns: minmax(0, 1fr) auto; align-items: end; }
-.entete--double .bouton { margin-bottom: 8px; }
 .entete .intro { margin-top: 6px; }
 
 /* Apparition au défilement : sans prise en charge, le contenu est simplement visible */
@@ -657,6 +655,10 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .lumiere .titre { position: relative; --projecteur: var(--projecteur-titre); }
 }
+/* haut de la couverture : le domaine et le statut réel (« En ligne » : publiés, à distinguer des titres en préparation) ; le statut est un <p> (lumiere.js : texte) */
+.couverture-haut { align-self: flex-start; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.couverture p.statut { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 7px 12px; border-radius: 999px; font: 500 0.68rem/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: #FFFFFF; background: rgb(255 255 255 / .14); }
+.couverture p.statut::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #34D399; box-shadow: 0 0 0 3px rgb(52 211 153 / .28); }
 .domaine { align-self: flex-start; font: 500 0.68rem/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 12px; border-radius: 999px; border: 1px solid rgb(255 255 255 / .28); background: rgb(0 0 0 / .18); backdrop-filter: blur(6px); }
 .couverture-bas { display: grid; gap: 8px; }
 .couverture img { width: 56px; height: 56px; border-radius: 13px; margin-bottom: 14px; box-shadow: 0 0 0 1px rgb(255 255 255 / .2), 0 12px 26px -12px rgb(0 0 0 / .55); }
@@ -714,6 +716,7 @@ html[dir="rtl"] .couverture .ecran { rotate: -4deg; }
 }
 .titre-corps { padding: 26px 28px 30px; display: grid; gap: 22px; align-content: start; }
 .titre-corps > p { color: var(--gris); }
+.titre-corps > .etiquettes { margin: 0; padding: 0; }   /* fonctions principales du produit : la grille de la carte (gap 22 px) suffit */
 .faits { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 9px 18px; padding-top: 18px; border-top: 1px solid var(--filet); font-size: 0.92rem; }
 .faits dt { font: 500 0.66rem/2 var(--f-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--gris); }
 .faits dd { margin: 0; }
@@ -744,6 +747,19 @@ html[dir="rtl"] .couverture .ecran { rotate: -4deg; }
 @keyframes compter { from { --k: 0; } to { --k: var(--n); } }
 
 /* À paraître : les prochains titres en épreuves, cadre pointillé, sans nom ni couverture */
+/* Depuis le 26/10/2026 (V2), « À paraître » n'est plus une section : une ligne repliable (#a-paraitre, ancre gardée pour les pieds de page) au bas
+   du Catalogue, sous l'appel « Discutons de votre projet ». Les réalisations publiées passent avant ; les épreuves restent lisibles une fois dépliée. */
+.catalogue-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: clamp(32px, 4vw, 48px); }
+.catalogue-cta p { margin: 0; font-size: 1.05rem; color: var(--gris); }
+.parution-discrete { margin-top: clamp(40px, 5vw, 64px); padding-top: 20px; border-top: 1px solid var(--filet); }
+.parution-discrete > summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; cursor: pointer; list-style: none; padding: 4px 0; color: var(--gris); }
+.parution-discrete > summary::-webkit-details-marker { display: none; }
+.parution-discrete > summary::after { content: "+" / ""; margin-inline-start: auto; font: 500 1.2rem/1 var(--f-mono); color: var(--tampon); }
+.parution-discrete[open] > summary::after { content: "−" / ""; }
+.parution-titre { font: 500 0.72rem/1.6 var(--f-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--encre); }
+.parution-resume { flex: 1 1 30ch; max-width: 92ch; font-size: 0.95rem; }
+.parution-discrete > summary:hover .parution-resume { color: var(--encre); }
+.parution-discrete .parution { margin-top: 32px; }
 .parution { display: grid; gap: 48px; }
 .parution-groupe h3 { display: flex; align-items: center; gap: 16px; font: 500 0.72rem/1.4 var(--f-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--gris); margin-bottom: 18px; }
 .parution-groupe h3::after { content: ""; flex: 1 1 auto; height: 1px; background: var(--filet); }
@@ -1042,7 +1058,6 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
   .societe { grid-template-columns: minmax(0, 1fr); }
   .fiche { max-width: 520px; }
   .catalogue, .atouts, .epreuves { grid-template-columns: minmax(0, 1fr); }
-  .entete--double { grid-template-columns: minmax(0, 1fr); align-items: start; }
   .societe::before { grid-column: 1; grid-row: 2; inset: -6% -20% -12%; }
 }
 @media (min-width: 901px) {
