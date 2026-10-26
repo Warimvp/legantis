@@ -22,6 +22,18 @@
 
 **Recommandation** : en deux temps. (1) Sans script : compter dans le Worker l'issue de chaque envoi (`envoye`, `echec`, `piege`, `limite`) avec le type de projet et la langue, **sans aucune donnée personnelle** ; c'est le chiffre qui compte le plus (les demandes réelles) et il ne demande ni bannière ni outil tiers. (2) Si les clics doivent être mesurés : Plausible servi par le Worker (première partie, sans cookie), avec la liste d'événements ci-dessous. Les deux demandent un `wrangler deploy` et une réécriture des mentions légales : à décider par le user.
 
+## Faisabilité des cinq suivis demandés (V2, 26/10/2026)
+
+| Suivi | Possible sans script ? | Comment |
+|---|---|---|
+| Visites des pages de prestation | **Non** : GitHub Pages ne donne aucun journal d'accès ; Search Console ne compte que les arrivées depuis Google | un outil de mesure (Plausible servi par le Worker, ou équivalent), événement de page vue avec le chemin |
+| Consultation des études de cas | Non (même raison) | page vue sur `/etude-de-cas-*/` et `/en/case-study-*/` |
+| Clics vers les projets | Non | `produit_clic` (tableau ci-dessous) |
+| Clics sur les demandes de devis | Non | `devis_clic` |
+| Envois de devis réellement réussis | **Oui** | compteur dans le Worker (il est le seul à savoir que Resend a accepté le mail) ; en attendant, l'objet des mails reçus (« Demande de devis — <type> — … ») et le tableau de bord Resend |
+
+Conclusion : seul le dernier suivi se fait sans script ni outil tiers. Les quatre autres demandent un outil de mesure côté visiteur, donc une décision du user (outil, compte, mentions légales).
+
 ## Événements préparés
 
 Les éléments à suivre portent déjà des classes stables : **aucun attribut n'a été ajouté au HTML** (rien de mort dans les pages). Un futur script s'y accroche par sélecteur.
