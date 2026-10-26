@@ -176,5 +176,29 @@ for u in pages:
     for classes, href in re.findall(r'<a class="([^"]*)" href="([^"]*)"', h):
         if any(c in classes.split() for c in CTA_UNIQUES + ('bouton--plein',)) and href.startswith('mailto:'): echecs.append(f'{u}: bouton « {classes} » ouvre encore un mailto')
         if 'bouton--plein' in classes.split() and href.startswith(('#devis', '../#devis', '../../#devis')) and href != cible: echecs.append(f'{u}: bouton « {classes} » vise {href} (attendu {cible})')
+# catalogue et compteurs (26/10/2026 ; l'intro disait « Deux titres » au-dessus de trois cartes) : pas de build qui centraliserait le nombre de titres,
+#   donc un contrôle. Sur chaque accueil, le nombre de cartes du Catalogue = le compteur de l'ouverture = le chiffre « titres publiés » = le mot de l'intro ;
+#   et partout, chaque compteur animé (--n, la valeur d'arrivée de l'animation) = le nombre écrit dans le texte (celui des lecteurs d'écran et du repli).
+MOTS = {'fr': ('Un titre', 'Deux titres', 'Trois titres', 'Quatre titres', 'Cinq titres', 'Six titres'), 'en': ('One title', 'Two titles', 'Three titles', 'Four titles', 'Five titles', 'Six titles')}
+PUBLIES = {'fr': 'titres publiés', 'en': 'titles published'}
+for u in pages:
+    h = open(fichier(u), encoding='utf-8').read()
+    for anime, ecrit in re.findall(r'<span class="n" style="--n:(\d+)">(\d+)</span>', h):
+        if anime != ecrit: echecs.append(f'{u}: compteur animé jusqu\'à {anime} mais {ecrit} dans le texte')
+for u, lang in ((BASE, 'fr'), (BASE + 'en/', 'en')):
+    if u not in pages: continue
+    h = open(fichier(u), encoding='utf-8').read()
+    if '<div class="catalogue">' not in h: echecs.append(f'{u}: Catalogue introuvable'); continue
+    debut = h.index('<div class="catalogue">')
+    nb = len(re.findall(r'<article class="titre ', h[debut:h.index('</section>', debut)]))
+    ouv = re.search(r'<p class="compteur"><span class="chiffre-n"><span class="n" style="--n:\d+">(\d+)</span>', h)
+    if not ouv or int(ouv.group(1)) != nb: echecs.append(f'{u}: compteur de l\'ouverture {ouv and ouv.group(1)} ≠ {nb} cartes au Catalogue')
+    pub = re.search(r'<span class="n" style="--n:\d+">(\d+)</span></span><span class="chiffre-l">' + PUBLIES[lang] + '</span>', h)
+    if not pub or int(pub.group(1)) != nb: echecs.append(f'{u}: chiffre « {PUBLIES[lang]} » {pub and pub.group(1)} ≠ {nb} cartes au Catalogue')
+    intro = re.search(r'id="produits-titre">.*?<p class="intro">([^<]*)', h, re.S)
+    if not intro or not 1 <= nb <= 6 or not intro.group(1).startswith(MOTS[lang][nb - 1] + ' '): echecs.append(f'{u}: l\'intro du Catalogue ne commence pas par « {MOTS[lang][nb - 1] if 1 <= nb <= 6 else nb} » ({nb} cartes)')
+    # captures des produits (couvertures) : dimensions écrites (pas de décalage au chargement) et chargement paresseux (le Catalogue est loin sous l'ouverture)
+    for img in re.findall(r'<div class="ecran">(<img [^>]*>)</div>', h):
+        if not re.search(r'\bwidth="\d+" height="\d+"', img) or 'loading="lazy"' not in img: echecs.append(f'{u}: capture {img[:60]}… sans width/height ou sans loading="lazy"')
 print(len(pages), 'pages du sitemap,', n, 'liens internes contrôlés')
 print('ÉCHECS:' if echecs else 'tout passe', *echecs, sep='\n  ')
