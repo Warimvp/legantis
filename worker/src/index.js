@@ -15,11 +15,20 @@ const DELAIS = { vite: 'Dès que possible', '1mois': 'Sous 1 mois', '3mois': 'So
 // Type de projet = les cinq prestations du site, plus « autre ». Facultatif ici : une page en cache d'avant ce champ (26/10/2026) doit encore pouvoir envoyer.
 const TYPES = { site: 'Site web', web: 'Application web', mobile: 'Application mobile', logiciel: 'Logiciel métier', conseil: 'Conseil ou reprise d\'une application', autre: 'Autre, ou à définir ensemble' };
 
+// Parcours d'acquisition (page /commandes/, pour les publicités) : questions de qualification en liste blanche. Lus par lireParcours,
+// jamais par les deux accueils : le formulaire générique continue de marcher sans ces champs.
+const QUALIFICATION = {
+  activite: { libelle: 'Activité', valeurs: { distribution: 'Distribution ou vente en gros', import: 'Import ou négoce', commerce: 'Commerce à plusieurs points de vente', services: 'Services aux entreprises', autre: 'Autre activité' } },
+  ville: { libelle: 'Ville', valeurs: { casablanca: 'Casablanca-Mohammedia', rabat: 'Rabat-Salé-Témara', tanger: 'Tanger', marrakech: 'Marrakech', agadir: 'Agadir', autre: 'Autre ville' } },
+  equipe: { libelle: 'Utilisateurs prévus', valeurs: { '1-3': '1 à 3', '4-10': '4 à 10', '11-30': '11 à 30', '31+': 'Plus de 30' } },
+  budget: { libelle: 'Budget envisagé', valeurs: { moins25: 'Moins de 25 000 MAD', '25-50': '25 000 à 50 000 MAD', '50-100': '50 000 à 100 000 MAD', '100+': 'Plus de 100 000 MAD', definir: 'À définir ensemble' } },
+};
 // Chemins de retour fixes : jamais d'adresse fournie par le visiteur (pas de redirection ouverte).
 const RETOUR = { fr: '/', en: '/en/' };
+const PARCOURS = { commandes: '/commandes/' };
 
-function retour(env, langue, ancre) {
-  const chemin = RETOUR[langue] || RETOUR.fr;
+function retour(env, langue, ancre, parcours) {
+  const chemin = PARCOURS[parcours] || RETOUR[langue] || RETOUR.fr;
   return new Response(null, { status: 303, headers: { Location: env.SITE_ORIGIN + chemin + '#' + ancre, 'Cache-Control': 'no-store' } });
 }
 
@@ -45,6 +54,16 @@ function texte(valeur, max, multiligne) {
   return t.trim().slice(0, max);
 }
 
+function lireParcours(donnees) {
+  const choix = {};
+  for (const [champ, { valeurs }] of Object.entries(QUALIFICATION)) {
+    const valeur = donnees.get(champ);
+    choix[champ] = Object.hasOwn(valeurs, valeur) ? valeur : '';
+  }
+  const nom = donnees.get('parcours');
+  return { parcours: Object.hasOwn(PARCOURS, nom) ? nom : '', choix };
+}
+
 function lire(donnees) {
   const nom = texte(donnees.get('nom'), 100);
   const email = texte(donnees.get('email'), 254);
@@ -55,8 +74,29 @@ function lire(donnees) {
   const supports = [...new Set(donnees.getAll('supports'))].filter(s => Object.hasOwn(SUPPORTS, s));
   const delai = Object.hasOwn(DELAIS, donnees.get('delai')) ? donnees.get('delai') : '';
   const langue = donnees.get('langue') === 'en' ? 'en' : 'fr';
-  const valide = nom.length >= 1 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && projet.length >= 10;
-  return { nom, email, telephone, entreprise, type, projet, supports, delai, langue, valide };
+  const { parcours, choix } = lireParcours(donnees);
+  const qualifie = !parcours || (entreprise !== '' && telephone !== '' && delai !== '' && Object.values(choix).every(Boolean));
+  const valide = nom.length >= 1 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && projet.length >= 10 && qualifie;
+  return { nom, email, telephone, entreprise, type, projet, supports, delai, langue, valide, parcours, choix };
+}
+
+// Tri de la boîte de réception : A = activité visée, budget réaliste et échéance ; C = budget sous le plancher ; B = le reste, à clarifier en échange.
+function priorite(d) {
+  if (d.choix.budget === 'moins25') return 'C';
+  const cible = ['distribution', 'import', 'commerce'].includes(d.choix.activite);
+  const budget = ['25-50', '50-100', '100+'].includes(d.choix.budget);
+  const echeance = ['vite', '1mois', '3mois'].includes(d.delai);
+  return cible && budget && echeance ? 'A' : 'B';
+}
+
+function lignesParcours(d) {
+  if (!d.parcours) return [];
+  return ['Priorité estimée : ' + priorite(d), ...Object.entries(QUALIFICATION).map(([champ, { libelle, valeurs }]) => libelle + ' : ' + valeurs[d.choix[champ]])];
+}
+
+function objet(d) {
+  if (d.parcours) return ('Demande commandes — Priorité ' + priorite(d) + ' — ' + d.entreprise + ' — ' + d.nom).slice(0, 120);
+  return ('Demande de devis — ' + (d.type ? TYPES[d.type] + ' — ' : '') + d.nom).slice(0, 120);
 }
 
 function corps(d) {
@@ -70,6 +110,7 @@ function corps(d) {
     'Téléphone : ' + (d.telephone || 'non indiqué'),
     'Supports : ' + (d.supports.length ? d.supports.map(s => SUPPORTS[s]).join(', ') : 'non précisés'),
     'Délai souhaité : ' + (d.delai ? DELAIS[d.delai] : 'non précisé'),
+    ...lignesParcours(d),
     '',
     'Projet :',
     d.projet,
@@ -86,7 +127,7 @@ async function envoyer(d, env) {
       from: env.MAIL_FROM,
       to: [env.MAIL_TO],
       reply_to: d.email,
-      subject: ('Demande de devis — ' + (d.type ? TYPES[d.type] + ' — ' : '') + d.nom).slice(0, 120),
+      subject: objet(d),
       text: corps(d),
     }),
     signal: AbortSignal.timeout(8000),
@@ -122,15 +163,15 @@ async function traiter(request, env) {
   const d = lire(donnees);
 
   // Champ piège : invisible pour une personne, rempli par les robots. On répond « envoyé » sans rien envoyer, pour ne rien leur apprendre.
-  if (texte(donnees.get('site_web'), 200) !== '') return retour(env, d.langue, 'devis-envoye');
+  if (texte(donnees.get('site_web'), 200) !== '') return retour(env, d.langue, 'devis-envoye', d.parcours);
 
-  if (!d.valide) return retour(env, d.langue, 'devis-echec');
+  if (!d.valide) return retour(env, d.langue, 'devis-echec', d.parcours);
   if (env.LIMITE) {
     const ip = request.headers.get('CF-Connecting-IP') || 'inconnue';
     const { success } = await env.LIMITE.limit({ key: ip });
-    if (!success) return retour(env, d.langue, 'devis-echec');
+    if (!success) return retour(env, d.langue, 'devis-echec', d.parcours);
   }
-  return retour(env, d.langue, (await envoyer(d, env)) ? 'devis-envoye' : 'devis-echec');
+  return retour(env, d.langue, (await envoyer(d, env)) ? 'devis-envoye' : 'devis-echec', d.parcours);
 }
 
 export default {

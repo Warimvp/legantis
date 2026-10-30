@@ -11,6 +11,14 @@ const RACINE = join(dirname(fileURLToPath(import.meta.url)), '..');
 const source = readFileSync(join(RACINE, 'src/index.js'), 'utf8');
 
 const SABOTAGES = [
+  ['qualification non exigée', `&& projet.length >= 10 && qualifie;`, `&& projet.length >= 10;`],
+  ['entreprise facultative dans le parcours', `(entreprise !== '' && telephone !== ''`, `(telephone !== ''`],
+  ['téléphone facultatif dans le parcours', `entreprise !== '' && telephone !== '' && delai`, `entreprise !== '' && delai`],
+  ['budget hors liste accepté', `choix[champ] = Object.hasOwn(valeurs, valeur) ? valeur : '';`, `choix[champ] = valeur || '';`],
+  ['parcours inconnu accepté', `parcours: Object.hasOwn(PARCOURS, nom) ? nom : ''`, `parcours: nom || ''`],
+  ['retour du parcours oublié au piège', `return retour(env, d.langue, 'devis-envoye', d.parcours);`, `return retour(env, d.langue, 'devis-envoye');`],
+  ['priorité C retirée', `if (d.choix.budget === 'moins25') return 'C';`, ``],
+  ['échéance ignorée dans la priorité', `return cible && budget && echeance ? 'A' : 'B';`, `return cible && budget ? 'A' : 'B';`],
   ['méthode POST non exigée', `if (request.method !== 'POST') return refus(405, 'Formulaire de devis de legantis.net : POST seulement.');`, ''],
   ['contrôle d\'origine retiré', `if (!origineAcceptee(request, env)) return refus(403, 'Origine refusée.');`, ''],
   ['Origin comparé par préfixe', `return origine === env.SITE_ORIGIN;`, `return origine.startsWith(env.SITE_ORIGIN);`],
@@ -21,7 +29,7 @@ const SABOTAGES = [
   ['e-mail non validé', `/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)`, `true`],
   ['projet de 0 caractère accepté', `projet.length >= 10`, `projet.length >= 0`],
   ['nom vide accepté', `nom.length >= 1 &&`, `true &&`],
-  ['limite de débit ignorée', `if (!success) return retour(env, d.langue, 'devis-echec');`, ''],
+  ['limite de débit ignorée', `if (!success) return retour(env, d.langue, 'devis-echec', d.parcours);`, ''],
   ['limite de débit sur une clé fixe', `limit({ key: ip })`, `limit({ key: 'tous' })`],
   ['retour à la ligne laissé dans les champs d\'une ligne', `/[\\u0000-\\u001F\\u007F]/g`, `/[\\u0000-\\u0008]/g`],
   ['sauts de ligne du projet aplatis', `if (multiligne) t = t.replace(/\\r\\n?/g, '\\n');`, `if (multiligne) t = t.replace(/\\n/g, ' ');`],

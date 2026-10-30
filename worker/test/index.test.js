@@ -213,3 +213,52 @@ test('une exception inattendue ne donne jamais une page d\'erreur : #devis-echec
   assert.equal(r.status, 303);
   assert.equal(lieu(r), 'https://legantis.net/#devis-echec');
 });
+
+// Parcours d'acquisition /commandes/ : qualification en liste blanche, retour sur la page, priorité dans l'objet du mail
+const COMMANDES = { ...VALIDE, parcours: 'commandes', type: 'logiciel', entreprise: 'Distribution Atlas', activite: 'distribution', ville: 'casablanca', equipe: '4-10', budget: '50-100', delai: '3mois' };
+
+test('parcours commandes : une demande qualifiée part en priorité A et revient sur la page', async () => {
+  const r = await worker.fetch(post(COMMANDES), ENV);
+  assert.equal(lieu(r), 'https://legantis.net/commandes/#devis-envoye');
+  assert.equal(envois.length, 1);
+  assert.equal(envois[0].corps.subject, 'Demande commandes — Priorité A — Distribution Atlas — Amina Benali');
+  for (const morceau of ['Priorité estimée : A', 'Activité : Distribution ou vente en gros', 'Ville : Casablanca-Mohammedia', 'Utilisateurs prévus : 4 à 10', 'Budget envisagé : 50 000 à 100 000 MAD', 'Délai souhaité : Sous 3 mois']) assert.ok(envois[0].corps.text.includes(morceau), morceau);
+});
+
+test('parcours commandes : budget sous le plancher = priorité C, budget à définir ou hors cible = priorité B', async () => {
+  await worker.fetch(post({ ...COMMANDES, budget: 'moins25' }), ENV);
+  await worker.fetch(post({ ...COMMANDES, budget: 'definir' }), ENV);
+  await worker.fetch(post({ ...COMMANDES, activite: 'services' }), ENV);
+  await worker.fetch(post({ ...COMMANDES, delai: 'libre' }), ENV);
+  assert.deepEqual(envois.map(e => e.corps.subject.match(/Priorité (.)/)[1]), ['C', 'B', 'B', 'B']);
+});
+
+test('parcours commandes : tout champ de qualification manquant ou hors liste refuse la demande, sans envoi', async () => {
+  for (const manque of ['entreprise', 'telephone', 'delai', 'activite', 'ville', 'equipe', 'budget']) {
+    const { [manque]: _, ...champs } = COMMANDES;
+    const r = await worker.fetch(post(champs), ENV);
+    assert.equal(lieu(r), 'https://legantis.net/commandes/#devis-echec', manque);
+  }
+  const r = await worker.fetch(post({ ...COMMANDES, budget: '999999' }), ENV);
+  assert.equal(lieu(r), 'https://legantis.net/commandes/#devis-echec');
+  assert.equal(envois.length, 0);
+});
+
+test('parcours commandes : le champ piège répond « envoyé » sur la page, sans envoi', async () => {
+  const r = await worker.fetch(post({ ...COMMANDES, site_web: 'robot' }), ENV);
+  assert.equal(lieu(r), 'https://legantis.net/commandes/#devis-envoye');
+  assert.equal(envois.length, 0);
+});
+
+test('un parcours inconnu ne redirige jamais ailleurs : retour à l\'accueil, formulaire générique', async () => {
+  const r = await worker.fetch(post({ ...VALIDE, parcours: 'https://exemple.test/' }), ENV);
+  assert.equal(lieu(r), 'https://legantis.net/#devis-envoye');
+  assert.ok(envois[0].corps.subject.startsWith('Demande de devis'));
+  assert.ok(!envois[0].corps.text.includes('Priorité estimée'));
+});
+
+test('le formulaire générique n\'exige aucun champ de qualification', async () => {
+  await worker.fetch(post(VALIDE), ENV);
+  assert.equal(envois.length, 1);
+  assert.ok(!envois[0].corps.text.includes('Budget envisagé'));
+});
