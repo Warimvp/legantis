@@ -149,7 +149,7 @@ for u, lang in ((BASE, 'fr'), (BASE + 'en/', 'en')):
     if 'REMPLACER' in action: echecs.append(f'{u}: action du formulaire = {action} (remplacer par l\'adresse workers.dev du Worker déployé)')
     elif not re.fullmatch(r'https://[a-z0-9-]+(\.[a-z0-9-]+)*\.workers\.dev/', action): echecs.append(f'{u}: action du formulaire {action!r} (adresse workers.dev attendue)')
     noms = set(re.findall(r'<(?:input|select|textarea)\b[^>]*\bname="([^"]+)"', corps))
-    if champs_worker is not None and noms != champs_worker: echecs.append(f'{u}: champs du formulaire {sorted(noms)} ≠ champs lus par le Worker {sorted(champs_worker)}')
+    if champs_worker is not None and noms != champs_worker - {'parcours'}: echecs.append(f'{u}: champs du formulaire {sorted(noms)} ≠ champs lus par le Worker {sorted(champs_worker)}')   # parcours : page /commandes/ seulement
     if f'<input type="hidden" name="langue" value="{lang}">' not in corps: echecs.append(f'{u}: champ caché langue={lang} absent')
     for ident in re.findall(r'<(?:input|select|textarea)\b[^>]*\bid="([^"]+)"', corps):
         if f'<label for="{ident}">' not in corps: echecs.append(f'{u}: champ #{ident} sans <label for>')
@@ -163,6 +163,29 @@ for u, mots in ((BASE + 'mentions-legales/', ('Cloudflare', 'Resend', 'Hostinger
     for mot in mots:
         if mot not in h: echecs.append(f'{u}: « {mot} » absent des données personnelles')
     if re.search(r'ni formulaire|no forms|aucune donnée personnelle|no personal data', h): echecs.append(f'{u}: dit encore qu\'il n\'y a ni formulaire ni donnée personnelle')
+# page d'acquisition /commandes/ (hors sitemap, réservée aux publicités) : noindex, formulaire vers le Worker, choix = listes blanches du Worker, un <label for> par champ.
+ACQ = os.path.join(RACINE, 'commandes', 'index.html')
+if os.path.exists(ACQ):
+    u = '/commandes/'; h = open(ACQ, encoding='utf-8').read(); src = open(WORKER_SRC, encoding='utf-8').read() if os.path.exists(WORKER_SRC) else ''
+    if 'content="noindex, follow"' not in h: echecs.append(f'{u}: noindex absent')
+    if 'commandes/' in open(os.path.join(RACINE, 'sitemap.xml'), encoding='utf-8').read(): echecs.append(f'{u}: ne doit pas être au sitemap')
+    m = re.search(r'<form class="devis-form"([^>]*)>(.*?)</form>', h, re.S)
+    if not m: echecs.append(f'{u}: formulaire absent')
+    else:
+        ouv, corps = m.group(1), m.group(2)
+        if not re.search(r'action="https://[a-z0-9-]+(\.[a-z0-9-]+)*\.workers\.dev/"', ouv) or 'method="post"' not in ouv: echecs.append(f'{u}: méthode ou adresse du formulaire')
+        if '<input type="hidden" name="parcours" value="commandes">' not in corps: echecs.append(f'{u}: champ caché parcours absent')
+        for nom in ('activite', 'ville', 'equipe', 'budget'):
+            sel = re.search(r'<select\b[^>]*name="' + nom + r'"[^>]*>(.*?)</select>', corps, re.S)
+            if not sel or 'required' not in sel.group(0).split('>')[0]: echecs.append(f'{u}: liste {nom} absente ou facultative'); continue
+            bloc = re.search(nom + r": \{ libelle: '[^']*', valeurs: \{(.*?)\} \}", src, re.S)
+            for v, lib in re.findall(r'<option value="([^"]+)">([^<]*)</option>', sel.group(1)):
+                if bloc and not re.search(r"(?:^|[\s,{])'?" + re.escape(v) + r"'?: '" + re.escape(lib).replace("'", "\\\\?'") + "'", bloc.group(1)): echecs.append(f'{u}: option {nom}={v} ({lib}) inconnue du Worker')
+        for ident in re.findall(r'<(?:input|select|textarea)\b[^>]*\bid="([^"]+)"', corps):
+            if f'<label for="{ident}">' not in corps: echecs.append(f'{u}: champ #{ident} sans <label for>')
+        if 'name="site_web"' not in corps or 'mentions-legales/#donnees' not in corps: echecs.append(f'{u}: champ piège ou lien de confidentialité absent')
+    for ident in ('devis-envoye', 'devis-echec', 'demande'):
+        if f'id="{ident}"' not in h: echecs.append(f'{u}: #{ident} absent')
 # boutons « Devis gratuit » (23/10/2026) : barre, menu mobile, pied et boutons pleins ouvrent le formulaire #devis, plus de mailto prérempli.
 #   Cible : #devis sur les deux accueils ; ../#devis ailleurs (accueil FR pour les pages FR, accueil EN pour les pages EN) ; ../../#devis sur les pages arabes (accueil FR : pas d'accueil arabe).
 #   Les liens qui affichent l'adresse e-mail (contact, ligne « Vous préférez écrire directement ? ») gardent leur mailto : ils n'ont pas ces classes.

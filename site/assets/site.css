@@ -1120,6 +1120,26 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
   .defile li::after { margin-left: 24px; }
 }
 
+/* ── Page d'acquisition (/commandes/, noindex, pour les publicités) : gabarit des prestations, sans menu, avec une seule action.
+   Propriétés logiques seulement. Sur téléphone, le bandeau du bas garde l'action à portée du pouce ; il disparaît après l'envoi. */
+.acq-barre-cta { white-space: nowrap; }
+.acq-titre-form { font-weight: 700; font-size: clamp(2rem, 3.6vw, 3.1rem); line-height: 1; font-stretch: 116%; letter-spacing: -0.02em; margin-block: 14px 16px; }
+.acq-titre-form em { font-style: normal; color: var(--tampon); }
+.acquisition .offre { margin-block-start: 0; }
+.acquisition .offre-texte { grid-column: 1 / -1; }
+.acquisition .offre-texte > p { margin-block-end: 0; }
+.acquisition .atout .suivre { justify-self: start; margin-block-start: 6px; }
+.acq-pied { padding-block: 28px; }
+.acq-appel { display: none; }
+@media (max-width: 700px) {
+  .acquisition { padding-block-end: 78px; }
+  .acq-barre-cta { display: none; }
+  .acq-appel { position: fixed; inset-inline: 0; inset-block-end: 0; z-index: 40; display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 8px; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); background: var(--chaux); border-block-start: 1px solid var(--filet); }
+  .acq-appel .bouton { justify-content: center; padding: 12px 10px; font-size: 0.95rem; }
+  .acquisition:has(#devis-envoye:target) .acq-appel { display: none; }
+}
+@media print { .acq-appel { display: none; } }
+
 /* ── Arabe : lecture de droite à gauche (pages /ar/) ───────────────────────────────────────────
    Tout est sous html[dir="rtl"] : les pages françaises et anglaises ne sont pas touchées. Les flex et grilles se retournent seuls ;
    ne sont réécrits ici que les réglages physiques (gauche/droite) des composants des pages de prestation, de la barre, du menu et du pied.
