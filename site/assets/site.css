@@ -281,6 +281,7 @@ h2 em { font-style: normal; color: var(--tampon); }
 .badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--tampon); box-shadow: 0 0 0 3px color-mix(in srgb, var(--tampon) 18%, transparent), 0 0 10px color-mix(in srgb, var(--lueur) 75%, transparent); animation: pulser 4s ease-in-out infinite; }
 h1 { font-size: clamp(2.9rem, 8.4vw, 7.4rem); margin: 0 0 40px; perspective: 1000px; }
 h1 .ligne { display: block; padding-bottom: .04em; }
+h1.titre-long { font-size: clamp(2.15rem, 6vw, 5.2rem); }   /* accroche de neuf mots : plus petite que le titre court d'origine, sans débordement à 320 px */
 h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot-entre .7s var(--sortie) both; animation-delay: calc(var(--i) * 80ms); }
 .chapeau { font-size: clamp(1.1rem, 1.55vw, 1.32rem); line-height: 1.55; color: var(--gris); max-width: 34rem; margin-bottom: 44px; animation: apparaitre 1s ease 1.1s both; }
 @media (prefers-color-scheme: dark) { .chapeau { color: color-mix(in oklab, var(--gris) 80%, var(--encre)); } }   /* lisible sous le halo */
