@@ -298,19 +298,20 @@ const visible = (page, s) => page.locator(s).isVisible();
 {
   const ctx = await contexte(); const page = await ctx.newPage();
   await page.goto(ORIGINE + '/');
-  const cadre = page.locator('.comparaison[data-comparaison="site"] .comparaison-cadre');
+  const cadre = page.locator('.comparaison[data-comparaison="gestion"] .comparaison-cadre');   // « Gestion » est la situation affichée d'abord (31/10/2026)
   await cadre.scrollIntoViewIfNeeded();
   const p = () => cadre.evaluate(e => parseFloat(e.style.getPropertyValue('--p')));
   verifier('comparaison : 50 % au départ', await p() === 50);
-  await page.locator('.comparaison[data-comparaison="site"] input[type="range"]').focus();
+  await page.locator('.comparaison[data-comparaison="gestion"] input[type="range"]').focus();
   await page.keyboard.press('ArrowRight');
   verifier('comparaison : clavier', await p() === 51, String(await p()));
   const b = await cadre.boundingBox();
   await page.mouse.move(b.x + b.width * .5, b.y + 100); await page.mouse.down(); await page.mouse.move(b.x + b.width * .2, b.y + 100); await page.mouse.up();
   verifier('comparaison : glisser à la souris', Math.abs(await p() - 20) < 2, String(await p()));
-  verifier('comparaison : valeur lisible par un lecteur d\'écran', (await page.getAttribute('.comparaison[data-comparaison="site"] input[type="range"]', 'aria-valuetext')).includes('version après'));
-  await page.check('#comparer-gestion', { force: true });
-  verifier('comparaison : changement de situation', await visible(page, '[data-comparaison="gestion"]') && !(await visible(page, '[data-comparaison="site"]')));
+  verifier('comparaison : valeur lisible par un lecteur d\'écran', (await page.getAttribute('.comparaison[data-comparaison="gestion"] input[type="range"]', 'aria-valuetext')).includes('version après'));
+  verifier('comparaison : « Gestion » affichée au départ', await visible(page, '[data-comparaison="gestion"]') && !(await visible(page, '[data-comparaison="site"]')));
+  await page.check('#comparer-site', { force: true });
+  verifier('comparaison : changement de situation', await visible(page, '[data-comparaison="site"]') && !(await visible(page, '[data-comparaison="gestion"]')));
   verifier('à l\'ordinateur : pas de barre de contact sans WhatsApp', !(await visible(page, '.contact-rapide')));
   await page.goto(ORIGINE + '/realisations/');
   verifier('réalisations : sept cartes', await page.locator('.projet').count() === 7);

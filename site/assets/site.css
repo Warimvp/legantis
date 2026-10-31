@@ -281,6 +281,7 @@ h2 em { font-style: normal; color: var(--tampon); }
 .badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--tampon); box-shadow: 0 0 0 3px color-mix(in srgb, var(--tampon) 18%, transparent), 0 0 10px color-mix(in srgb, var(--lueur) 75%, transparent); animation: pulser 4s ease-in-out infinite; }
 h1 { font-size: clamp(2.9rem, 8.4vw, 7.4rem); margin: 0 0 40px; perspective: 1000px; }
 h1 .ligne { display: block; padding-bottom: .04em; }
+h1.titre-long { font-size: clamp(2.15rem, 6vw, 5.2rem); }   /* accroche de neuf mots : plus petite que le titre court d'origine, sans débordement à 320 px */
 h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot-entre .7s var(--sortie) both; animation-delay: calc(var(--i) * 80ms); }
 .chapeau { font-size: clamp(1.1rem, 1.55vw, 1.32rem); line-height: 1.55; color: var(--gris); max-width: 34rem; margin-bottom: 44px; animation: apparaitre 1s ease 1.1s both; }
 @media (prefers-color-scheme: dark) { .chapeau { color: color-mix(in oklab, var(--gris) 80%, var(--encre)); } }   /* lisible sous le halo */
@@ -1125,6 +1126,7 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
    Mêmes jetons et mêmes voix que le reste du site ; propriétés logiques seulement (rien à miroiter dans le bloc « Arabe »). Les comportements viennent de
    conversion.js, jamais indispensables : sans lui, formulaires entiers et panneaux côte à côte. */
 .ouverture--accroche h1 { font-size: clamp(2.45rem, 7.2vw, 6.1rem); margin-bottom: 30px; }
+@media (min-width: 900px) { .ouverture--accroche h1.titre-long { font-size: clamp(2.6rem, 4.2vw, 4rem); } }   /* sur ordinateur, trois lignes au lieu de cinq : le bouton principal reste dans le premier écran (mesuré : à 1440×900 il tombait à 908 px) */
 .ouverture--accroche .badge { margin-bottom: 32px; animation-delay: .1s; }
 .ouverture--accroche .chapeau { max-width: 39rem; margin-bottom: 32px; animation: apparaitre .6s ease .3s both; }
 .ouverture--accroche .actions { animation: monter .6s var(--sortie) .4s both; }
@@ -1399,6 +1401,9 @@ body.page-offre:has(.contact-rapide) .pied--court { padding-bottom: 96px; }
 .acq-titre-form { font-weight: 700; font-size: clamp(2rem, 3.6vw, 3.1rem); line-height: 1; font-stretch: 116%; letter-spacing: -0.02em; margin-block: 14px 16px; }
 .acq-titre-form em { font-style: normal; color: var(--tampon); }
 .acquisition .offre { margin-block-start: 0; }
+.acq-demo { margin: 36px 0 0; max-inline-size: 640px; }   /* capture de la démonstration de gestion (données fictives, bandeau dans l'image) */
+.acq-demo a { display: block; }
+.acq-demo img { display: block; inline-size: 100%; block-size: auto; border: 1px solid var(--filet); border-radius: 12px; box-shadow: 0 18px 40px -26px color-mix(in srgb, var(--encre) 45%, transparent); }
 .acquisition .offre-texte { grid-column: 1 / -1; }
 .acquisition .offre-texte > p { margin-block-end: 0; }
 .acquisition .atout .suivre { justify-self: start; margin-block-start: 6px; }

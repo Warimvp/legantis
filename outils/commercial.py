@@ -155,7 +155,7 @@ def bloc_contact_rapide(config, params, prefixe):
     suffixe = f'?type={cle}' if cle in ('vitrine', 'ecommerce', 'web', 'mobile', 'logiciel', 'autre') else ''
     principal = ''
     if cible == 'estimer':
-        principal = f'<a class="bouton bouton--plein contact-rapide-devis" href="{prefixe}estimer-mon-projet/{suffixe}">Estimer mon projet <span class="fleche" aria-hidden="true">→</span></a>'
+        principal = f'<a class="bouton bouton--plein contact-rapide-devis" href="{prefixe}estimer-mon-projet/{suffixe}">Demander un devis gratuit <span class="fleche" aria-hidden="true">→</span></a>'
     elif cible == 'demande':
         principal = '<a class="bouton bouton--plein contact-rapide-devis" href="#demande">Demander mon devis <span class="fleche" aria-hidden="true">→</span></a>'
     lien = lien_whatsapp(config, cle if cle in MESSAGES_WHATSAPP else 'general')
