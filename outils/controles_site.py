@@ -165,6 +165,13 @@ for u, mots in ((BASE + 'mentions-legales/', ('Cloudflare', 'Resend', 'Hostinger
     for mot in mots:
         if mot not in h: echecs.append(f'{u}: « {mot} » absent des données personnelles')
     if re.search(r'ni formulaire|no forms|aucune donnée personnelle|no personal data', h): echecs.append(f'{u}: dit encore qu\'il n\'y a ni formulaire ni donnée personnelle')
+# Rihla : pas de promesse sans limite de durée (une publicité récompensée est prévue, on écrit « à ce jour »), sur toutes les pages, hors sitemap comprises.
+for dossier, _, noms in os.walk(RACINE):
+    for nom in noms:
+        if nom.endswith('.html'):
+            page = os.path.join(dossier, nom)
+            if re.search(r'pour toujours|free forever|مجانية دائمًا', open(page, encoding='utf-8').read()):
+                echecs.append(f'{os.path.relpath(page, RACINE)}: promesse sans limite de durée')
 # page d'acquisition /commandes/ (hors sitemap, réservée aux publicités) : noindex, formulaire vers le Worker, choix = listes blanches du Worker, un <label for> par champ.
 ACQ = os.path.join(RACINE, 'commandes', 'index.html')
 if os.path.exists(ACQ):
@@ -310,3 +317,4 @@ if os.path.exists(os.path.join(RACINE, '..', 'outils', 'commercial.py')) and os.
     if r.returncode != 0: echecs.append('site/ décalé par rapport à config/commercial.json : ' + (r.stdout + r.stderr).strip()[:200])
 print(len(pages), 'pages du sitemap,', n, 'liens internes contrôlés')
 print('ÉCHECS:' if echecs else 'tout passe', *echecs, sep='\n  ')
+sys.exit(1 if echecs else 0)
