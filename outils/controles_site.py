@@ -58,13 +58,19 @@ for u, p in pages.items():
 for k, v in seen.items():
     if len(v) > 1: echecs.append(f'doublon {k[:60]}: {v}')
 
+# /commandes/ est une page d'acquisition indexable (depuis le 31/10/2026) mais sans barre, sans menu et sans pied complet :
+#   elle passe les contrôles communs ci-dessus (h1, canonical, titre, description, JSON-LD, liens) et ses contrôles propres plus bas,
+#   pas ceux du gabarit des pages de prestation (pied, réseaux, horaires, boutons « Devis gratuit », liens vers « Création de site web »).
+ACQ_URL = BASE + 'commandes/'
+gabarit = {u: p for u, p in pages.items() if u != ACQ_URL}
+
 FR_NEW = BASE + 'creation-site-web-casablanca/'; EN_NEW = BASE + 'en/website-development-casablanca/'; AR_NEW = BASE + 'ar/website-development-casablanca/'
 # langues déclarées par le sitemap pour chaque URL (xhtml:link) : le <head> de la page doit porter les mêmes, plus x-default
 alt_sitemap = {}
 for bloc in re.findall(r'<url>.*?</url>', sm, re.S):
     loc = re.search(r'<loc>([^<]+)</loc>', bloc).group(1)
     alt_sitemap[loc] = {l: h for l, h in re.findall(r'hreflang="([^"]+)" href="([^"]+)"', bloc)}
-for u, p in pages.items():
+for u, p in gabarit.items():
     resolus = [urljoin(u, h).split('#')[0] for h in p.hrefs]
     attendu = AR_NEW if '/ar/' in u else EN_NEW if '/en/' in u or u == BASE + 'en/' else FR_NEW
     if u not in (FR_NEW, EN_NEW, AR_NEW) and resolus.count(attendu) < 1 and not (attendu == AR_NEW and FR_NEW in resolus):
@@ -77,6 +83,11 @@ for u, p in pages.items():
         if langs != attendues: echecs.append(f'{u}: hreflang {langs} ≠ sitemap {attendues}')
         for lang, href in p.alt:
             if lang != 'x-default' and alt_sitemap.get(u, {}).get(lang) != href: echecs.append(f'{u}: hreflang {lang} {href} ≠ sitemap')
+# x-default : le sitemap le déclare pour chaque URL qui a des alternates, identique à celui du <head> de la page
+for u, p in pages.items():
+    if not alt_sitemap.get(u): continue
+    xd_html = dict(p.alt).get('x-default')
+    if alt_sitemap[u].get('x-default') != xd_html: echecs.append(f'{u}: x-default du sitemap {alt_sitemap[u].get("x-default")} ≠ celui de la page {xd_html}')
 # le sitemap porte les alternates réciproques des pages Création de site web (FR, EN, AR)
 if not all(f'<loc>{x}</loc>' in sm for x in (FR_NEW, EN_NEW, AR_NEW)): echecs.append('sitemap: pages Création de site web absentes')
 # les pages arabes : lang="ar" dir="rtl", og:locale ar_MA
@@ -94,7 +105,7 @@ for u, p in pages.items():
 LI = 'https://www.linkedin.com/company/legantis-digital-service-sas/'; IG = 'https://www.instagram.com/legantis.ma/'
 #   emplacements (22/10/2026, demande du user : « les rendre plus visibles ») : le bas de page de chaque page (nav « Liens de pied de page »), la colonne Contact du pied (`<span class="pied-reseaux">` dans l'<address>) et, sur les DEUX ACCUEILS seulement, la section Contact (`<div class="contact-tel contact-reseaux">`) : 3 liens par réseau sur un accueil, 2 ailleurs
 ACCUEILS = (BASE, BASE + 'en/')
-for u, p in pages.items():
+for u, p in gabarit.items():
     h = open(fichier(u), encoding='utf-8').read()
     for nom, lien in (('LinkedIn', LI), ('Instagram', IG)):
         motif = r'<a class="reseau" href="' + re.escape(lien) + r'"><svg class="logo-reseau"[^>]*aria-hidden="true"[^>]*><path d="[^"]{40,}"/></svg>' + nom + '</a>'
@@ -119,7 +130,7 @@ for u, v in sa.items():
     if v != [LI, IG]: echecs.append(f'{u}: sameAs {v} (attendu LinkedIn puis Instagram)')
 # horaires (lundi au samedi, 9 h – 18 h, dimanche fermé) : la ligne du pied (dans l'<address>) de chaque page du sitemap, dans sa langue, et le hoursAvailable du contactPoint des deux accueils
 HORAIRES = {'fr': 'Du lundi au samedi<br>9&nbsp;h – 18&nbsp;h', 'en': 'Monday to Saturday<br>9 am – 6 pm, Morocco time', 'ar': 'من الاثنين إلى السبت<br><bdi dir="ltr">9:00 – 18:00</bdi>'}
-for u in pages:
+for u in gabarit:
     lang = 'ar' if '/ar/' in u else 'en' if '/en/' in u else 'fr'
     m = re.search(r'<address>(.*?)</address>', open(fichier(u), encoding='utf-8').read(), re.S)
     if not m or ('<span>' + HORAIRES[lang] + '</span>') not in m.group(1): echecs.append(f'{u}: ligne d\'horaires ({lang}) absente ou modifiée dans le pied')
@@ -172,12 +183,19 @@ for dossier, _, noms in os.walk(RACINE):
             page = os.path.join(dossier, nom)
             if re.search(r'pour toujours|free forever|مجانية دائمًا', open(page, encoding='utf-8').read()):
                 echecs.append(f'{os.path.relpath(page, RACINE)}: promesse sans limite de durée')
-# page d'acquisition /commandes/ (hors sitemap, réservée aux publicités) : noindex, formulaire vers le Worker, choix = listes blanches du Worker, un <label for> par champ.
+# page d'acquisition /commandes/ (indexable et au sitemap depuis le 31/10/2026, aussi page d'arrivée des publicités) : pas de noindex, au sitemap, balisage Service, formulaire vers le Worker, choix = listes blanches du Worker, un <label for> par champ.
 ACQ = os.path.join(RACINE, 'commandes', 'index.html')
 if os.path.exists(ACQ):
     u = '/commandes/'; h = open(ACQ, encoding='utf-8').read(); src = open(WORKER_SRC, encoding='utf-8').read() if os.path.exists(WORKER_SRC) else ''
-    if 'content="noindex, follow"' not in h: echecs.append(f'{u}: noindex absent')
-    if 'commandes/' in open(os.path.join(RACINE, 'sitemap.xml'), encoding='utf-8').read(): echecs.append(f'{u}: ne doit pas être au sitemap')
+    if 'noindex' in h.split('</head>')[0]: echecs.append(f'{u}: noindex présent (la page est indexable depuis le 31/10/2026)')
+    if '<loc>' + ACQ_URL + '</loc>' not in sm: echecs.append(f'{u}: absente du sitemap')
+    if ACQ_URL not in pages: echecs.append(f'{u}: non contrôlée par le sitemap')
+    else:
+        servis = [e for j in pages[ACQ_URL].jsonld for e in json.loads(j).get('@graph', []) if e.get('@type') == 'Service']
+        if len(servis) != 1 or servis[0].get('@id') != ACQ_URL + '#service' or servis[0].get('url') != ACQ_URL: echecs.append(f'{u}: balisage Service absent ou mal formé')
+        elif (servis[0].get('provider') or {}).get('@id') != 'https://legantis.net/#organisation': echecs.append(f'{u}: le Service n\'a pas l\'Organization de l\'accueil pour fournisseur')
+    titre_acq = ((pages[ACQ_URL].title if ACQ_URL in pages else '') or '').lower()
+    if ACQ_URL in pages and not ('logiciel' in titre_acq and 'commandes' in titre_acq): echecs.append(f'{u}: le titre ne porte plus « logiciel » et « commandes »')
     m = re.search(r'<form class="devis-form"([^>]*)>(.*?)</form>', h, re.S)
     if not m: echecs.append(f'{u}: formulaire absent')
     else:
@@ -203,7 +221,7 @@ if os.path.exists(ACQ):
 #   Depuis le 30/10/2026, les pages françaises mènent au simulateur (?type= garde le contexte de la prestation) ; EN et AR gardent le formulaire #devis de leur accueil.
 CTA_UNIQUES = ('barre-cta', 'menu-devis', 'pied-devis')
 TYPES_PAGE = {'creation-site-web-casablanca/': '?type=vitrine', 'application-web-maroc/': '?type=web', 'application-mobile-casablanca/': '?type=mobile', 'logiciel-sur-mesure-maroc/': '?type=logiciel', 'conseil-reprise-application-maroc/': '?type=autre', 'etude-de-cas-atlasya/': '?type=web', 'etude-de-cas-rihla/': '?type=mobile', 'etude-de-cas-ostad/': '?type=web'}
-for u in pages:
+for u in gabarit:
     h = open(fichier(u), encoding='utf-8').read()
     rel = u[len(BASE):]
     if rel == 'estimer-mon-projet/': cible = '#titre'
