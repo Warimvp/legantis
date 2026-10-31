@@ -2,19 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://legantis.net/</loc>
-    <lastmod>2026-10-26</lastmod>
+    <lastmod>2026-10-31</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/"/>
   </url>
   <url>
     <loc>https://legantis.net/en/</loc>
-    <lastmod>2026-10-26</lastmod>
+    <lastmod>2026-10-31</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/"/>
   </url>
   <url>
     <loc>https://legantis.net/application-mobile-casablanca/</loc>
-    <lastmod>2026-10-26</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/application-mobile-casablanca/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/mobile-app-casablanca/"/>
     <xhtml:link rel="alternate" hreflang="ar" href="https://legantis.net/ar/mobile-app-casablanca/"/>
@@ -35,7 +35,7 @@
   </url>
   <url>
     <loc>https://legantis.net/application-web-maroc/</loc>
-    <lastmod>2026-10-26</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/application-web-maroc/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/web-app-morocco/"/>
   </url>
@@ -47,7 +47,7 @@
   </url>
   <url>
     <loc>https://legantis.net/creation-site-web-casablanca/</loc>
-    <lastmod>2026-10-26</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/creation-site-web-casablanca/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/website-development-casablanca/"/>
     <xhtml:link rel="alternate" hreflang="ar" href="https://legantis.net/ar/website-development-casablanca/"/>
@@ -68,7 +68,7 @@
   </url>
   <url>
     <loc>https://legantis.net/logiciel-sur-mesure-maroc/</loc>
-    <lastmod>2026-10-26</lastmod>
+    <lastmod>2026-10-31</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/logiciel-sur-mesure-maroc/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/custom-software-morocco/"/>
   </url>
@@ -80,7 +80,7 @@
   </url>
   <url>
     <loc>https://legantis.net/conseil-reprise-application-maroc/</loc>
-    <lastmod>2026-10-26</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/conseil-reprise-application-maroc/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/app-consulting-takeover-morocco/"/>
   </url>
@@ -92,7 +92,7 @@
   </url>
   <url>
     <loc>https://legantis.net/etude-de-cas-atlasya/</loc>
-    <lastmod>2026-10-26</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/etude-de-cas-atlasya/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/case-study-atlasya/"/>
   </url>
@@ -104,7 +104,7 @@
   </url>
   <url>
     <loc>https://legantis.net/etude-de-cas-rihla/</loc>
-    <lastmod>2026-10-26</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/etude-de-cas-rihla/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/case-study-rihla/"/>
   </url>
@@ -116,7 +116,7 @@
   </url>
   <url>
     <loc>https://legantis.net/etude-de-cas-ostad/</loc>
-    <lastmod>2026-10-26</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/etude-de-cas-ostad/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/case-study-ostad/"/>
   </url>
@@ -128,14 +128,26 @@
   </url>
   <url>
     <loc>https://legantis.net/mentions-legales/</loc>
-    <lastmod>2026-10-30</lastmod>
+    <lastmod>2026-10-31</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/mentions-legales/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/legal/"/>
   </url>
   <url>
     <loc>https://legantis.net/en/legal/</loc>
-    <lastmod>2026-10-30</lastmod>
+    <lastmod>2026-10-31</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/mentions-legales/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/legal/"/>
+  </url>
+  <url>
+    <loc>https://legantis.net/estimer-mon-projet/</loc>
+    <lastmod>2026-10-30</lastmod>
+  </url>
+  <url>
+    <loc>https://legantis.net/audit-gratuit/</loc>
+    <lastmod>2026-10-31</lastmod>
+  </url>
+  <url>
+    <loc>https://legantis.net/realisations/</loc>
+    <lastmod>2026-10-30</lastmod>
   </url>
 </urlset>

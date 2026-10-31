@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau de bord de gestion — démonstration Legantis</title>
+<meta name="description" content="Démonstration de tableau de bord de gestion : commandes, relances et indicateurs au même endroit. Données fictives.">
+<meta name="robots" content="noindex, follow">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../demos.css">
+
+</head>
+<body class="gest">
+<p class="demo-bandeau"><span>Démonstration créée par Legantis · entreprise et données fictives</span> <a href="../../">Retour aux réalisations</a></p>
+<div class="gest-cadre">
+  <aside class="gest-cote" aria-label="Navigation de la démonstration">
+    <b>Atelier Démo</b>
+    <ul><li>Tableau de bord</li><li>Commandes</li><li>Clients</li><li>Stock</li><li>Relances</li></ul>
+  </aside>
+  <main class="gest-corps">
+    <h1>Bonjour, voici votre journée</h1>
+    <div class="tuiles-kpi">
+      <div class="kpi"><b>12</b><span>Commandes en cours</span></div>
+      <div class="kpi"><b>3</b><span>Relances à faire</span></div>
+      <div class="kpi"><b>5</b><span>Livraisons du jour</span></div>
+      <div class="kpi"><b>8</b><span>Produits à commander</span></div>
+    </div>
+    <section class="panneau" aria-labelledby="semaine-titre">
+      <h2 id="semaine-titre">Commandes de la semaine</h2>
+      <ul class="barres" role="list"><li><i style="--h:45"></i>Lun</li><li><i style="--h:62"></i>Mar</li><li><i style="--h:38"></i>Mer</li><li><i style="--h:78"></i>Jeu</li><li><i style="--h:90"></i>Ven</li><li><i style="--h:70"></i>Sam</li><li><i style="--h:22"></i>Dim</li></ul>
+    </section>
+    <section class="panneau" aria-labelledby="liste-titre">
+      <h2 id="liste-titre">Dernières commandes</h2>
+      <fieldset class="onglets onglets--gest"><legend class="visuellement-cache">Filtrer par état</legend>
+        <label><input type="radio" name="etat" id="e-tout" checked> Toutes</label>
+        <label><input type="radio" name="etat" id="e-preparer"> À préparer</label>
+        <label><input type="radio" name="etat" id="e-livraison"> En livraison</label>
+        <label><input type="radio" name="etat" id="e-payees"> Payées</label>
+      </fieldset>
+      <div class="table-defile" tabindex="0" role="region" aria-label="Liste des commandes"><table><thead><tr><th scope="col">Référence</th><th scope="col">Client</th><th scope="col">Montant</th><th scope="col">État</th></tr></thead><tbody><tr data-e="a"><td>Commande 1042</td><td>Client exemple A</td><td>1 250 MAD</td><td><span class="etat etat--a">À préparer</span></td></tr><tr data-e="l"><td>Commande 1041</td><td>Client exemple B</td><td>780 MAD</td><td><span class="etat etat--l">En livraison</span></td></tr><tr data-e="p"><td>Commande 1040</td><td>Client exemple C</td><td>3 400 MAD</td><td><span class="etat etat--p">Payée</span></td></tr><tr data-e="a"><td>Commande 1039</td><td>Client exemple D</td><td>560 MAD</td><td><span class="etat etat--a">À préparer</span></td></tr><tr data-e="p"><td>Commande 1038</td><td>Client exemple E</td><td>1 980 MAD</td><td><span class="etat etat--p">Payée</span></td></tr><tr data-e="l"><td>Commande 1037</td><td>Client exemple F</td><td>920 MAD</td><td><span class="etat etat--l">En livraison</span></td></tr></tbody></table></div>
+    </section>
+    <p class="demo-note">Toutes les données de cet écran sont fictives.</p>
+  </main>
+</div>
+<footer class="demo-pied"><div class="env"><span>Page de démonstration : ce n'est pas un client de Legantis, aucune commande réelle.</span><a href="../../../commandes/">Un outil comparable pour votre entreprise ? Voir l'offre Commandes</a></div></footer>
+</body>
+</html>

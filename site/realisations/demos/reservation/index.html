@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plateforme de réservation — démonstration Legantis</title>
+<meta name="description" content="Démonstration de plateforme de réservation : choix du service, de la date et du créneau, avec récapitulatif. Données fictives.">
+<meta name="robots" content="noindex, follow">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../demos.css">
+<script src="../demos.js" defer></script>
+</head>
+<body class="resa">
+<p class="demo-bandeau"><span>Démonstration créée par Legantis · entreprise et données fictives</span> <a href="../../">Retour aux réalisations</a></p>
+<div class="env"><header class="entete"><b>Réserve Démo</b><nav aria-label="Navigation de la démonstration"><a href="#choix">Réserver</a><a href="#recapitulatif">Récapitulatif</a></nav></header></div>
+<main class="env">
+  <div class="resa-grille">
+    <form id="choix" data-demo data-recap aria-labelledby="titre">
+      <h1 id="titre">Prenez rendez-vous en ligne</h1>
+      <p style="color:var(--gris)">Exemple de parcours pour un salon, un cabinet ou un atelier.</p>
+      <fieldset><legend>1. Le service</legend><div class="tuiles">
+        <label class="tuile"><input type="radio" name="service" value="a" checked><b>Consultation</b><span>30 min</span></label><label class="tuile"><input type="radio" name="service" value="b"><b>Séance complète</b><span>1 h</span></label><label class="tuile"><input type="radio" name="service" value="c"><b>Suivi</b><span>20 min</span></label>
+      </div></fieldset>
+      <fieldset><legend>2. Le jour</legend><div class="tuiles">
+        <label class="tuile"><input type="radio" name="jour" value="lun" checked><b>Lundi</b><span>Exemple</span></label><label class="tuile"><input type="radio" name="jour" value="mar"><b>Mardi</b><span>Exemple</span></label><label class="tuile"><input type="radio" name="jour" value="mer" disabled><b>Mercredi</b><span>Complet</span></label><label class="tuile"><input type="radio" name="jour" value="jeu"><b>Jeudi</b><span>Exemple</span></label><label class="tuile"><input type="radio" name="jour" value="ven"><b>Vendredi</b><span>Exemple</span></label>
+      </div></fieldset>
+      <fieldset><legend>3. Le créneau</legend><div class="tuiles">
+        <label class="tuile"><input type="radio" name="creneau" value="9" checked><b>09:00</b></label><label class="tuile"><input type="radio" name="creneau" value="10"><b>10:30</b></label><label class="tuile"><input type="radio" name="creneau" value="12" disabled><b>12:00</b></label><label class="tuile"><input type="radio" name="creneau" value="14"><b>14:30</b></label><label class="tuile"><input type="radio" name="creneau" value="16"><b>16:00</b></label>
+      </div></fieldset>
+      <fieldset><legend>4. Vos coordonnées</legend><div class="grille-2">
+        <label class="champ">Nom<input type="text" autocomplete="off" required></label>
+        <label class="champ">Téléphone<input type="tel" autocomplete="off" required></label>
+      </div></fieldset>
+      <p style="margin-top:18px"><button class="btn" type="submit">Confirmer le rendez-vous</button></p>
+      <p class="demo-note" style="margin-top:8px">Démonstration : aucun rendez-vous n'est créé.</p>
+      <p class="demo-retour" tabindex="-1" hidden>Démonstration : rien n'a été envoyé.</p>
+    </form>
+    <aside class="recap" id="recapitulatif" aria-labelledby="recap-titre" aria-live="polite">
+      <h2 id="recap-titre">Votre rendez-vous</h2>
+      <dl>
+        <dt>Service</dt><dd id="recap-service">Consultation</dd>
+        <dt>Jour</dt><dd id="recap-jour">Lundi</dd>
+        <dt>Créneau</dt><dd id="recap-creneau">09:00</dd>
+      </dl>
+    </aside>
+  </div>
+</main>
+<footer class="demo-pied"><div class="env"><span>Page de démonstration : ce n'est pas un client de Legantis, aucune commande réelle.</span><a href="../../../estimer-mon-projet/">Un projet comparable ? Estimer mon projet</a></div></footer>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Site d'entreprise de services — démonstration Legantis</title>
+<meta name="description" content="Démonstration de site d'entreprise de services : message clair, services, zones couvertes et demande de rappel. Entreprise fictive.">
+<meta name="robots" content="noindex, follow">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../demos.css">
+<script src="../demos.js" defer></script>
+</head>
+<body class="serv">
+<p class="demo-bandeau"><span>Démonstration créée par Legantis · entreprise et données fictives</span> <a href="../../">Retour aux réalisations</a></p>
+<div class="serv-hero">
+  <div class="env">
+    <header class="entete"><b>Clim Démo Services</b><nav aria-label="Navigation de la démonstration"><a href="#services">Services</a><a href="#zones">Zones</a><a href="#etapes">Comment ça marche</a></nav></header>
+    <div class="inner">
+      <div>
+        <h1>Climatisation et dépannage pour les professionnels.</h1>
+        <p>Installation, entretien et dépannage de vos équipements, avec un interlocuteur unique et un devis écrit.</p>
+        <a class="btn" href="#rappel">Être rappelé</a>
+      </div>
+      <form class="carte-rappel" id="rappel" data-demo aria-labelledby="rappel-titre">
+        <h2 id="rappel-titre">Demander un rappel</h2>
+        <label class="champ">Nom<input type="text" autocomplete="off" required></label>
+        <label class="champ">Téléphone<input type="tel" autocomplete="off" required></label>
+        <label class="champ">Besoin<select><option>Installation</option><option>Entretien</option><option>Dépannage</option></select></label>
+        <button class="btn" type="submit">Être rappelé</button>
+        <p class="demo-note">Démonstration : ce formulaire n'envoie rien.</p>
+        <p class="demo-retour" tabindex="-1" hidden>Démonstration : rien n'a été envoyé.</p>
+      </form>
+    </div>
+  </div>
+</div>
+<main>
+  <section class="section" id="services" aria-labelledby="services-titre">
+    <div class="env">
+      <h2 id="services-titre">Nos services</h2>
+      <ul class="services">
+        <li><h3>Installation</h3><p>Étude de vos locaux, pose et mise en service.</p></li>
+        <li><h3>Contrat d'entretien</h3><p>Visites planifiées et suivi de vos équipements.</p></li>
+        <li><h3>Dépannage</h3><p>Diagnostic sur place et devis avant intervention.</p></li>
+      </ul>
+    </div>
+  </section>
+  <section class="section" style="background:var(--fond-2)" id="zones" aria-labelledby="zones-titre">
+    <div class="env">
+      <h2 id="zones-titre">Zones couvertes</h2>
+      <ul class="zones"><li>Casablanca</li><li>Mohammedia</li><li>Rabat</li><li>Salé</li><li>Kénitra</li></ul>
+    </div>
+  </section>
+  <section class="section" id="etapes" aria-labelledby="etapes-titre">
+    <div class="env">
+      <h2 id="etapes-titre">Comment ça marche</h2>
+      <ul class="services">
+        <li><h3>1. Vous demandez un rappel</h3><p>En quelques secondes, depuis votre téléphone.</p></li>
+        <li><h3>2. Nous évaluons</h3><p>Un technicien vous rappelle et prépare un devis écrit.</p></li>
+        <li><h3>3. Nous intervenons</h3><p>À la date convenue, avec un compte rendu.</p></li>
+      </ul>
+    </div>
+  </section>
+</main>
+<footer class="demo-pied"><div class="env"><span>Page de démonstration : ce n'est pas un client de Legantis, aucune commande réelle.</span><a href="../../../estimer-mon-projet/">Un projet comparable ? Estimer mon projet</a></div></footer>
+</body>
+</html>

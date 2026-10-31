@@ -25,6 +25,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="../assets/site.css">
 <script src="../assets/lumiere.js" defer></script>
+<script src="../assets/conversion.js" defer></script>
 </head>
 <body class="acquisition">
 <a class="lien-evitement" href="#contenu">Aller au contenu</a>
@@ -42,12 +43,12 @@
 <main id="contenu" class="service">
   <section class="service-tete" aria-labelledby="titre">
     <div class="enveloppe">
-      <span class="surtitre">Distributeurs, grossistes et importateurs au Maroc</span>
+      <span class="surtitre">PME de distribution, de gros et de négoce au Maroc</span>
       <h1 id="titre"><em>Commandes</em>, clients et&nbsp;stock au&nbsp;même endroit.</h1>
-      <p class="chapeau">Vos commandes arrivent sur WhatsApp et se suivent sur Excel ? Nous construisons avec vous un logiciel adapté à votre façon de vendre, en français et en arabe, dont le code source vous est remis.</p>
+      <p class="chapeau">Commandes dispersées entre WhatsApp, le téléphone et Excel, suivi à la main, erreurs, aucune vue d'ensemble ? Nous construisons avec vous un logiciel adapté à votre façon de vendre, en français et en arabe, dont le code source vous est remis.</p>
       <div class="actions">
         <a class="bouton bouton--plein" href="#demande">Demander mon diagnostic gratuit <span class="fleche" aria-hidden="true">→</span></a>
-        <a class="bouton bouton--trait" href="https://wa.me/212672759097?text=Bonjour%20Legantis%2C%20je%20souhaite%20un%20diagnostic%20pour%20le%20suivi%20de%20mes%20commandes.">Écrire sur WhatsApp</a>
+        <!-- commercial:whatsapp type=commandes style=bouton --><!-- /commercial -->
       </div>
       <ul class="garanties" role="list"><li>30 minutes</li><li>Sans engagement</li><li>Réponse sous 48 h ouvrées</li></ul>
     </div>
@@ -60,10 +61,10 @@
         <h2 id="problemes-titre">Quand tout passe par le téléphone, rien n'est vraiment suivi.</h2>
       </div>
       <div class="atouts atouts--2 reveler">
-        <div class="atout"><h3>Quelle commande en est où ?</h3><p>Une demande arrive par message, une autre par appel. Pour savoir ce qui est préparé ou livré, il faut demander à quelqu'un.</p></div>
-        <div class="atout"><h3>Que reste-t-il en stock ?</h3><p>Le fichier dit une chose, le dépôt en dit une autre, et chacun garde sa propre version.</p></div>
-        <div class="atout"><h3>Qui reste à payer ?</h3><p>Les relances dépendent de la mémoire de la personne qui a pris la commande.</p></div>
-        <div class="atout"><h3>Qui peut répondre sans vous ?</h3><p>Si l'information est dans votre téléphone, chaque question finit par arriver chez vous.</p></div>
+        <div class="atout"><h3>Des commandes dispersées</h3><p>Une commande arrive sur WhatsApp, une autre par téléphone, une troisième au comptoir. Personne n'a la liste complète.</p></div>
+        <div class="atout"><h3>Un suivi manuel</h3><p>Chaque commande est recopiée dans Excel. Pour savoir ce qui est préparé ou livré, il faut demander à quelqu'un.</p></div>
+        <div class="atout"><h3>Des erreurs qui coûtent</h3><p>Une quantité mal recopiée, un stock faux, une relance oubliée : on s'en aperçoit quand le client réclame.</p></div>
+        <div class="atout"><h3>Aucune vue d'ensemble</h3><p>Commandes en cours, stock réel, clients à relancer : la réponse dépend de la personne à qui vous posez la question.</p></div>
       </div>
     </div>
   </section>
@@ -81,6 +82,7 @@
         <div class="atout"><h3>Stock</h3><p>Les entrées et les sorties suivies dans l'outil, à la place de plusieurs fichiers.</p></div>
         <div class="atout"><h3>Relances et vue d'ensemble</h3><p>Les commandes à traiter et les paiements à relancer, avec des exports vers Excel.</p></div>
       </div>
+      <p class="note"><a class="suivre" href="../realisations/demos/gestion/">Voir un exemple de tableau de bord <span aria-hidden="true">→</span></a> Démonstration créée par Legantis, avec des données fictives.</p>
     </div>
   </section>
 
@@ -130,7 +132,7 @@
           <p class="devis-consigne">Tous les champs sont obligatoires.</p>
           <div class="champ"><label for="acq-entreprise">Entreprise</label><input id="acq-entreprise" name="entreprise" type="text" autocomplete="organization" required maxlength="120"></div>
           <div class="champ"><label for="acq-nom">Votre nom</label><input id="acq-nom" name="nom" type="text" autocomplete="name" required maxlength="100"></div>
-          <div class="champ"><label for="acq-tel">Téléphone ou WhatsApp</label><input id="acq-tel" name="telephone" type="tel" inputmode="tel" autocomplete="tel" required maxlength="30"></div>
+          <div class="champ"><label for="acq-tel">Téléphone</label><input id="acq-tel" name="telephone" type="tel" inputmode="tel" autocomplete="tel" required maxlength="30"></div>
           <div class="champ"><label for="acq-email">E-mail professionnel</label><input id="acq-email" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="254"></div>
           <div class="champ"><label for="acq-activite">Activité</label>
             <select id="acq-activite" name="activite" required><option value="">Choisissez</option><option value="distribution">Distribution ou vente en gros</option><option value="import">Import ou négoce</option><option value="commerce">Commerce à plusieurs points de vente</option><option value="services">Services aux entreprises</option><option value="autre">Autre activité</option></select></div>
@@ -143,6 +145,7 @@
           <div class="champ"><label for="acq-delai">Délai souhaité</label>
             <select id="acq-delai" name="delai" required><option value="">Choisissez</option><option value="vite">Dès que possible</option><option value="1mois">Sous 1 mois</option><option value="3mois">Sous 3 mois</option><option value="libre">Pas de date précise</option></select></div>
           <div class="champ champ--large"><label for="acq-projet">Votre principal problème aujourd'hui</label><textarea id="acq-projet" name="projet" rows="4" required minlength="10" maxlength="4000" placeholder="Par exemple : commandes reçues sur WhatsApp, stock suivi sur Excel, relances oubliées…"></textarea></div>
+          <div class="champ consentement"><label for="acq-consentement"><input id="acq-consentement" name="consentement" type="checkbox" value="oui" required><span>J'accepte que LEGANTIS DIGITAL SERVICE SAS utilise ces informations pour répondre à ma demande, et qu'elles transitent par ses prestataires hors du Maroc, comme expliqué dans les <a href="../mentions-legales/#donnees">mentions légales</a>.</span></label></div>
           <div class="visuellement-cache" aria-hidden="true"><label>Ne pas remplir ce champ<input type="text" name="site_web" tabindex="-1" autocomplete="off"></label></div>
           <div class="devis-bas">
             <button class="bouton bouton--plein" type="submit">Demander mon diagnostic <span class="fleche" aria-hidden="true">→</span></button>
@@ -184,7 +187,7 @@
 
 <div class="acq-appel" aria-label="Actions rapides">
   <a class="bouton bouton--plein" href="#demande">Diagnostic gratuit</a>
-  <a class="bouton bouton--trait" href="https://wa.me/212672759097?text=Bonjour%20Legantis%2C%20je%20souhaite%20un%20diagnostic%20pour%20le%20suivi%20de%20mes%20commandes.">WhatsApp</a>
+  <!-- commercial:whatsapp type=commandes style=bouton libelle=court --><!-- /commercial -->
 </div>
 </body>
 </html>

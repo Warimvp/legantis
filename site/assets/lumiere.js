@@ -228,7 +228,7 @@
      l'entrée dans la carte, puis seulement après un défilement, un redimensionnement ou la fin de son soulèvement au survol
      (la carte monte de 3 px : l'origine lue en entrant serait décalée d'autant). Le suivi n'est abonné que tant qu'une carte est visible. */
   (function () {
-    var CARTES = '.prestation, .offre, .titre, .epreuve, .atout, .fiche';
+    var CARTES = '.prestation, .offre, .titre, .epreuve, .atout, .fiche, .pack, .projet, .offre-phare';
     var cartes = document.querySelectorAll(CARTES);
     if (!cartes.length) return;   // pages légales et 404 : aucune carte, rien à suivre
 
@@ -323,7 +323,7 @@
      présent. Le bouton « Curseur standard » du pied de page (dans le HTML, affiché par la CSS quand les effets sont permis) rend
      le curseur du système pour la page en cours ; rien n'est mémorisé. */
   (function () {
-    var LIENS = 'a[href], button, summary, [role="button"], label';
+    var LIENS = 'a[href], button, summary, [role="button"], label, .comparaison--active .comparaison-cadre';
     var VUE = '.couverture';
     var TEXTE = 'p, li, dd, dt, h1, h2, h3, h4, address, .fiche, input, textarea, select';   // champs du formulaire de devis : le navigateur leur donne son curseur (barre de texte, flèche), la CSS n'a rien à écrire
     var SOUS_LE_LIBELLE = TEXTE + ', .domaine, img';   // dans la vue, ce qui porte du texte ou une image : pas de libellé par-dessus, et le pointeur natif y reste (la CSS le lui rend : même liste)

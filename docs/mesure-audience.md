@@ -2,6 +2,30 @@
 
 **État actuel : aucun outil de mesure sur legantis.net.** Les mentions légales (FR + EN, § Données personnelles) affirment « ni cookie, ni outil de mesure d'audience, ni pixel publicitaire » : c'est exact aujourd'hui et **doit être réécrit avant** toute activation. Rien n'a été installé ni aucun compte créé ; ce document prépare la décision.
 
+**Mise à jour du 30/10/2026** : événements du simulateur et des nouveaux parcours, source UTM dans chaque demande, Meta Pixel préparé et non activé. Conditions CNDP lues dans le texte officiel : voir `mesure/README.md`, « Meta Pixel ».
+
+## Architecture retenue (V3, 26/10/2026) — tout est prêt, rien n'est activé
+
+1. **Demandes réelles** : compteur côté serveur dans le Worker du formulaire (base D1 gratuite `legantis-mesures`), incrémenté seulement quand Resend accepte le mail ; doublons (même demande sous 10 minutes) neutralisés ; échecs techniques et refus comptés à part ; aucune donnée personnelle. Code, tests (28) et sabotages (34) dans `worker/` ; activation en 6 étapes dans `worker/README.md` ; lecture par `node worker/rapport.mjs`.
+2. **Visiteurs, visites, pages, sources, clics** : un outil sans cookie (recommandation : Umami Cloud Hobby, gratuit ; ou Plausible, payant) et le script d'événements `mesure/mesure.js` (testé, non chargé). Voir `mesure/README.md`.
+3. **Décisions du user avant activation** : créer la base D1 et redéployer le Worker ; choisir et créer le compte de l'outil ; compléter les mentions légales FR + EN ; vérifier la CNDP.
+
+## Point mensuel (modèle)
+
+À remplir avec les deux sources ; une case sans source activée s'écrit « non disponible », jamais une estimation.
+
+| Indicateur | Valeur | Source |
+|---|---|---|
+| Visiteurs | non disponible | outil de mesure (non activé) |
+| Visites des pages de prestation (par page) | non disponible | outil de mesure (non activé) |
+| Consultations du portfolio (`Réalisations vues`, études de cas) | non disponible | outil de mesure (non activé) |
+| Clics sur les boutons de devis (par emplacement) | non disponible | outil de mesure (non activé) |
+| Demandes de devis reçues | non disponible tant que le compteur n'est pas activé ; d'ici là, compter les mails « Demande de devis » de la boîte | `node worker/rapport.mjs` |
+| Taux de conversion (demandes ÷ visiteurs) | non calculable | les deux lignes ci-dessus |
+| Types de projets demandés | idem | `node worker/rapport.mjs` (ou objet des mails) |
+| Demandes venues des publicités Meta | à relever | gestionnaire de publicités Meta |
+| Rendez-vous obtenus, devis envoyés, devis signés | à relever | classeur de suivi (hors dépôt) |
+
 ## Ce qui se mesure déjà, sans rien ajouter
 
 | Question | Où regarder |

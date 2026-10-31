@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Site de restaurant — démonstration Legantis</title>
+<meta name="description" content="Démonstration de site de restaurant : carte, horaires et demande de réservation. Entreprise fictive.">
+<meta name="robots" content="noindex, follow">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../demos.css">
+<script src="../demos.js" defer></script>
+</head>
+<body class="resto">
+<p class="demo-bandeau"><span>Démonstration créée par Legantis · entreprise et données fictives</span> <a href="../../">Retour aux réalisations</a></p>
+<div class="resto-hero">
+  <div class="env">
+    <header class="entete"><b>La Table Démo</b><nav aria-label="Navigation de la démonstration"><a href="#carte">La carte</a><a href="#infos">Infos</a><a href="#reserver">Réserver</a></nav></header>
+    <div class="inner">
+      <h1>Une cuisine marocaine de saison, à deux pas de chez vous.</h1>
+      <p>Tajines, poissons du jour et pâtisseries maison, à déguster sur place ou à emporter.</p>
+      <div class="actions"><a class="btn" href="#reserver">Réserver une table</a><a class="btn btn--creux" href="#carte">Voir la carte</a></div>
+    </div>
+  </div>
+</div>
+<main>
+  <section class="section" id="infos" aria-labelledby="infos-titre">
+    <div class="env">
+      <h2 id="infos-titre" class="visuellement-cache">Informations pratiques</h2>
+      <div class="infos">
+        <div><b>Horaires</b>Tous les jours, 12 h – 23 h</div>
+        <div><b>Adresse</b>Adresse fictive, Casablanca</div>
+        <div><b>Téléphone</b>Numéro de démonstration</div>
+      </div>
+    </div>
+  </section>
+  <section class="section fond-2" id="carte" aria-labelledby="carte-titre">
+    <div class="env carte">
+      <h2 id="carte-titre">La carte</h2>
+      <fieldset class="onglets"><legend class="visuellement-cache">Partie de la carte</legend>
+        <label><input type="radio" name="carte" id="c-entrees" checked> Entrées</label>
+        <label><input type="radio" name="carte" id="c-plats"> Plats</label>
+        <label><input type="radio" name="carte" id="c-desserts"> Desserts</label>
+      </fieldset>
+      <ul class="plats">
+        <li data-c="entrees"><div><b>Salade marocaine</b><span>Tomates, poivrons, herbes fraîches</span></div><b>35 MAD</b></li>
+        <li data-c="entrees"><div><b>Briouates au fromage</b><span>Quatre pièces, miel et sésame</span></div><b>45 MAD</b></li>
+        <li data-c="entrees"><div><b>Harira</b><span>Soupe traditionnelle</span></div><b>30 MAD</b></li>
+        <li data-c="entrees"><div><b>Zaalouk</b><span>Aubergines fumées, pain maison</span></div><b>35 MAD</b></li>
+        <li data-c="plats"><div><b>Tajine de poulet</b><span>Citron confit et olives</span></div><b>85 MAD</b></li>
+        <li data-c="plats"><div><b>Couscous aux sept légumes</b><span>Le vendredi</span></div><b>90 MAD</b></li>
+        <li data-c="plats"><div><b>Poisson du jour</b><span>Chermoula, légumes grillés</span></div><b>110 MAD</b></li>
+        <li data-c="plats"><div><b>Tajine de kefta</b><span>Œufs et tomates</span></div><b>80 MAD</b></li>
+        <li data-c="desserts"><div><b>Pastilla au lait</b><span>Amandes et fleur d'oranger</span></div><b>40 MAD</b></li>
+        <li data-c="desserts"><div><b>Assortiment de pâtisseries</b><span>Quatre pièces</span></div><b>35 MAD</b></li>
+      </ul>
+      <p class="demo-note" style="margin-top:14px">Plats et prix de démonstration.</p>
+    </div>
+  </section>
+  <section class="section" id="reserver" aria-labelledby="reserver-titre">
+    <div class="env">
+      <h2 id="reserver-titre">Demander une réservation</h2>
+      <form data-demo style="display:grid;gap:14px;max-width:620px">
+        <div class="grille-2">
+          <label class="champ">Date<input type="date" required></label>
+          <label class="champ">Personnes<select><option>2</option><option>3</option><option>4</option><option>5 ou plus</option></select></label>
+          <label class="champ">Nom<input type="text" autocomplete="off" required></label>
+          <label class="champ">Téléphone<input type="tel" autocomplete="off" required></label>
+        </div>
+        <button class="btn" type="submit">Envoyer la demande</button>
+        <p class="demo-note">Démonstration : ce formulaire n'envoie rien.</p>
+        <p class="demo-retour" tabindex="-1" hidden>Démonstration : rien n'a été envoyé.</p>
+      </form>
+    </div>
+  </section>
+</main>
+<footer class="demo-pied"><div class="env"><span>Page de démonstration : ce n'est pas un client de Legantis, aucune commande réelle.</span><a href="../../../estimer-mon-projet/">Un projet comparable ? Estimer mon projet</a></div></footer>
+</body>
+</html>

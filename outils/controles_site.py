@@ -138,6 +138,8 @@ for u in (BASE, BASE + 'en/'):
 #   légales : plus de « ni formulaire », les prestataires du Worker nommés (Cloudflare, Resend) et la messagerie (Hostinger).
 WORKER_SRC = os.path.join(RACINE, '..', 'worker', 'src', 'index.js')
 champs_worker = set(re.findall(r"donnees\.(?:get|getAll)\('([a-z_]+)'\)", open(WORKER_SRC, encoding='utf-8').read())) if os.path.exists(WORKER_SRC) else None
+#   les champs qu'une page d'avant le 30/10/2026 envoyait doivent rester lus ; chaque formulaire n'emploie ensuite que ce qui le concerne (les parcours sont contrôlés plus bas)
+CHAMPS_ACCUEIL = {'nom', 'email', 'telephone', 'entreprise', 'type', 'projet', 'supports', 'delai', 'langue', 'site_web', 'consentement'}
 for u, lang in ((BASE, 'fr'), (BASE + 'en/', 'en')):
     if u not in pages: continue
     h = open(fichier(u), encoding='utf-8').read()
@@ -149,7 +151,7 @@ for u, lang in ((BASE, 'fr'), (BASE + 'en/', 'en')):
     if 'REMPLACER' in action: echecs.append(f'{u}: action du formulaire = {action} (remplacer par l\'adresse workers.dev du Worker déployé)')
     elif not re.fullmatch(r'https://[a-z0-9-]+(\.[a-z0-9-]+)*\.workers\.dev/', action): echecs.append(f'{u}: action du formulaire {action!r} (adresse workers.dev attendue)')
     noms = set(re.findall(r'<(?:input|select|textarea)\b[^>]*\bname="([^"]+)"', corps))
-    if champs_worker is not None and noms != champs_worker - {'parcours'}: echecs.append(f'{u}: champs du formulaire {sorted(noms)} ≠ champs lus par le Worker {sorted(champs_worker)}')   # parcours : page /commandes/ seulement
+    if champs_worker is not None and not (noms == CHAMPS_ACCUEIL and noms <= champs_worker): echecs.append(f'{u}: champs du formulaire {sorted(noms)} ≠ {sorted(CHAMPS_ACCUEIL)} ou non lus par le Worker')
     if f'<input type="hidden" name="langue" value="{lang}">' not in corps: echecs.append(f'{u}: champ caché langue={lang} absent')
     for ident in re.findall(r'<(?:input|select|textarea)\b[^>]*\bid="([^"]+)"', corps):
         if f'<label for="{ident}">' not in corps: echecs.append(f'{u}: champ #{ident} sans <label for>')
@@ -184,21 +186,30 @@ if os.path.exists(ACQ):
         for ident in re.findall(r'<(?:input|select|textarea)\b[^>]*\bid="([^"]+)"', corps):
             if f'<label for="{ident}">' not in corps: echecs.append(f'{u}: champ #{ident} sans <label for>')
         if 'name="site_web"' not in corps or 'mentions-legales/#donnees' not in corps: echecs.append(f'{u}: champ piège ou lien de confidentialité absent')
+        if not re.search(r'<input[^>]*name="consentement"[^>]*required', corps): echecs.append(f'{u}: case de consentement absente ou facultative')
+    if 'assets/conversion.js' not in h: echecs.append(f'{u}: conversion.js absent : la source des publicités ne serait pas relevée')
     for ident in ('devis-envoye', 'devis-echec', 'demande'):
         if f'id="{ident}"' not in h: echecs.append(f'{u}: #{ident} absent')
 # boutons « Devis gratuit » (23/10/2026) : barre, menu mobile, pied et boutons pleins ouvrent le formulaire #devis, plus de mailto prérempli.
 #   Cible : #devis sur les deux accueils ; ../#devis ailleurs (accueil FR pour les pages FR, accueil EN pour les pages EN) ; ../../#devis sur les pages arabes (accueil FR : pas d'accueil arabe).
 #   Les liens qui affichent l'adresse e-mail (contact, ligne « Vous préférez écrire directement ? ») gardent leur mailto : ils n'ont pas ces classes.
+#   Depuis le 30/10/2026, les pages françaises mènent au simulateur (?type= garde le contexte de la prestation) ; EN et AR gardent le formulaire #devis de leur accueil.
 CTA_UNIQUES = ('barre-cta', 'menu-devis', 'pied-devis')
+TYPES_PAGE = {'creation-site-web-casablanca/': '?type=vitrine', 'application-web-maroc/': '?type=web', 'application-mobile-casablanca/': '?type=mobile', 'logiciel-sur-mesure-maroc/': '?type=logiciel', 'conseil-reprise-application-maroc/': '?type=autre', 'etude-de-cas-atlasya/': '?type=web', 'etude-de-cas-rihla/': '?type=mobile', 'etude-de-cas-ostad/': '?type=web'}
 for u in pages:
     h = open(fichier(u), encoding='utf-8').read()
-    cible = '#devis' if u in ACCUEILS else '../../#devis' if '/ar/' in u else '../#devis'
+    rel = u[len(BASE):]
+    if rel == 'estimer-mon-projet/': cible = '#titre'
+    elif '/ar/' in u: cible = '../../#devis'
+    elif '/en/' in u or u == BASE + 'en/': cible = '#devis' if u in ACCUEILS else '../#devis'
+    elif u == BASE: cible = 'estimer-mon-projet/'
+    else: cible = '../estimer-mon-projet/' + TYPES_PAGE.get(rel, '')
     for cls in CTA_UNIQUES:
         liens = re.findall(r'<a class="[^"]*\b' + cls + r'\b[^"]*" href="([^"]*)"', h)
         if liens != [cible]: echecs.append(f'{u}: lien « {cls} » = {liens} (attendu une fois {cible})')
     for classes, href in re.findall(r'<a class="([^"]*)" href="([^"]*)"', h):
         if any(c in classes.split() for c in CTA_UNIQUES + ('bouton--plein',)) and href.startswith('mailto:'): echecs.append(f'{u}: bouton « {classes} » ouvre encore un mailto')
-        if 'bouton--plein' in classes.split() and href.startswith(('#devis', '../#devis', '../../#devis')) and href != cible: echecs.append(f'{u}: bouton « {classes} » vise {href} (attendu {cible})')
+        if 'bouton--plein' in classes.split() and '#devis' in href and href != cible: echecs.append(f'{u}: bouton « {classes} » vise {href} (attendu {cible})')
 # catalogue et compteurs (26/10/2026 ; l'intro disait « Deux titres » au-dessus de trois cartes) : pas de build qui centraliserait le nombre de titres,
 #   donc un contrôle. Sur chaque accueil, le nombre de cartes du Catalogue = le compteur de l'ouverture = le chiffre « titres publiés » = le mot de l'intro ;
 #   et partout, chaque compteur animé (--n, la valeur d'arrivée de l'animation) = le nombre écrit dans le texte (celui des lecteurs d'écran et du repli).
@@ -223,5 +234,79 @@ for u, lang in ((BASE, 'fr'), (BASE + 'en/', 'en')):
     # captures des produits (couvertures) : dimensions écrites (pas de décalage au chargement) et chargement paresseux (le Catalogue est loin sous l'ouverture)
     for img in re.findall(r'<div class="ecran">(<img [^>]*>)</div>', h):
         if not re.search(r'\bwidth="\d+" height="\d+"', img) or 'loading="lazy"' not in img: echecs.append(f'{u}: capture {img[:60]}… sans width/height ou sans loading="lazy"')
+# ── Conversion (30/10/2026) ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+HORS_SITEMAP = ['offre-lancement/', 'realisations/demos/restaurant/', 'realisations/demos/services/', 'realisations/demos/reservation/', 'realisations/demos/gestion/']
+for rel in HORS_SITEMAP:
+    u = BASE + rel
+    if f'<loc>{u}</loc>' in sm: echecs.append(f'{u}: page d\'offre ou démonstration dans le sitemap')
+    if not os.path.exists(fichier(u)): echecs.append(f'{u}: fichier absent'); continue
+    t = open(fichier(u), encoding='utf-8').read(); q = P(); q.feed(t)
+    if 'noindex' not in (q.meta.get('robots') or ''): echecs.append(f'{u}: noindex absent')
+    if q.h1 != 1: echecs.append(f'{u}: {q.h1} h1')
+    for href in q.hrefs:
+        if href.startswith(('mailto:', 'tel:', '#!')) or urlparse(href).netloc not in ('', 'legantis.net'): continue
+        c = urlparse(urljoin(u, href))
+        if not os.path.exists(fichier(BASE + c.path.lstrip('/'))): echecs.append(f'{u}: {href} -> fichier absent')
+        if c.fragment and urljoin(u, href).split('#')[0].split('?')[0] == u and c.fragment not in q.ids: echecs.append(f'{u}: {href} -> ancre absente')
+    if '/demos/' in rel:
+        if 'entreprise et données fictives' not in t: echecs.append(f'{u}: mention « données fictives » absente du bandeau')
+        if re.search(r'<form[^>]*\baction=', t): echecs.append(f'{u}: une démonstration ne doit rien envoyer (action trouvée)')
+        if re.search(r'href="(mailto|tel):', t): echecs.append(f'{u}: une démonstration ne doit proposer aucun contact réel fictif')
+# réalisations : chaque carte dit sa nature ; aucune démonstration sans étiquette ; aucun témoignage ni client
+rea = BASE + 'realisations/'
+if rea in pages:
+    t = open(fichier(rea), encoding='utf-8').read()
+    for bloc in re.findall(r'<li class="projet[^"]*" data-nature="(\w+)".*?</li>', t, re.S):
+        pass
+    cartes = re.findall(r'<li class="projet[^>]*data-nature="(\w+)"[^>]*>(.*?)</li>\s*(?=<li class="projet|</ul>)', t, re.S)
+    if len(cartes) < 7: echecs.append(f'{rea}: {len(cartes)} cartes de projet')
+    for nature, corps in cartes:
+        attendu = {'interne': 'Produit interne Legantis', 'demo': 'Démonstration conceptuelle'}.get(nature)
+        if not attendu or attendu not in corps: echecs.append(f'{rea}: carte de nature {nature} sans son étiquette')
+# parcours : mêmes contrôles que le formulaire de l'accueil, plus le consentement et le retour prévu par le Worker
+WS = open(WORKER_SRC, encoding='utf-8').read() if os.path.exists(WORKER_SRC) else ''
+for rel, parcours in (('estimer-mon-projet/', 'simulateur'), ('audit-gratuit/', 'audit'), ('offre-lancement/', 'offre')):
+    u = BASE + rel
+    if not os.path.exists(fichier(u)): echecs.append(f'{u}: page absente'); continue
+    t = open(fichier(u), encoding='utf-8').read()
+    m = re.search(r'<form class="devis-form[^"]*"([^>]*)>(.*?)</form>', t, re.S)
+    if not m: echecs.append(f'{u}: formulaire absent'); continue
+    ouv, corps = m.group(1), m.group(2)
+    action = (re.search(r'action="([^"]*)"', ouv) or [None, ''])[1]
+    if 'method="post"' not in ouv or not re.fullmatch(r'https://[a-z0-9-]+(\.[a-z0-9-]+)*\.workers\.dev/', action): echecs.append(f'{u}: méthode ou adresse du formulaire ({action!r})')
+    noms = set(re.findall(r'<(?:input|select|textarea)\b[^>]*\bname="([^"]+)"', corps))
+    if champs_worker is not None and not noms <= champs_worker: echecs.append(f'{u}: champs non lus par le Worker : {sorted(noms - champs_worker)}')
+    if f'<input type="hidden" name="parcours" value="{parcours}">' not in corps: echecs.append(f'{u}: parcours={parcours} absent')
+    if f"{parcours}: '/{rel}'" not in WS: echecs.append(f'{u}: chemin de retour absent du Worker')
+    if 'name="consentement"' not in corps or 'required' not in re.search(r'<input[^>]*name="consentement"[^>]*>', corps).group(0): echecs.append(f'{u}: case de consentement absente ou facultative')
+    if 'name="site_web" tabindex="-1"' not in corps: echecs.append(f'{u}: champ piège absent')
+    for ident in ('devis-envoye', 'devis-echec'):
+        if f'id="{ident}"' not in t: echecs.append(f'{u}: message #{ident} absent')
+    for ident in re.findall(r'<(?:input|select|textarea)\b[^>]*\bid="([^"]+)"', corps):
+        if f'<label for="{ident}">' not in corps: echecs.append(f'{u}: champ #{ident} sans <label for>')
+# le simulateur affiche le texte convenu tant que la grille n'est pas validée
+est = fichier(BASE + 'estimer-mon-projet/')
+if os.path.exists(est) and 'Votre projet nécessite une estimation personnalisée. Recevez un devis gratuit adapté à vos besoins.' not in open(est, encoding='utf-8').read(): echecs.append('simulateur : message d\'estimation personnalisée absent')
+# aucun tarif non validé dans ce qui est publié : tant que config/commercial.json ne porte aucun pack validé, aucun montant de vente ; seuls sont admis le capital, les tranches
+# de budget du visiteur et, dans les démonstrations, les prix fictifs. Aucune adresse wa.me non plus tant qu'aucun numéro n'est configuré.
+CONFIG = os.path.join(RACINE, '..', 'config', 'commercial.json')
+if os.path.exists(CONFIG):
+    conf = json.load(open(CONFIG, encoding='utf-8'))
+    montants_valides = {f"{p['prix_mad']:,}".replace(',', ' ') for p in conf.get('packs') or []}
+    ADMIS = {'10 000', '5 000', '15 000', '50 000', '25 000', '100 000'}   # capital ; tranches de budget du visiteur (simulateur, /commandes/)
+    for dossier, _, fichiers in os.walk(RACINE):
+        for nom in fichiers:
+            if not nom.endswith(('.html', '.js', '.css', '.json', '.xml', '.txt')): continue
+            chemin = os.path.join(dossier, nom); relatif = os.path.relpath(chemin, RACINE)
+            t = open(chemin, encoding='utf-8').read().replace('&nbsp;', ' ').replace('\u00a0', ' ')
+            if not (conf.get('whatsapp') or {}).get('numero') and 'wa.me/' in t: echecs.append(f'{relatif}: lien WhatsApp alors qu\'aucun numéro n\'est configuré')
+            if relatif.startswith(os.path.join('realisations', 'demos')): continue
+            for m in re.findall(r'(\d[\d ]*\d|\d)\s*(?:MAD|DH|dirhams)\b', t):
+                if m.strip() not in ADMIS | montants_valides: echecs.append(f'{relatif}: montant « {m} MAD » non validé dans config/commercial.json')
+            if not conf.get('packs') and re.search(r'\b(pack starter|pack business|prix_mad)\b', re.sub(r'<script type="application/ld\+json">.*?</script>', '', t, flags=re.S), re.I) and not relatif.endswith('conversion.js'): echecs.append(f'{relatif}: offre non validée publiée')
+import subprocess
+if os.path.exists(os.path.join(RACINE, '..', 'outils', 'commercial.py')) and os.path.abspath(RACINE) == os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'site')):
+    r = subprocess.run([sys.executable, os.path.join(RACINE, '..', 'outils', 'commercial.py'), '--verifier'], capture_output=True, text=True)
+    if r.returncode != 0: echecs.append('site/ décalé par rapport à config/commercial.json : ' + (r.stdout + r.stderr).strip()[:200])
 print(len(pages), 'pages du sitemap,', n, 'liens internes contrôlés')
 print('ÉCHECS:' if echecs else 'tout passe', *echecs, sep='\n  ')

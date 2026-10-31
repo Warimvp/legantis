@@ -1,0 +1,18 @@
+{
+  "_lire": "Modèle sans valeur réelle. Copier vers ~/Documents/bureaux/Legantis-Acquisition/commercial.apercu.json (hors du dépôt public) et remplir pour voir les pages tarifaires en aperçu local. Les nombres ci-dessous sont factices.",
+  "whatsapp": { "numero": "" },
+  "offre_ouverture": { "valide": false, "titre": "Offre de lancement", "texte": "Description de l'offre", "lien": "offre-lancement/" },
+  "packs": [
+    {
+      "id": "starter", "nom": "Pack Starter", "valide": false, "prix_mad": 1, "regime": "HT", "accroche": "Accroche", "cta": "Choisir ce pack",
+      "inclus": ["Élément inclus"], "exclus": ["Élément exclu"]
+    }
+  ],
+  "packs_faq": [{ "question": "Question", "reponse": "Réponse" }],
+  "grille": {
+    "valide": false, "devise": "MAD", "regime": "HT",
+    "postes": {
+      "vitrine": { "valide": false, "base": { "min": 1, "max": 2 }, "options": { "formulaire": { "min": 1, "max": 2 } } }
+    }
+  }
+}
