@@ -329,6 +329,26 @@ if os.path.exists(CONFIG):
             for m in re.findall(r'(\d[\d ]*\d|\d)\s*(?:MAD|DH|dirhams)\b', t):
                 if m.strip() not in ADMIS | montants_valides: echecs.append(f'{relatif}: montant « {m} MAD » non validé dans config/commercial.json')
             if not conf.get('packs') and re.search(r'\b(pack starter|pack business|prix_mad)\b', re.sub(r'<script type="application/ld\+json">.*?</script>', '', t, flags=re.S), re.I) and not relatif.endswith('conversion.js'): echecs.append(f'{relatif}: offre non validée publiée')
+# identité légale (loi n° 5-96, art. 43-12 et 43-14) : le capital figure une fois par accueil, dans .pied-legal avec la dénomination, la forme, le siège et le RC, et une fois
+# par page légale avec tous les identifiants ; il n'apparaît nulle part ailleurs : les pages commerciales restent sobres. Élargir cette règle si le juriste le demande.
+def visible(h): return re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', re.sub(r'<(script|style)\b.*?</\1>|<!--.*?-->', '', h, flags=re.S))).replace('&nbsp;', ' ').replace('\u00a0', ' ')
+MONTANT_CAPITAL = re.compile(r'\b10 000 MAD\b|\bMAD 10,000\b|\bcapital 10 000\b', re.I)
+LIGNE_LEGALE = {BASE: ('LEGANTIS DIGITAL SERVICE SAS', 'société par actions simplifiée à associé unique', '10 000 MAD', 'Oasis Offices Latitudes, Route de l\'Oasis, Bureau 304, Maarif, Casablanca', 'MyLegal Offices', 'RC Casablanca n° 745587', '004026900000030', '73343482'),
+                BASE + 'en/': ('LEGANTIS DIGITAL SERVICE SAS', 'simplified joint-stock company with a single shareholder', 'MAD 10,000', 'Oasis Offices Latitudes, Route de l\'Oasis, Bureau 304, Maarif, Casablanca', 'MyLegal Offices', 'Casablanca Commercial Register No. 745587', '004026900000030', '73343482')}
+PAGES_LEGALES = {BASE + 'mentions-legales/': ('LEGANTIS DIGITAL SERVICE SAS', '10 000 MAD', 'Oasis Offices Latitudes', 'MyLegal Offices', 'Casablanca n° 745587', '07/09/2026', '004026900000030', '73343482', '34706792', 'Yassir Legmara'),
+                 BASE + 'en/legal/': ('LEGANTIS DIGITAL SERVICE SAS', 'MAD 10,000', 'Oasis Offices Latitudes', 'MyLegal Offices', 'Casablanca No. 745587', '7 September 2026', '004026900000030', '73343482', '34706792', 'Yassir Legmara')}
+for u in pages:
+    h = open(fichier(u), encoding='utf-8').read(); t = visible(h); nb = len(MONTANT_CAPITAL.findall(t))
+    attendu = 1 if u in LIGNE_LEGALE or u in PAGES_LEGALES else 0
+    if nb != attendu: echecs.append(f'{u}: capital social affiché {nb} fois, {attendu} attendue(s)')
+    if u in LIGNE_LEGALE:
+        ligne = re.search(r'<p class="pied-legal">(.*?)</p>', h, re.S)
+        for mot in LIGNE_LEGALE[u]:
+            if not ligne or mot not in visible(ligne.group(1)): echecs.append(f'{u}: ligne légale sans « {mot} »')
+    for mot in PAGES_LEGALES.get(u, ()):
+        if mot not in t: echecs.append(f'{u}: page légale sans « {mot} »')
+IMAGES = os.path.join(RACINE, '..', 'outils', 'images.py')
+if os.path.exists(IMAGES) and 'CAPITAL' in open(IMAGES, encoding='utf-8').read(): echecs.append('outils/images.py : capital sur l\'image de partage')
 import subprocess
 if os.path.exists(os.path.join(RACINE, '..', 'outils', 'commercial.py')) and os.path.abspath(RACINE) == os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'site')):
     r = subprocess.run([sys.executable, os.path.join(RACINE, '..', 'outils', 'commercial.py'), '--verifier'], capture_output=True, text=True)

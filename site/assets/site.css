@@ -442,19 +442,18 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 @keyframes barre-voile { to { background: color-mix(in srgb, var(--chaux) 84%, transparent); border-color: var(--filet); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); } }
 
 /* Projecteur des cartes (lumiere.js, classe .lumiere) : sous le curseur, une lumière douce à l'encre (--lueur) suit la souris dans la
-   carte et le bord de la carte s'allume. Une seule recette pour les six cartes (.prestation, .offre, .titre, .epreuve, .atout, .fiche),
+   carte et le bord de la carte s'allume. Une seule recette pour les cinq cartes (.prestation, .offre, .titre, .epreuve, .atout),
    un seul pseudo-élément par carte, posé par-dessus le contenu sans recevoir le pointeur : un dégradé radial centré en (--sx, --sy),
    le curseur dans le cadre intérieur de la carte (écrit par le script sur la carte survolée seulement). Un masque en exclusion (la
    carte entière à 84 %, contre son cadre entier) laisse le dégradé presque entier sur le liseré de 2 px du bord et le ramène à 16 %
    dans la carte : le même dégradé fait le trait lumineux et la lueur. Extinction en fondu quand le curseur sort (opacité seule, le
    dégradé garde sa dernière place) ; le survol est affaire de :hover, le script n'écrit que la position. Le liseré est dans le cadre
    intérieur : .prestation et .titre rognent leur contenu (overflow: hidden), un trait posé sur leur bordure serait coupé.
-   Support de chaque carte (pseudo-éléments déjà pris, rien n'est déplacé) : ::after partout, sauf .fiche, qui prend ::before pour que
-   le cachet, posé après, reste par-dessus. .prestation a son ::before (lampe du coin), .epreuve le sien (voile du bas), .atout le sien
+   Support de chaque carte (pseudo-éléments déjà pris, rien n'est déplacé) : ::after partout.
+   .prestation a son ::before (lampe du coin), .epreuve le sien (voile du bas), .atout le sien
    (trait d'encre) ; les autres n'en avaient aucun. Le texte est éclairé avec le fond (le tout reste à 4,5:1 sous le cœur, mesuré). */
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .lumiere :is(.prestation, .offre, .titre, .epreuve, .atout, .pack, .projet, .offre-phare)::after,
-  .lumiere .fiche::before {
+  .lumiere :is(.prestation, .offre, .titre, .epreuve, .atout, .pack, .projet, .offre-phare)::after {
     content: ""; position: absolute; inset: 0; padding: 2px; border-radius: inherit; pointer-events: none;
     --sx: inherit; --sy: inherit;
     background: radial-gradient(circle var(--projecteur-rayon) at calc(var(--sx) + var(--dx, 0px)) calc(var(--sy) + var(--dy, 0px)), var(--projecteur), color-mix(in srgb, var(--projecteur) 62%, transparent) 30%, color-mix(in srgb, var(--projecteur) 26%, transparent) 62%, transparent);
@@ -464,22 +463,7 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
     mask-composite: exclude;
     opacity: 0; transition: opacity .45s var(--sortie) .12s;   /* l'extinction attend 0,12 s : une carte qui se soulève sous le pointeur (prestation) le perd un instant à son bord bas et ferait clignoter le liseré */
   }
-  .lumiere :is(.prestation, .offre, .titre, .epreuve, .atout, .pack, .projet, .offre-phare):hover::after,
-  .lumiere .fiche:hover::before { opacity: 1; transition-delay: 0s; }
-  /* Le cachet de la fiche (aria-hidden) déborde du papier : le liseré, qui longe le bord, passe sous ses lignes de texte. En sombre, le
-     texte du cachet tombait à 4,1:1 au protocole des cartes (6,4:1 sans projecteur). Deux retouches propres à cette carte : le liseré
-     reste à 1 px (à 2 px, 4,5:1 tout juste), et un troisième calque du masque, une ellipse douce centrée sur le cachet, retire la
-     lumière autour de lui (composé par intersection avec le reste du masque : le liseré s'éteint en fondu en l'approchant). Le cachet
-     est mesuré à environ 142 px du bord droit du papier et 25 px au-dessus de son bord bas (il ne déborde que de 12 px : le papier a
-     28 px de marge droite) ; l'ellipse est réglée à la main à 114 px et 28 px, soit un écart d'environ 28 px sans effet mesuré sur le
-     contraste. Si la taille ou la place du cachet change, recaler l'ellipse. */
-  .lumiere .fiche::before {
-    padding: 1px;
-    -webkit-mask: radial-gradient(ellipse 210px 90px at calc(100% - min(114px, (100% - 40px) / 2)) calc(100% - 28px), transparent 40%, #000), linear-gradient(rgb(0 0 0 / .84) 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: source-in, xor, source-over;
-    mask: radial-gradient(ellipse 210px 90px at calc(100% - min(114px, (100% - 40px) / 2)) calc(100% - 28px), transparent 40%, #000), linear-gradient(rgb(0 0 0 / .84) 0 0) content-box, linear-gradient(#000 0 0);
-    mask-composite: intersect, exclude, add;
-  }
+  .lumiere :is(.prestation, .offre, .titre, .epreuve, .atout, .pack, .projet, .offre-phare):hover::after { opacity: 1; transition-delay: 0s; }
 }
 
 /* Curseur personnalisé (lumiere.js) : un point et un anneau accompagnent le pointeur. Dans les zones vides (état « repos »), ils
@@ -513,8 +497,8 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
   html.curseur { cursor: none; }
   html.curseur summary { cursor: pointer; }   /* le navigateur n'en donne pas : sans cela le pointeur serait masqué sur un résumé que le script range avec les liens */
   html.curseur [role="button"] { cursor: pointer; }
-  html.curseur :is(p, li, dd, dt, h1, h2, h3, h4, address, .fiche), html.curseur .couverture .domaine { cursor: text; }
-  html.curseur :is(a[href], button, summary, [role="button"], label) :is(p, li, dd, dt, h1, h2, h3, h4, address, .fiche) { cursor: inherit; }
+  html.curseur :is(p, li, dd, dt, h1, h2, h3, h4, address), html.curseur .couverture .domaine { cursor: text; }
+  html.curseur :is(a[href], button, summary, [role="button"], label) :is(p, li, dd, dt, h1, h2, h3, h4, address) { cursor: inherit; }
   html.curseur .couverture img { cursor: default; }
   body > .curseur { position: fixed; left: 0; top: 0; width: 0; height: 0; z-index: 2147483647; pointer-events: none; -webkit-user-select: none; user-select: none; mix-blend-mode: difference;
     opacity: 0; visibility: hidden; transition: opacity .2s ease-out, visibility 0s .2s; }
@@ -781,32 +765,15 @@ html[dir="rtl"] .couverture .ecran { rotate: -4deg; }
 .epreuve p { color: var(--gris); font-size: 0.96rem; }
 .epreuve .support { justify-self: start; margin-top: 8px; padding: 6px 11px; border-radius: 999px; background: var(--tampon-pale); color: var(--tampon); font: 500 0.66rem/1.4 var(--f-mono); letter-spacing: 0.1em; text-transform: uppercase; }
 
-/* Colophon : la société d'un côté, la fiche d'identité tamponnée de l'autre, posée sur un orbe de lumière
-   (l'équivalent de l'illustration « Art01 » de nexus) ; #societe le contient (et le cachet qui déborde sur mobile) */
+/* La société : un court texte de confiance, sans données administratives. L'identité légale est dans .pied-legal et les mentions légales. */
 #societe { overflow-x: clip; }
-.societe { position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr); gap: 56px clamp(40px, 6vw, 96px); align-items: start; }
-.societe::before {
-  content: ""; position: absolute; z-index: -1; pointer-events: none;
-  grid-column: 2; grid-row: 1; inset: -10% -55% -16%;
-  background: radial-gradient(closest-side, var(--eclat) 42%, color-mix(in srgb, var(--lueur) 12%, transparent) 62%, transparent 88%);
-}
-@media (prefers-color-scheme: dark) {
-  .societe::before {
-    background: radial-gradient(closest-side, color-mix(in srgb, var(--lueur) 55%, transparent), color-mix(in srgb, var(--lueur) 24%, transparent) 45%, color-mix(in srgb, var(--lueur) 7%, transparent) 72%, transparent);
-    animation: respirer 6s ease-in-out infinite;
-  }
-}
-@keyframes respirer { 50% { opacity: .7; } }
 .societe-texte { position: relative; padding-top: 24px; }
 .numero-fantome { position: absolute; z-index: 0; top: -70px; left: -20px; font-weight: 800; font-size: clamp(9rem, 18vw, 16rem); line-height: 1; font-stretch: 118%; letter-spacing: -0.07em; color: color-mix(in srgb, var(--encre) 4%, transparent); pointer-events: none; user-select: none; }
 .societe-texte > :not(.numero-fantome) { position: relative; z-index: 1; }
 .societe-texte h2 { margin: 18px 0 28px; }
 .societe-texte p { color: var(--gris); font-size: clamp(1.05rem, 1.35vw, 1.2rem); max-width: 50ch; }
-.societe-texte p + p { margin-top: 18px; }
+.societe-texte .actions { margin-top: 30px; animation: none; }
 .note { margin-top: 26px; font-size: 0.92rem; color: var(--gris); max-width: var(--mesure); }
-.fiche { position: relative; background: var(--carte); border: 1px solid var(--filet); border-radius: 8px; padding: 24px 28px 28px; box-shadow: var(--ombre); }
-.fiche h3 { font: 500 0.7rem/1.4 var(--f-mono); letter-spacing: 0.16em; text-transform: uppercase; margin: 0 0 12px; padding-bottom: 14px; border-bottom: 1px solid var(--filet); }
-/* projecteur : ::before de la fiche (libre), pour que le cachet, posé après, reste par-dessus le liseré ; pas d'isolation ajoutée, elle changerait le mélange du cachet */
 .colophon { margin: 0; display: grid; }
 .colophon div { display: grid; grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr); align-items: baseline; padding: 9px 0; }
 .colophon dt { display: flex; align-items: baseline; font-size: 0.86rem; color: var(--gris); }
@@ -840,8 +807,6 @@ html[dir="rtl"] .couverture .ecran { rotate: -4deg; }
 }
 .cachet b { display: block; font-size: 1.12rem; font-weight: 800; line-height: 1.15; letter-spacing: 0.03em; margin-bottom: 4px; }
 .cachet span { display: block; }
-/* Dans le flux, sous la liste : il déborde du papier par ses marges négatives sans jamais couvrir l'adresse */
-.fiche .cachet { position: relative; width: 308px; max-width: calc(100% + 40px); margin: 24px -40px -56px auto; }
 @keyframes coup-de-tampon {
   from { opacity: 0; transform: rotate(var(--angle)) scale(1.55); }
   65% { opacity: .95; transform: rotate(var(--angle)) scale(.97); }
@@ -893,6 +858,7 @@ html[dir="rtl"] .couverture .ecran { rotate: -4deg; }
 .contact-reseaux dd { column-gap: 28px; }   /* pas de « · » entre les deux : il se logeait sous la ligne de texte, l'écart suffit */
 .logo-reseau { width: 1.3em; height: 1.3em; fill: currentColor; flex: none; }
 .pied-bas .coeur { color: var(--tampon); }
+.pied-legal { margin: 18px 0 0; max-width: 100ch; font-size: 0.74rem; line-height: 1.6; color: var(--gris); overflow-wrap: anywhere; }   /* accueils : art. 43-12 de la loi n° 5-96, une seule fois par page */
 
 /* ── Pages légales et 404 ──────────────────────────────────── */
 main.enveloppe { overflow-x: clip; }   /* 404, mentions : le cachet tourné n'élargit pas la page sur mobile ; découpe au bord de la page, pas au ras du texte */
@@ -1056,10 +1022,7 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
   .menu-ouvrir { display: inline-flex; }
   .ouverture { min-height: auto; }
   .rond-tournant, .forme--carre { display: none; }
-  .societe { grid-template-columns: minmax(0, 1fr); }
-  .fiche { max-width: 520px; }
   .catalogue, .atouts, .epreuves { grid-template-columns: minmax(0, 1fr); }
-  .societe::before { grid-column: 1; grid-row: 2; inset: -6% -20% -12%; }
 }
 @media (min-width: 901px) {
   .menu-plein:target { display: none; }
@@ -1098,7 +1061,7 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
   .defile { display: none; }
   .bouton--plein { background: none; color: var(--tampon); box-shadow: none; }
   .couverture { color: var(--encre); } .couverture p { color: var(--gris); } .domaine { background: none; border-color: var(--filet); }
-  .prestation, .titre, .epreuve, .etape, .offre, .fiche, .atout, .suite-bloc { break-inside: avoid; }
+  .prestation, .titre, .epreuve, .etape, .offre, .atout, .suite-bloc { break-inside: avoid; }
   h2, h3, h4, .surtitre, .sous-titre { break-after: avoid; }
   .bloc-tete { break-inside: avoid; break-after: avoid; }
 }
