@@ -260,7 +260,7 @@ for u, lang in ((BASE, 'fr'), (BASE + 'en/', 'en')):
     for img in re.findall(r'<div class="ecran">(<img [^>]*>)</div>', h):
         if not re.search(r'\bwidth="\d+" height="\d+"', img) or 'loading="lazy"' not in img: echecs.append(f'{u}: capture {img[:60]}… sans width/height ou sans loading="lazy"')
 # ── Conversion (30/10/2026) ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-HORS_SITEMAP = ['offre-lancement/', 'realisations/demos/restaurant/', 'realisations/demos/services/', 'realisations/demos/reservation/', 'realisations/demos/gestion/']
+HORS_SITEMAP = ['offre-lancement/', 'realisations/demos/restaurant/', 'realisations/demos/services/', 'realisations/demos/reservation/', 'realisations/demos/gestion/', 'realisations/demos/distribution-os/']
 for rel in HORS_SITEMAP:
     u = BASE + rel
     if f'<loc>{u}</loc>' in sm: echecs.append(f'{u}: page d\'offre ou démonstration dans le sitemap')
@@ -277,6 +277,32 @@ for rel in HORS_SITEMAP:
         if 'entreprise et données fictives' not in t: echecs.append(f'{u}: mention « données fictives » absente du bandeau')
         if re.search(r'<form[^>]*\baction=', t): echecs.append(f'{u}: une démonstration ne doit rien envoyer (action trouvée)')
         if re.search(r'href="(mailto|tel):', t): echecs.append(f'{u}: une démonstration ne doit proposer aucun contact réel fictif')
+# Distribution OS (01/11/2026) : démonstration interactive, données fictives, rien ne quitte le navigateur. Ses scripts ne contiennent aucun moyen d'envoi
+#   (fetch, XMLHttpRequest, sendBeacon, WebSocket, formulaire, image ou script tiers), ne touchent qu'au sessionStorage (jamais localStorage ni cookie),
+#   le bandeau porte la mention complète, et /commandes/ y renvoie (vitrine #demonstration, bouton principal) avec un retour vers son formulaire.
+DOS = os.path.join(RACINE, 'realisations', 'demos', 'distribution-os')
+if os.path.isdir(DOS):
+    u = 'realisations/demos/distribution-os/'
+    for nom in sorted(os.listdir(DOS)):
+        if not nom.endswith('.js'): continue
+        src = open(os.path.join(DOS, nom), encoding='utf-8').read()
+        for motif, quoi in ((r'\bfetch\s*\(', 'fetch'), (r'XMLHttpRequest', 'XMLHttpRequest'), (r'sendBeacon', 'sendBeacon'), (r'WebSocket|EventSource', 'WebSocket'), (r'\blocalStorage\b', 'localStorage'), (r'document\.cookie', 'cookie'), (r'\.submit\s*\(', 'envoi de formulaire'), (r'https?://(?!www\.w3\.org/2000/svg)', 'adresse externe'), (r'\bimport\s*\(|createElement\(\s*[\'"]script', 'chargement de code')):
+            if re.search(motif, src): echecs.append(f'{u}{nom}: {quoi} dans une démonstration qui ne doit rien transmettre')
+    h = open(os.path.join(DOS, 'index.html'), encoding='utf-8').read()
+    if 'Démonstration interactive créée par Legantis.</b> Entreprises, opérations et données fictives.' not in h: echecs.append(f'{u}: bandeau « Démonstration interactive créée par Legantis. Entreprises, opérations et données fictives. » absent')
+    if re.search(r'<(script|link|img)[^>]+(src|href)="https?://', h): echecs.append(f'{u}: ressource externe chargée')
+    app = open(os.path.join(DOS, 'app.js'), encoding='utf-8').read() if os.path.exists(os.path.join(DOS, 'app.js')) else ''
+    if "'../../../commandes/'" not in app or "'#demande'" not in app or 'utm_source' not in app: echecs.append(f'{u}: le retour vers le formulaire de /commandes/ (avec la campagne) a disparu')
+    if os.path.exists(ACQ):
+        c = open(ACQ, encoding='utf-8').read()
+        if not re.search(r'<section class="section vitrine" id="demonstration"', c) or not re.search(r'<a class="bouton bouton--plein" href="\.\./realisations/demos/distribution-os/">Essayer la démonstration interactive', c) or '<a class="bouton" href="#demande">Demander mon diagnostic gratuit</a>' not in c:
+            echecs.append('/commandes/: vitrine de la démonstration (bouton principal, diagnostic) absente')
+        for img in re.findall(r'<img [^>]*dos-[a-z-]+\.webp[^>]*>', c):
+            if not re.search(r'\bwidth="\d+" height="\d+"', img) or 'loading="lazy"' not in img or not re.search(r'alt="[^"]{20,}"', img): echecs.append(f'/commandes/: capture {img[:70]}… sans dimensions, sans chargement paresseux ou sans texte alternatif')
+            src = re.search(r'src="\.\./([^"]+)"', img).group(1)
+            if not os.path.exists(os.path.join(RACINE, src)): echecs.append(f'/commandes/: {src} absente')
+    cv = open(os.path.join(RACINE, 'assets', 'conversion.js'), encoding='utf-8').read()
+    if 'a[href*="demos/distribution-os/"]' not in cv: echecs.append('conversion.js : la campagne n\'est plus transmise aux liens vers la démonstration')
 # réalisations : chaque carte dit sa nature ; aucune démonstration sans étiquette ; aucun témoignage ni client
 rea = BASE + 'realisations/'
 if rea in pages:

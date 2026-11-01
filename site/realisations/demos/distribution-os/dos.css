@@ -691,6 +691,12 @@ a.ref:hover { color: var(--accent-texte); text-decoration: underline; }
   .cta-carte { grid-template-columns: minmax(0, 1fr); }
   .cta-carte .btn { width: 100%; white-space: normal; }
   #guide { left: 8px; right: 8px; bottom: 8px; width: auto; }
+  html.fige #guide { top: calc(env(safe-area-inset-top) + 6px); bottom: auto; }
+  html.fige .guide { max-height: 34vh; }
+  html.fige .guide > div[aria-live] > p:not(.guide-cmd):not(.guide-ok), html.fige .guide-pied, html.fige .guide-progression { display: none; }
+  .nc-lignes th:nth-child(2), .nc-lignes td:nth-child(2) { display: none; }
+  .nc-lignes th, .nc-lignes td { padding-inline: 6px; }
+  .quantite input { width: 52px; }
   .guide { padding: 12px 14px 10px; max-height: 46vh; overflow-y: auto; }
   .toasts { right: 12px; left: 12px; bottom: 12px; width: auto; }
   body:has(#guide:not([hidden])) .toasts { bottom: auto; top: calc(var(--bandeau) + var(--haut) + 8px); }

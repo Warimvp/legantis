@@ -366,6 +366,22 @@ const texteNum = t => Number(t.replace(/[^\d,−-]/g, '').replace(',', '.').repl
   await ctx.close();
 }
 
+// ── /commandes/ → démonstration → formulaire, campagne conservée de bout en bout ────────────────────────────────────────────────────────
+{
+  const ctx = await contexte(); const page = await ctx.newPage();
+  await page.goto(ORIGINE + '/commandes/?utm_source=meta&utm_medium=paid&utm_campaign=distribution-os');
+  verifier('/commandes/ : vitrine avec grande capture et trois vues', await page.locator('#demonstration .vitrine-bureau').count() === 1 && await page.locator('#demonstration .vitrine-vues li').count() === 3);
+  verifier('/commandes/ : bouton secondaire vers le diagnostic', (await page.getAttribute('#demonstration a.bouton:not(.bouton--plein)', 'href')) === '#demande');
+  await page.click('#demonstration .bouton--plein');
+  await page.waitForSelector('body.pret');
+  verifier('/commandes/ → démonstration : la campagne suit', page.url().includes('/distribution-os/?utm_source=meta&utm_medium=paid&utm_campaign=distribution-os'), page.url());
+  const retour = await page.getAttribute('.nav-cta a', 'href');
+  verifier('démonstration → /commandes/#demande : la campagne revient', retour.includes('utm_campaign=distribution-os') && retour.endsWith('#demande'), retour);
+  await page.goto(ORIGINE + '/commandes/?utm_source=meta');
+  verifier('/commandes/ : les vues secondaires ouvrent le bon écran, campagne comprise', (await page.getAttribute('#demonstration .vitrine-vues a', 'href')).endsWith('/distribution-os/?utm_source=meta#/commandes'));
+  await ctx.close();
+}
+
 verifier('aucun hôte tiers contacté', tiers.size === 0, [...tiers].join(', '));
 verifier('aucune requête d\'envoi (POST, etc.) depuis la démonstration', requetes.filter(r => r.includes('/distribution-os/')).length === 0, requetes.join(', '));
 await navigateur.close();

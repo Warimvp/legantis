@@ -43,7 +43,7 @@ m = open(os.path.join(SITE, 'mentions-legales', 'index.html'), encoding='utf-8')
 verifier('mentions légales : ni pixel ni cookie, comme le site', 'ni cookie, ni outil de mesure d\'audience, ni pixel publicitaire' in m)
 
 if '--complet' in sys.argv:
-    for nom, cmd in (('Worker', ['node', '--test', 'worker/test/index.test.js']), ('contrôles du site', [sys.executable, 'outils/controles_site.py']), ('outil commercial', [sys.executable, 'outils/test_commercial.py']), ('estimation', ['node', 'outils/test_estimation.js']), ('parcours', ['node', 'outils/parcours_test.mjs'])):
+    for nom, cmd in (('Worker', ['node', '--test', 'worker/test/index.test.js']), ('contrôles du site', [sys.executable, 'outils/controles_site.py']), ('outil commercial', [sys.executable, 'outils/test_commercial.py']), ('estimation', ['node', 'outils/test_estimation.js']), ('parcours', ['node', 'outils/parcours_test.mjs']), ('Distribution OS : règles', ['node', '--test', 'outils/test_distribution_os.js']), ('Distribution OS : parcours', ['node', 'outils/parcours_distribution_os.mjs'])):
         r = subprocess.run(cmd, cwd=RACINE, capture_output=True, text=True)
         verifier(f'{nom} : tests', r.returncode == 0 and 'ÉCHECS' not in r.stdout, r.stdout[-300:])
 
