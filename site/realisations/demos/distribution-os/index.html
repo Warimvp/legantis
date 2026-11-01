@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Distribution OS — démonstration interactive de Legantis</title>
+<meta name="description" content="Distribution OS, démonstration interactive créée par Legantis : commandes, clients, stock, préparation, paiements et rapports d'un distributeur, entreprise et données fictives.">
+<meta name="robots" content="noindex, follow">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#FFFFFF">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Legantis">
+<meta property="og:locale" content="fr_MA">
+<meta property="og:title" content="Distribution OS — démonstration interactive de Legantis">
+<meta property="og:description" content="Distribution OS, démonstration interactive créée par Legantis : commandes, clients, stock, préparation, paiements et rapports d'un distributeur, entreprise et données fictives.">
+<meta property="og:image" content="https://legantis.net/assets/captures/dos-tableau.webp">
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
+<link rel="preload" href="../../../assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="dos.css">
+<script src="moteur.js" defer></script>
+<script src="graphiques.js" defer></script>
+<script src="app.js" defer></script>
+<script src="ecrans.js" defer></script>
+<script src="guide.js" defer></script>
+</head>
+<body class="dos">
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-grille" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-commandes" viewBox="0 0 24 24"><rect x="5" y="4.5" width="14" height="16" rx="2"/><path d="M9 3.5h6v3H9zM9 11h6M9 15h4"/></symbol>
+  <symbol id="i-clients" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19.5c0-3.2 2.5-5.6 5.5-5.6s5.5 2.4 5.5 5.6M15.5 5.6a3.1 3.1 0 0 1 0 5.8M17.6 14.3c1.8.6 2.9 2.6 2.9 5.2"/></symbol>
+  <symbol id="i-stock" viewBox="0 0 24 24"><path d="M3.5 7.6 12 3.5l8.5 4.1v8.8L12 20.5l-8.5-4.1z"/><path d="M3.5 7.6 12 11.8l8.5-4.2M12 11.8v8.7"/></symbol>
+  <symbol id="i-camion" viewBox="0 0 24 24"><path d="M2.5 6.5h11v9.5h-11zM13.5 9.5h3.8l3.7 3.7V16h-7.5"/><circle cx="6.5" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></symbol>
+  <symbol id="i-paiement" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 9.8h18M7 14.8h4"/></symbol>
+  <symbol id="i-rapport" viewBox="0 0 24 24"><path d="M4 20h16M6.5 20v-7M11 20V5.5M15.5 20v-9.5M20 20V8"/></symbol>
+  <symbol id="i-reglages" viewBox="0 0 24 24"><path d="M4 7h9.5M18.5 7H20M4 17h3.5M12.5 17H20"/><circle cx="16" cy="7" r="2.3"/><circle cx="10" cy="17" r="2.3"/></symbol>
+  <symbol id="i-loupe" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m20 20-4.6-4.6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-moins" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-croix" viewBox="0 0 24 24"><path d="m6.5 6.5 11 11M17.5 6.5l-11 11"/></symbol>
+  <symbol id="i-coche" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-alerte" viewBox="0 0 24 24"><path d="M10.3 4.3 2.9 17.5A2 2 0 0 0 4.6 20.5h14.8a2 2 0 0 0 1.7-3L13.7 4.3a2 2 0 0 0-3.4 0z"/><path d="M12 9.5v4.2M12 16.8h.01"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.2M12 7.8h.01"/></symbol>
+  <symbol id="i-horloge" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-fleche" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-droite" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+  <symbol id="i-gauche" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+  <symbol id="i-haut" viewBox="0 0 24 24"><path d="m6.5 14.5 5.5-5.5 5.5 5.5"/></symbol>
+  <symbol id="i-bas" viewBox="0 0 24 24"><path d="m6.5 9.5 5.5 5.5 5.5-5.5"/></symbol>
+  <symbol id="i-egal" viewBox="0 0 24 24"><path d="M6.5 10h11M6.5 14h11"/></symbol>
+  <symbol id="i-points" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18.5" cy="12" r="1.2"/></symbol>
+  <symbol id="i-oeil" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></symbol>
+  <symbol id="i-cloche" viewBox="0 0 24 24"><path d="M6.5 16.5v-5a5.5 5.5 0 0 1 11 0v5l1.5 2h-14zM10 20.5a2.2 2.2 0 0 0 4 0"/></symbol>
+  <symbol id="i-telecharger" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></symbol>
+  <symbol id="i-entree" viewBox="0 0 24 24"><path d="M4 13.5h4l1.8 2.8h4.4l1.8-2.8h4"/><path d="M4 13.5 6.2 5.5h11.6l2.2 8v5H4z"/></symbol>
+  <symbol id="i-recharger" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4.6h-4.6"/></symbol>
+  <symbol id="i-lune" viewBox="0 0 24 24"><path d="M19.5 14.6A7.8 7.8 0 1 1 9.4 4.5a6.2 6.2 0 0 0 10.1 10.1z"/></symbol>
+  <symbol id="i-soleil" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.8"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></symbol>
+  <symbol id="i-lecture" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+  <symbol id="i-crayon" viewBox="0 0 24 24"><path d="M4.5 19.5h3.8L19 8.8 15.2 5 4.5 15.7z"/></symbol>
+  <symbol id="i-corbeille" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 12.5h9l1-12.5"/></symbol>
+  <symbol id="i-imprimer" viewBox="0 0 24 24"><path d="M7 9V3.5h10V9"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v6.5H7z"/></symbol>
+  <symbol id="i-personne" viewBox="0 0 24 24"><circle cx="12" cy="8.2" r="3.7"/><path d="M4.5 20.5c0-4.2 3.4-7.2 7.5-7.2s7.5 3 7.5 7.2"/></symbol>
+  <symbol id="i-baguette" viewBox="0 0 24 24"><path d="m4.5 19.5 10-10M17 3.5v3.5M15.2 5.2h3.6M19.5 10v2.5M18.3 11.2h2.5M11 3.5v2M10 4.5h2"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></symbol>
+</svg>
+<a class="lien-evitement" href="#vue">Aller au contenu</a>
+<header class="bandeau-demo"><p><span><b>Démonstration interactive créée par Legantis.</b> Entreprises, opérations et données fictives.</span> <a data-lien-legantis="#" href="../../../commandes/">Découvrir l'offre</a></p></header>
+<div class="app">
+  <aside class="nav" id="nav" aria-label="Navigation principale">
+    <div class="nav-marque">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="8" fill="#3D36B2"/><path d="M8 9h12v3.2H8zM8 14.4h9v3.2H8zM8 19.8h6V23H8z" fill="#F6F7F9"/><rect x="19" y="19" width="5" height="5" rx="1" fill="#E3A33A"/></svg>
+      <div><b>Distribution OS</b><small>Démo Négoce SARL · fictive</small></div>
+    </div>
+    <nav aria-label="Modules"><ul class="nav-liste" id="nav-liste"></ul></nav>
+    <div class="nav-bas">
+      <div class="nav-cta">
+        <p>Vous aimeriez un outil adapté à votre entreprise ?</p>
+        <a data-lien-legantis="#demande" href="../../../commandes/#demande">Discuter de mon projet avec Legantis <span aria-hidden="true">→</span></a>
+      </div>
+      <p class="nav-qui"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-personne"/></svg><span id="nav-role">Direction</span></p>
+      <button type="button" class="nav-reset" data-action="reinitialiser"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-recharger"/></svg>Réinitialiser la démonstration</button>
+    </div>
+  </aside>
+  <div class="voile-nav" data-action="fermer-nav" aria-hidden="true"></div>
+  <div class="zone">
+    <div class="haut" role="region" aria-label="Barre d'outils">
+      <button type="button" class="btn btn--icone haut-menu" data-action="nav" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg></button>
+      <p class="haut-titre" id="haut-titre">Tableau de bord</p>
+      <button type="button" class="recherche-globale" data-action="palette" aria-label="Rechercher une commande, un client ou un produit (Ctrl K)"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-loupe"/></svg><span>Rechercher…</span><kbd>Ctrl K</kbd></button>
+      <div class="haut-droite">
+        <label class="role-choix" title="Changer de vue (simulé)"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-personne"/></svg><span class="visuellement-cache">Voir l'interface comme</span>
+          <select id="role"><option value="direction">Direction</option><option value="commercial">Commercial</option><option value="magasinier">Magasinier</option><option value="gestionnaire">Gestionnaire</option></select>
+        </label>
+        <button type="button" class="btn btn--icone" data-action="theme" aria-pressed="false" aria-label="Passer en thème sombre"><svg class="ic ic-lune" aria-hidden="true" focusable="false"><use href="#i-lune"/></svg><svg class="ic ic-soleil" aria-hidden="true" focusable="false"><use href="#i-soleil"/></svg></button>
+        <button type="button" class="btn btn--accent haut-guide" data-action="guide" aria-label="Tester un scénario en 3 minutes"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lecture"/></svg><span>Tester un scénario en 3 minutes</span></button>
+        <button type="button" class="btn btn--plein haut-nouvelle" data-action="nouvelle-commande" aria-label="Nouvelle commande"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-plus"/></svg><span>Nouvelle commande</span></button>
+      </div>
+    </div>
+    <main id="vue" class="vue" tabindex="-1" aria-busy="true">
+      <div class="squelette" aria-label="Chargement des données fictives">
+        <div class="sq sq--titre"></div>
+        <div class="sq-kpis"><div class="sq"></div><div class="sq"></div><div class="sq"></div><div class="sq"></div><div class="sq"></div><div class="sq"></div></div>
+        <div class="sq-grille"><div class="sq sq--grand"></div><div class="sq sq--grand"></div></div>
+        <p class="squelette-texte">Préparation des données fictives de la démonstration…</p>
+      </div>
+      <noscript><div class="etat-erreur"><h1>Cette démonstration a besoin de JavaScript</h1><p>Distribution OS est une application interactive : activez JavaScript pour l'essayer, ou découvrez <a href="../../../commandes/">l'offre Commandes de Legantis</a>.</p></div></noscript>
+    </main>
+  </div>
+</div>
+<div id="tiroir" class="calque" hidden></div>
+<div id="modale" class="calque" hidden></div>
+<div id="palette" class="calque" hidden></div>
+<div id="guide" hidden></div>
+<div class="toasts"><div id="toasts" role="status" aria-live="polite"></div><div id="toasts-alerte" role="alert" aria-live="assertive"></div></div>
+</body>
+</html>

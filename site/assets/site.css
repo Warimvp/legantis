@@ -1401,9 +1401,41 @@ body.page-offre:has(.contact-rapide) .pied--court { padding-bottom: 96px; }
 .acq-titre-form { font-weight: 700; font-size: clamp(2rem, 3.6vw, 3.1rem); line-height: 1; font-stretch: 116%; letter-spacing: -0.02em; margin-block: 14px 16px; }
 .acq-titre-form em { font-style: normal; color: var(--tampon); }
 .acquisition .offre { margin-block-start: 0; }
-.acq-demo { margin: 36px 0 0; max-inline-size: 640px; }   /* capture de la démonstration de gestion (données fictives, bandeau dans l'image) */
-.acq-demo a { display: block; }
-.acq-demo img { display: block; inline-size: 100%; block-size: auto; border: 1px solid var(--filet); border-radius: 12px; box-shadow: 0 18px 40px -26px color-mix(in srgb, var(--encre) 45%, transparent); }
+/* Vitrine de la démonstration Distribution OS (31/10 → 01/11/2026) : texte et parcours à gauche, capture du tableau de bord à droite avec la même vue
+   sur téléphone en surimpression, puis trois vues secondaires. Captures réelles de la démonstration (outils/captures_distribution_os.js), données fictives.
+   Sur téléphone : seule la capture téléphone est montrée (l'image d'ordinateur, paresseuse et non affichée, n'est pas téléchargée), vues secondaires en liste compacte. */
+.vitrine { overflow: hidden; background: radial-gradient(90% 70% at 85% 10%, var(--tampon-pale), transparent 70%), var(--chaux); border-block: 1px solid var(--filet); }
+.vitrine-grille { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.35fr); gap: clamp(36px, 5vw, 80px); align-items: start; }
+.vitrine h2 { font-size: clamp(2rem, 3.4vw, 3.1rem); font-stretch: 104%; margin-block: 18px 20px; }
+.vitrine .intro { margin-block-end: 26px; }
+.vitrine-scenario { display: grid; gap: 12px; margin: 0 0 30px; padding: 0; list-style: none; counter-reset: etape; }
+.vitrine-scenario li { position: relative; padding-inline-start: 40px; color: var(--gris); counter-increment: etape; }
+.vitrine-scenario li::before { content: counter(etape); position: absolute; inset-inline-start: 0; inset-block-start: -1px; display: grid; place-items: center; inline-size: 26px; block-size: 26px; border-radius: 50%; background: var(--tampon-pale); color: var(--tampon); font: 600 0.78rem/1 var(--f-mono); }
+.vitrine-scenario b { color: var(--encre); font-weight: 600; }
+.vitrine .actions { animation: none; }
+.vitrine-guide { margin-block-start: 18px; }
+.vitrine .note { margin-block-start: 14px; }
+.vitrine-principale { position: relative; margin: clamp(0px, 4vw, 64px) 0 36px; }
+.vitrine-principale a { display: block; }
+.vitrine-bureau { display: block; inline-size: 100%; block-size: auto; border: 1px solid var(--filet); border-radius: 14px; box-shadow: 0 2px 6px color-mix(in srgb, var(--encre) 6%, transparent), 0 40px 90px -40px color-mix(in srgb, var(--tampon) 55%, transparent); }
+.vitrine-mobile { position: absolute; inset-inline-end: -3%; inset-block-end: -12%; inline-size: 23%; block-size: auto; border: 5px solid #16172E; border-radius: 22px; background: #16172E; box-shadow: 0 30px 60px -24px color-mix(in srgb, var(--encre) 60%, transparent); }
+.vitrine-vues { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 2.4vw, 28px); margin: clamp(48px, 6vw, 80px) 0 0; padding: 0; list-style: none; }
+.vitrine-vues a { display: grid; gap: 14px; color: inherit; text-decoration: none; }
+.vitrine-vues img { display: block; inline-size: 100%; block-size: auto; border: 1px solid var(--filet); border-radius: 10px; box-shadow: 0 18px 40px -28px color-mix(in srgb, var(--encre) 45%, transparent); transition: transform .3s var(--sortie), box-shadow .3s; }
+.vitrine-vues span { display: grid; gap: 2px; color: var(--gris); font-size: 0.94rem; }
+.vitrine-vues b { color: var(--encre); font-weight: 600; font-size: 1.02rem; }
+@media (hover: hover) { .vitrine-vues a:hover img { transform: translateY(-3px); box-shadow: 0 26px 50px -28px color-mix(in srgb, var(--tampon) 55%, transparent); } }
+@media (max-width: 900px) {
+  .vitrine-grille { grid-template-columns: minmax(0, 1fr); }
+  .vitrine-principale { margin-block-end: 0; }
+}
+@media (max-width: 600px) {
+  .vitrine-bureau { display: none; }
+  .vitrine-mobile { position: static; display: block; inline-size: min(270px, 74%); margin-inline: auto; border-width: 6px; border-radius: 28px; }
+  .vitrine .actions .bouton { inline-size: 100%; justify-content: center; }
+  .vitrine-vues { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .vitrine-vues a { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); align-items: center; }
+}
 .acquisition .offre-texte { grid-column: 1 / -1; }
 .acquisition .offre-texte > p { margin-block-end: 0; }
 .acquisition .atout .suivre { justify-self: start; margin-block-start: 6px; }
