@@ -65,7 +65,7 @@
   <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></symbol>
 </svg>
 <a class="lien-evitement" href="#vue">Aller au contenu</a>
-<p class="bandeau-demo" role="note"><span><b>Démonstration interactive créée par Legantis.</b> Entreprises, opérations et données fictives.</span> <a data-lien-legantis="#" href="../../../commandes/">Découvrir l'offre</a></p>
+<header class="bandeau-demo"><p><span><b>Démonstration interactive créée par Legantis.</b> Entreprises, opérations et données fictives.</span> <a data-lien-legantis="#" href="../../../commandes/">Découvrir l'offre</a></p></header>
 <div class="app">
   <aside class="nav" id="nav" aria-label="Navigation principale">
     <div class="nav-marque">
@@ -84,7 +84,7 @@
   </aside>
   <div class="voile-nav" data-action="fermer-nav" aria-hidden="true"></div>
   <div class="zone">
-    <header class="haut">
+    <div class="haut" role="region" aria-label="Barre d'outils">
       <button type="button" class="btn btn--icone haut-menu" data-action="nav" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg></button>
       <p class="haut-titre" id="haut-titre">Tableau de bord</p>
       <button type="button" class="recherche-globale" data-action="palette" aria-label="Rechercher une commande, un client ou un produit (Ctrl K)"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-loupe"/></svg><span>Rechercher…</span><kbd>Ctrl K</kbd></button>
@@ -93,10 +93,10 @@
           <select id="role"><option value="direction">Direction</option><option value="commercial">Commercial</option><option value="magasinier">Magasinier</option><option value="gestionnaire">Gestionnaire</option></select>
         </label>
         <button type="button" class="btn btn--icone" data-action="theme" aria-pressed="false" aria-label="Passer en thème sombre"><svg class="ic ic-lune" aria-hidden="true" focusable="false"><use href="#i-lune"/></svg><svg class="ic ic-soleil" aria-hidden="true" focusable="false"><use href="#i-soleil"/></svg></button>
-        <button type="button" class="btn btn--accent haut-guide" data-action="guide"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lecture"/></svg><span>Tester un scénario en 3 minutes</span></button>
+        <button type="button" class="btn btn--accent haut-guide" data-action="guide" aria-label="Tester un scénario en 3 minutes"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lecture"/></svg><span>Tester un scénario en 3 minutes</span></button>
         <button type="button" class="btn btn--plein haut-nouvelle" data-action="nouvelle-commande" aria-label="Nouvelle commande"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-plus"/></svg><span>Nouvelle commande</span></button>
       </div>
-    </header>
+    </div>
     <main id="vue" class="vue" tabindex="-1" aria-busy="true">
       <div class="squelette" aria-label="Chargement des données fictives">
         <div class="sq sq--titre"></div>

@@ -143,7 +143,7 @@
   function debutMois(n) { var d = new Date(n * 864e5); return Math.floor(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1) / 864e5); }
   function ouvre(n) { return jourSemaine(n) === 0 ? n + 1 : n; }
   function heure(min) { min = Math.max(0, Math.min(23 * 60 + 59, Math.round(min))); return String(Math.floor(min / 60)).padStart(2, '0') + ':' + String(min % 60).padStart(2, '0'); }
-  function minutes(h) { var p = String(h).split(':'); return (+p[0]) * 60 + (+p[1] || 0); }
+  function minutes(h) { h = String(h); return (+h.slice(0, 2)) * 60 + (+h.slice(3, 5) || 0); }
   function alea(graine) {   // mulberry32 : suite pseudo-aléatoire déterministe
     var a = graine >>> 0;
     function suivant() { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
@@ -674,9 +674,15 @@
       var limite = j === J ? minutes(HEURE_GENERATION) : 24 * 60;
       planning[j] = [];
       var vus = 0;
+      file.forEach(function (x, i) { x.m = minutes(x.h); x.o = i; });
+      file.sort(function (a, b) { return a.m - b.m || a.o - b.o; });
+      var ordre = file.length;
       while (file.length || planning[j].length > vus) {
-        while (planning[j].length > vus) file.push(planning[j][vus++]);
-        file.sort(function (a, b) { return minutes(a.h) - minutes(b.h); });
+        while (planning[j].length > vus) {   // insertion à sa place (tri stable) d'une étape prévue pendant la journée
+          var x = planning[j][vus++]; x.m = minutes(x.h); x.o = ordre++;
+          var k = file.length; while (k > 0 && (file[k - 1].m > x.m || (file[k - 1].m === x.m && file[k - 1].o > x.o))) k--;
+          file.splice(k, 0, x);
+        }
         var ev = file.shift();
         if (minutes(ev.h) > limite) continue;
         ev.f(ev.h);

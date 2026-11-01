@@ -337,6 +337,7 @@ const texteNum = t => Number(t.replace(/[^\d,−-]/g, '').replace(',', '.').repl
   await page.tap('.haut-menu');
   verifier('téléphone : le menu s\'ouvre', await page.locator('.nav').isVisible());
   await page.tap('.nav-lien[href="#/commandes"]');
+  await page.waitForFunction(() => DOSApp.route.module === 'commandes', null, { timeout: 3000 }).catch(() => {});
   verifier('téléphone : navigation puis menu refermé', page.url().endsWith('#/commandes') && !(await page.locator('.app').evaluate(a => a.classList.contains('nav-ouverte'))));
   verifier('téléphone : tableau présenté en cartes avec intitulés', await etat(page, () => getComputedStyle(document.querySelector('.table--cartes tr')).display === 'grid'));
   await page.tap('.haut-nouvelle');

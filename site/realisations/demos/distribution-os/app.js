@@ -264,7 +264,7 @@
     A.modaleActive = m;
     var boite = $('#modale');
     boite.hidden = false;
-    boite.innerHTML = '<div class="voile" data-action="fermer-modale"></div><div class="modale' + (m.large ? ' modale--large' : '') + '" role="dialog" aria-modal="true" aria-labelledby="modale-titre"><header class="modale-tete"><h2 id="modale-titre">' + e(m.titre) + '</h2><button type="button" class="btn btn--icone" data-action="fermer-modale" aria-label="Fermer">' + ic('croix') + '</button></header><div class="modale-corps" id="modale-corps"></div></div>';
+    boite.innerHTML = '<div class="voile" data-action="fermer-modale"></div><div class="modale' + (m.large ? ' modale--large' : '') + '" role="dialog" aria-modal="true" aria-labelledby="modale-titre"><div class="modale-tete"><h2 id="modale-titre">' + e(m.titre) + '</h2><button type="button" class="btn btn--icone" data-action="fermer-modale" aria-label="Fermer">' + ic('croix') + '</button></div><div class="modale-corps" id="modale-corps"></div></div>';
     m.rendre = (function (f) { return function () { var fo = memoriserFocus(); $('#modale-corps').innerHTML = f(); restaurerFocus(fo); }; })(m.contenu);
     m.rendre();
     document.documentElement.classList.add('fige');
@@ -294,7 +294,7 @@
     A.dernierTiroir = r.id;
     var defile = deja ? $('#tiroir .tiroir-corps').scrollTop : 0;
     boite.hidden = false;
-    boite.innerHTML = '<a class="voile" href="#/' + r.module + '" tabindex="-1" aria-hidden="true"></a><aside class="tiroir" role="dialog" aria-modal="true" aria-labelledby="tiroir-titre">' + contenu + '</aside>';
+    boite.innerHTML = '<a class="voile" href="#/' + r.module + '" tabindex="-1" aria-hidden="true"></a><div class="tiroir" role="dialog" aria-modal="true" aria-labelledby="tiroir-titre">' + contenu + '</div>';
     $('#tiroir .tiroir-corps').scrollTop = defile;
     document.documentElement.classList.add('fige');
     if (!deja) { var t = $('#tiroir-titre'); t.setAttribute('tabindex', '-1'); t.focus({ preventScroll: true }); }

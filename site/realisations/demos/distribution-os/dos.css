@@ -68,6 +68,7 @@ kbd { font: 500 11px/1 var(--f-mono); padding: 3px 5px; border: 1px solid var(--
 
 /* ── Bandeau de démonstration (toujours visible) ─────────────────────────────────────────────────────────────────────────────────── */
 .bandeau-demo { position: sticky; top: 0; z-index: 40; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px 14px; min-height: var(--bandeau); padding: 6px 14px; background: #16172E; color: #F2F2FA; font-size: 13px; text-align: center; }
+.bandeau-demo p { display: contents; }
 .bandeau-demo a { color: #fff; font-weight: 600; }
 .bandeau-demo b { font-weight: 650; }
 
