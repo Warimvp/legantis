@@ -108,7 +108,9 @@
   A.commandesFiltrees = commandesFiltrees;
   A.ecrans.commandes = function () {
     var s = S(), u = A.ui.commandes, liste = commandesFiltrees(), montrerMontant = A.role !== 'magasinier';
-    var compte = D.commandesParStatut(s, function (c) { var f = filtresCommandes(); f.statuts = []; return D.filtrerCommandes(s, A.d, f).indexOf(c) >= 0; });
+    var sansStatut = filtresCommandes(); sansStatut.statuts = [];
+    var compte = {}; D.STATUTS.forEach(function (x) { compte[x] = 0; });
+    D.filtrerCommandes(s, A.d, sansStatut).forEach(function (c) { compte[c.statut]++; });
     var html = tete('Commandes', pluriel(s.commandes.length, 'commande') + ' sur 18 semaines · ' + pluriel(A.k.enCours, 'commande') + ' en cours', boutonExport('commandes'));
     html += '<div class="onglets-filtre" role="group" aria-label="Filtrer par statut">' + [['', 'Toutes']].concat(D.STATUTS.map(function (x) { return [x, D.LIBELLE_STATUT[x]]; })).map(function (o) {
       var n = o[0] ? compte[o[0]] : Object.keys(compte).reduce(function (t, x) { return t + compte[x]; }, 0);
@@ -293,6 +295,8 @@
     if (bouton && bouton.getAttribute('aria-disabled') === 'true') { A.notifier(bouton.getAttribute('data-refus'), 'info'); return; }
     if (!f.client) { f.erreur = 'Choisissez un client.'; reformer(); $('#nc-client').focus(); return; }
     if (!f.lignes.length) { f.erreur = 'Ajoutez au moins un produit.'; reformer(); $('#nc-q').focus(); return; }
+    var invalide = $$('[data-saisie="nc-qte"]').filter(function (c) { var v = Number(c.value); return !(Number.isInteger(v) && v >= 1 && v <= 9999); })[0];
+    if (invalide) { f.erreur = 'Indiquez une quantité entière entre 1 et 9 999 pour chaque produit.'; var fo = invalide.getAttribute('data-focus'); reformer(); var ch = $('[data-focus="' + fo + '"]'); if (ch) { ch.value = ''; ch.setAttribute('aria-invalid', 'true'); ch.focus(); } return; }
     var dateSaisie = $('#nc-date').value, jourSaisi = versJour(dateSaisie);
     if (isNaN(jourSaisi)) { f.erreur = 'Indiquez une date de livraison valide.'; reformer(); $('#nc-date').focus(); return; }
     var action = f.edition ? { type: 'modifier_commande', id: f.edition, lignes: f.lignes, livraisonPrevue: jourSaisi } : { type: 'creer_commande', client: f.client, lignes: f.lignes, livraisonPrevue: jourSaisi, canal: f.canal, note: f.note };
@@ -448,7 +452,6 @@
   /* ══ E. Préparation et livraison ════════════════════════════════════════════════════════════════════════════════════════════════════ */
   A.ecrans.preparation = function (r) {
     var s = S(), u = A.ui.preparation;
-    if (r.params && r.params.get && r.params.get('onglet')) u.onglet = r.params.get('onglet');
     var k = A.k;
     var html = tete('Préparation et livraison', pluriel(k.aPreparer, 'commande') + ' à préparer · ' + pluriel(k.prets, 'commande') + ' prête' + (k.prets > 1 ? 's' : '') + ' à expédier · ' + pluriel(k.livraisonsJour, 'livraison') + ' prévue' + (k.livraisonsJour > 1 ? 's' : '') + ' aujourd\'hui', u.onglet === 'liste' ? A.bouton({ action: 'imprimer', texte: 'Imprimer la liste', icone: 'imprimer' }) : '');
     var alertes = [];

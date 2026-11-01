@@ -104,7 +104,9 @@
       '<footer class="guide-pied"><button type="button" class="lien-bouton" data-action="guide-reinitialiser">' + ic('recharger') + 'Réinitialiser</button><button type="button" class="lien-bouton" data-action="guide-quitter">Quitter le guide</button></footer></section>';
     boite.hidden = false;
     var titreAvant = $('#guide-titre') && $('#guide-titre').textContent;
+    var actif = boite.contains(document.activeElement) ? document.activeElement.getAttribute('data-action') : null;
     boite.innerHTML = h;
+    if (actif && !(focus && titreAvant !== et.titre)) { var b = boite.querySelector('[data-action="' + actif + '"]'); if (b) b.focus({ preventScroll: true }); else { var t = $('#guide-titre'); if (t) t.focus({ preventScroll: true }); } }
     if (focus && titreAvant !== et.titre && !A.modaleActive) $('#guide-titre').focus({ preventScroll: true });
     marquerCibles();
   }

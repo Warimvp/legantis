@@ -284,6 +284,7 @@ test('session : le rejeu des actions redonne le même état ; une session vide =
   refuse(jouer({ type: 'changer_statut', id, vers: 'livree' }));
   const r = D.rejouer(REF, actions);
   assert.equal(r.refusees, 1);
+  assert.equal(r.acceptees.length, 2, 'les actions acceptées sont gardées pour la session');
   assert.equal(copie(r.etat), copie(s));
   assert.equal(copie(D.rejouer(REF, []).etat), copie(neuf()), 'réinitialiser = repartir des données de départ');
 });

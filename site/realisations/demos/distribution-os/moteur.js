@@ -702,12 +702,12 @@
 
   /* Session : l'état = données de départ + actions du visiteur, rejouées. On ne garde que ces actions (fictives) dans sessionStorage. */
   function rejouer(isoDate, actions) {
-    var s = generer(isoDate), refusees = 0;
+    var s = generer(isoDate), refusees = 0, acceptees = [];
     (actions || []).forEach(function (x) {
-      var res = executer(s, x.action, { jour: s.jour, heure: x.h || '12:00', role: x.role, par: (ROLES[x.role] || {}).personne || 'Démo', session: true });
-      if (!res.ok) refusees++;
+      var res = x && x.action ? executer(s, x.action, { jour: s.jour, heure: x.h || '12:00', role: x.role, par: (ROLES[x.role] || {}).personne || 'Démo', session: true }) : { ok: false };
+      if (res.ok) acceptees.push(x); else refusees++;
     });
-    return { etat: s, refusees: refusees };
+    return { etat: s, refusees: refusees, acceptees: acceptees };
   }
 
   /* ── Cohérence ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */

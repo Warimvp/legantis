@@ -99,6 +99,7 @@
     if (r.module === 'commandes') { A.ui.commandes = Object.assign({}, A.ui.commandes, { q: '', statut: p.get('statut') || '', type: '', ville: '', paiement: p.get('paiement') || '', periode: 0, retard: p.get('retard') === '1', page: 1 }); }
     if (r.module === 'stocks') { A.ui.stocks.onglet = p.get('onglet') || 'catalogue'; A.ui.stocks.etat = p.get('etat') || ''; A.ui.stocks.q = ''; A.ui.stocks.categorie = ''; }
     if (r.module === 'paiements') { A.ui.paiements.etat = p.get('etat') || ''; }
+    if (r.module === 'preparation' && p.get('onglet')) { A.ui.preparation.onglet = p.get('onglet') === 'liste' ? 'liste' : 'kanban'; }
     if (r.module === 'clients') { A.ui.clients.echu = p.get('echu') === '1'; A.ui.clients.plafond = p.get('plafond') === '1'; A.ui.clients.q = ''; A.ui.clients.type = ''; A.ui.clients.segment = ''; }
     history.replaceState(null, '', '#/' + r.module + (r.id ? '/' + encodeURIComponent(r.id) : ''));
     return true;
@@ -360,8 +361,7 @@
     try {
       var r = D.rejouer(A.jourIso, ses ? ses.actions : []);
       A.etat = r.etat;
-      A.actions = ses ? ses.actions.slice() : [];
-      if (r.refusees) A.actions = [];
+      A.actions = r.acceptees;   // une action qui ne se rejoue plus est écartée ; les autres restent, comme l'état affiché
     } catch (err) { erreurChargement(err); brancher(); return; }
     A.role = ses && D.ROLES[ses.role] ? ses.role : D.ROLES[PARAMS.get('role')] ? PARAMS.get('role') : 'direction';
     A.theme = ses && ses.theme === 'sombre' ? 'sombre' : PARAMS.get('theme') === 'sombre' ? 'sombre' : 'clair';

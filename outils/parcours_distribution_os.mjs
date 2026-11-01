@@ -361,6 +361,15 @@ const texteNum = t => Number(t.replace(/[^\d,−-]/g, '').replace(',', '.').repl
   await page.evaluate(() => sessionStorage.setItem('legantis-demo-distribution-os', JSON.stringify({ v: 1, jour: '2026-11-02', actions: [{ action: { type: 'changer_statut', id: 'CMD-1', vers: 'livree' }, role: 'direction', h: '10:00' }] })));
   await page.reload(); await page.waitForSelector('body.pret');
   verifier('session invalide (action impossible) : ignorée', (await etat(page, () => DOSApp.actions.length)) === 0);
+  await page.goto(DEMO + '?jour=' + JOUR + '#/preparation?onglet=liste'); await page.waitForSelector('body.pret');
+  await page.click('[data-action="prep-onglet"][data-onglet="kanban"]');
+  verifier('préparation : arrivé par ?onglet=liste, le Kanban reste accessible', await page.locator('.kanban').count() === 1);
+  await page.click('.haut-nouvelle'); await page.selectOption('#nc-client', 'C05'); await page.click('[data-action="nc-ajouter"][data-produit="P01"]');
+  await page.fill('[data-focus="nc-qte-P01"]', '');
+  const n0 = await etat(page, () => DOSApp.etat.commandes.length);
+  await page.click('[data-focus="nc-creer"]');
+  verifier('quantité vide : refus explicite, rien n\'est créé', (await page.locator('#nc-erreur').innerText()).includes('quantité entière') && (await etat(page, () => DOSApp.etat.commandes.length)) === n0);
+  await page.keyboard.press('Escape');
   await page.click('[data-action="theme"]');
   await page.reload(); await page.waitForSelector('body.pret');
   verifier('thème sombre gardé pendant la session', (await page.getAttribute('html', 'data-theme')) === 'sombre');
