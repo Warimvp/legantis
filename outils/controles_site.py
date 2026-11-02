@@ -329,18 +329,22 @@ if os.path.exists(CONFIG):
             for m in re.findall(r'(\d[\d ]*\d|\d)\s*(?:MAD|DH|dirhams)\b', t):
                 if m.strip() not in ADMIS | montants_valides: echecs.append(f'{relatif}: montant « {m} MAD » non validé dans config/commercial.json')
             if not conf.get('packs') and re.search(r'\b(pack starter|pack business|prix_mad)\b', re.sub(r'<script type="application/ld\+json">.*?</script>', '', t, flags=re.S), re.I) and not relatif.endswith('conversion.js'): echecs.append(f'{relatif}: offre non validée publiée')
-# identité légale (loi n° 5-96, art. 43-12 et 43-14) : le capital figure une fois par accueil, dans .pied-legal avec la dénomination, la forme, le siège et le RC, et une fois
-# par page légale avec tous les identifiants ; il n'apparaît nulle part ailleurs : les pages commerciales restent sobres. Élargir cette règle si le juriste le demande.
+# identité légale (loi n° 5-96, art. 43-12 et 43-14) : le capital figure une fois par accueil et par page de commande, dans .pied-legal avec la dénomination, la forme, le siège et le RC,
+# et une fois par page légale avec tous les identifiants ; il n'apparaît nulle part ailleurs. Toute page qui affiche l'adresse dit la domiciliation, tout RC dit son lieu.
 def visible(h): return re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', re.sub(r'<(script|style)\b.*?</\1>|<!--.*?-->', '', h, flags=re.S))).replace('&nbsp;', ' ').replace('\u00a0', ' ')
 MONTANT_CAPITAL = re.compile(r'\b10 000 MAD\b|\bMAD 10,000\b|\bcapital 10 000\b', re.I)
 LIGNE_LEGALE = {BASE: ('LEGANTIS DIGITAL SERVICE SAS', 'société par actions simplifiée à associé unique', '10 000 MAD', 'Oasis Offices Latitudes, Route de l\'Oasis, Bureau 304, Maarif, Casablanca', 'MyLegal Offices', 'RC Casablanca n° 745587', '004026900000030', '73343482'),
+                BASE + 'commandes/': ('LEGANTIS DIGITAL SERVICE SAS', 'société par actions simplifiée à associé unique', '10 000 MAD', 'Oasis Offices Latitudes, Route de l\'Oasis, Bureau 304, Maarif, Casablanca', 'MyLegal Offices', 'RC Casablanca n° 745587', '004026900000030', '73343482'),
+                BASE + 'offre-lancement/': ('LEGANTIS DIGITAL SERVICE SAS', 'société par actions simplifiée à associé unique', '10 000 MAD', 'Oasis Offices Latitudes, Route de l\'Oasis, Bureau 304, Maarif, Casablanca', 'MyLegal Offices', 'RC Casablanca n° 745587', '004026900000030', '73343482'),
                 BASE + 'en/': ('LEGANTIS DIGITAL SERVICE SAS', 'simplified joint-stock company with a single shareholder', 'MAD 10,000', 'Oasis Offices Latitudes, Route de l\'Oasis, Bureau 304, Maarif, Casablanca', 'MyLegal Offices', 'Casablanca Commercial Register No. 745587', '004026900000030', '73343482')}
-PAGES_LEGALES = {BASE + 'mentions-legales/': ('LEGANTIS DIGITAL SERVICE SAS', '10 000 MAD', 'Oasis Offices Latitudes', 'MyLegal Offices', 'Casablanca n° 745587', '07/09/2026', '004026900000030', '73343482', '34706792', 'Yassir Legmara'),
-                 BASE + 'en/legal/': ('LEGANTIS DIGITAL SERVICE SAS', 'MAD 10,000', 'Oasis Offices Latitudes', 'MyLegal Offices', 'Casablanca No. 745587', '7 September 2026', '004026900000030', '73343482', '34706792', 'Yassir Legmara')}
-for u in pages:
+PAGES_LEGALES = {BASE + 'mentions-legales/': ('LEGANTIS DIGITAL SERVICE SAS', '10 000 MAD', 'Oasis Offices Latitudes', 'MyLegal Offices', 'Casablanca n° 745587', '07/09/2026', 'titre III bis de la loi n° 5-96', '004026900000030', '73343482', '34706792', 'Yassir Legmara'),
+                 BASE + 'en/legal/': ('LEGANTIS DIGITAL SERVICE SAS', 'MAD 10,000', 'Oasis Offices Latitudes', 'MyLegal Offices', 'Casablanca No. 745587', '7 September 2026', 'Title III bis of Moroccan Law No. 5-96', '004026900000030', '73343482', '34706792', 'Yassir Legmara')}
+for u in [*pages, BASE + 'offre-lancement/']:
     h = open(fichier(u), encoding='utf-8').read(); t = visible(h); nb = len(MONTANT_CAPITAL.findall(t))
     attendu = 1 if u in LIGNE_LEGALE or u in PAGES_LEGALES else 0
     if nb != attendu: echecs.append(f'{u}: capital social affiché {nb} fois, {attendu} attendue(s)')
+    if 'Oasis Offices Latitudes' in t and 'MyLegal Offices' not in t: echecs.append(f'{u}: adresse sans mention de domiciliation')
+    if 'RC 745587' in t: echecs.append(f'{u}: RC sans son lieu d\'immatriculation')
     if u in LIGNE_LEGALE:
         ligne = re.search(r'<p class="pied-legal">(.*?)</p>', h, re.S)
         for mot in LIGNE_LEGALE[u]:

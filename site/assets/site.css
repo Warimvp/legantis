@@ -858,7 +858,7 @@ html[dir="rtl"] .couverture .ecran { rotate: -4deg; }
 .contact-reseaux dd { column-gap: 28px; }   /* pas de « · » entre les deux : il se logeait sous la ligne de texte, l'écart suffit */
 .logo-reseau { width: 1.3em; height: 1.3em; fill: currentColor; flex: none; }
 .pied-bas .coeur { color: var(--tampon); }
-.pied-legal { margin: 18px 0 0; max-width: 100ch; font-size: 0.74rem; line-height: 1.6; color: var(--gris); overflow-wrap: anywhere; }   /* accueils : art. 43-12 de la loi n° 5-96, une seule fois par page */
+.pied-legal { margin: 18px 0 0; max-width: 100ch; font-size: 0.74rem; line-height: 1.6; color: var(--gris); overflow-wrap: anywhere; }   /* accueils et pages de commande : art. 43-12 de la loi n° 5-96, une seule fois par page */
 
 /* ── Pages légales et 404 ──────────────────────────────────── */
 main.enveloppe { overflow-x: clip; }   /* 404, mentions : le cachet tourné n'élargit pas la page sur mobile ; découpe au bord de la page, pas au ras du texte */
