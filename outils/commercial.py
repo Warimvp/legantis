@@ -157,7 +157,8 @@ def bloc_contact_rapide(config, params, prefixe):
     if cible == 'estimer':
         principal = f'<a class="bouton bouton--plein contact-rapide-devis" href="{prefixe}estimer-mon-projet/{suffixe}">Demander un devis gratuit <span class="fleche" aria-hidden="true">→</span></a>'
     elif cible == 'demande':
-        principal = '<a class="bouton bouton--plein contact-rapide-devis" href="#demande">Demander mon devis <span class="fleche" aria-hidden="true">→</span></a>'
+        libelle = 'Demander mon mini-audit' if params.get('type') == 'audit' else 'Demander mon devis'
+        principal = f'<a class="bouton bouton--plein contact-rapide-devis" href="#demande">{libelle} <span class="fleche" aria-hidden="true">→</span></a>'
     lien = lien_whatsapp(config, cle if cle in MESSAGES_WHATSAPP else 'general')
     whatsapp = f'<a class="contact-rapide-wa" href="{lien}" aria-label="Écrire à Legantis sur WhatsApp">{SVG_WHATSAPP}<span>WhatsApp</span></a>' if lien else ''
     if not principal and not whatsapp:

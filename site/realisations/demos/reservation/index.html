@@ -2,50 +2,98 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Plateforme de réservation — démonstration Legantis</title>
-<meta name="description" content="Démonstration de plateforme de réservation : choix du service, de la date et du créneau, avec récapitulatif. Données fictives.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://legantis-devis.rihla-serveur.workers.dev; form-action 'self' https://legantis-devis.rihla-serveur.workers.dev; base-uri 'self'; object-src 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Institut Naïa : réservation en ligne, démonstration Legantis</title>
+<meta name="description" content="Démonstration créée par Legantis : plateforme de réservation d’un institut de soins fictif, avec parcours client et planning de gestion. Entreprise et données fictives.">
 <meta name="robots" content="noindex, follow">
 <meta name="color-scheme" content="light">
-<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../demos.css">
-<script src="../demos.js" defer></script>
+<meta name="theme-color" content="#F4EDE0">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/fraunces-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="reservation.css">
+<script src="moteur.js" defer></script>
+<script src="reservation.js" defer></script>
 </head>
-<body class="resa">
-<p class="demo-bandeau"><span>Démonstration créée par Legantis · entreprise et données fictives</span> <a href="../../">Retour aux réalisations</a></p>
-<div class="env"><header class="entete"><b>Réserve Démo</b><nav aria-label="Navigation de la démonstration"><a href="#choix">Réserver</a><a href="#recapitulatif">Récapitulatif</a></nav></header></div>
-<main class="env">
-  <div class="resa-grille">
-    <form id="choix" data-demo data-recap aria-labelledby="titre">
-      <h1 id="titre">Prenez rendez-vous en ligne</h1>
-      <p style="color:var(--gris)">Exemple de parcours pour un salon, un cabinet ou un atelier.</p>
-      <fieldset><legend>1. Le service</legend><div class="tuiles">
-        <label class="tuile"><input type="radio" name="service" value="a" checked><b>Consultation</b><span>30 min</span></label><label class="tuile"><input type="radio" name="service" value="b"><b>Séance complète</b><span>1 h</span></label><label class="tuile"><input type="radio" name="service" value="c"><b>Suivi</b><span>20 min</span></label>
-      </div></fieldset>
-      <fieldset><legend>2. Le jour</legend><div class="tuiles">
-        <label class="tuile"><input type="radio" name="jour" value="lun" checked><b>Lundi</b><span>Exemple</span></label><label class="tuile"><input type="radio" name="jour" value="mar"><b>Mardi</b><span>Exemple</span></label><label class="tuile"><input type="radio" name="jour" value="mer" disabled><b>Mercredi</b><span>Complet</span></label><label class="tuile"><input type="radio" name="jour" value="jeu"><b>Jeudi</b><span>Exemple</span></label><label class="tuile"><input type="radio" name="jour" value="ven"><b>Vendredi</b><span>Exemple</span></label>
-      </div></fieldset>
-      <fieldset><legend>3. Le créneau</legend><div class="tuiles">
-        <label class="tuile"><input type="radio" name="creneau" value="9" checked><b>09:00</b></label><label class="tuile"><input type="radio" name="creneau" value="10"><b>10:30</b></label><label class="tuile"><input type="radio" name="creneau" value="12" disabled><b>12:00</b></label><label class="tuile"><input type="radio" name="creneau" value="14"><b>14:30</b></label><label class="tuile"><input type="radio" name="creneau" value="16"><b>16:00</b></label>
-      </div></fieldset>
-      <fieldset><legend>4. Vos coordonnées</legend><div class="grille-2">
-        <label class="champ">Nom<input type="text" autocomplete="off" required></label>
-        <label class="champ">Téléphone<input type="tel" autocomplete="off" required></label>
-      </div></fieldset>
-      <p style="margin-top:18px"><button class="btn" type="submit">Confirmer le rendez-vous</button></p>
-      <p class="demo-note" style="margin-top:8px">Démonstration : aucun rendez-vous n'est créé.</p>
-      <p class="demo-retour" tabindex="-1" hidden>Démonstration : rien n'a été envoyé.</p>
-    </form>
-    <aside class="recap" id="recapitulatif" aria-labelledby="recap-titre" aria-live="polite">
-      <h2 id="recap-titre">Votre rendez-vous</h2>
-      <dl>
-        <dt>Service</dt><dd id="recap-service">Consultation</dd>
-        <dt>Jour</dt><dd id="recap-jour">Lundi</dd>
-        <dt>Créneau</dt><dd id="recap-creneau">09:00</dd>
-      </dl>
-    </aside>
+<body class="naia">
+<p class="demo-bandeau"><span>Démonstration créée par Legantis · entreprise et données fictives</span> <a href="/realisations/">Retour aux réalisations</a></p>
+
+<svg class="sprite" width="0" height="0" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <symbol id="branche" viewBox="0 0 250 340">
+      <g class="gravure"><path class="tige" d="M70 330C60 220 120 110 170 24"/><g transform="translate(69.3 290.4) rotate(-145.1) scale(1.21)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(69.3 290.4) rotate(-29.1) scale(1.21)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(71.9 262.9) rotate(-138.5) scale(1.15)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(71.9 262.9) rotate(-25.5) scale(1.15)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(76.9 235.5) rotate(-132.6) scale(1.09)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(76.9 235.5) rotate(-22.6) scale(1.09)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(83.8 208.5) rotate(-127.3) scale(1.04)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(83.8 208.5) rotate(-20.3) scale(1.04)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(92.4 181.8) rotate(-122.5) scale(0.98)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(92.4 181.8) rotate(-18.5) scale(0.98)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(102.4 155.6) rotate(-118.2) scale(0.92)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(102.4 155.6) rotate(-17.2) scale(0.92)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(113.6 129.9) rotate(-114.3) scale(0.86)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(113.6 129.9) rotate(-16.3) scale(0.86)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(125.6 104.9) rotate(-110.9) scale(0.81)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(125.6 104.9) rotate(-15.9) scale(0.81)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(138.2 80.6) rotate(-107.9) scale(0.75)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(138.2 80.6) rotate(-15.9) scale(0.75)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(151.1 57.1) rotate(-105.3) scale(0.69)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(151.1 57.1) rotate(-16.3) scale(0.69)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(164.0 34.4) rotate(-103.0) scale(0.63)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(164.0 34.4) rotate(-17.0) scale(0.63)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(170.0 24.0) rotate(-59.8)"><path class="feuille f" d="M0 0C8-7 20-7 30 0C20 7 8 7 0 0Z"/><path class="nervure" d="M2 0H26"/></g></g>
+    </symbol>
+    <symbol id="g-visage" viewBox="0 0 48 48"><ellipse cx="22" cy="25" rx="11" ry="14"/><path d="M14 20c5 1 10-2 12-7M17 33c3 2 7 2 10 0M31 9c4-4 10-4 12 0-4 4-9 4-12 0zM33 9c3 0 6 1 8 1"/></symbol>
+    <symbol id="g-corps" viewBox="0 0 48 48"><ellipse cx="24" cy="36" rx="15" ry="6"/><ellipse cx="24" cy="26" rx="11" ry="5"/><ellipse cx="24" cy="17" rx="7" ry="4"/><path d="M9 36v-3M13 26v-2"/></symbol>
+    <symbol id="g-mains" viewBox="0 0 48 48"><path d="M24 40c-8-4-12-11-12-18 6 0 10 3 12 8 2-5 6-8 12-8 0 7-4 14-12 18zM24 30c-3-6-3-13 0-20 3 7 3 14 0 20zM12 22c-3-3-4-7-3-11 4 1 7 4 8 8"/></symbol>
+    <symbol id="g-rituels" viewBox="0 0 48 48"><path d="M8 32h32M12 32a12 12 0 0 1 24 0M24 12v4M12 17l3 3M36 17l-3 3M5 38h38M11 43h26"/></symbol>
+    <symbol id="i-fleche" viewBox="0 0 24 24"><path d="M14 6l-6 6 6 6"/></symbol>
+    <symbol id="i-suiv" viewBox="0 0 24 24"><path d="M10 6l6 6-6 6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-bloc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M6.5 6.5l11 11"/></symbol>
+    <symbol id="i-coche" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  </defs>
+</svg>
+
+<header class="entete">
+  <div class="entete-in">
+    <div class="marque">
+      <svg class="marque-sceau" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22"/><path d="M24 38c-9-5-12-14-9-24 8 2 14 9 9 24zM24 38c1-9 4-15 10-19"/></svg>
+      <div>
+        <h1>Institut Naïa</h1>
+        <p class="marque-sous">Soins du visage et du corps · Casablanca</p>
+      </div>
+    </div>
+    <p class="adresse">Adresse fictive, Casablanca · 05 00 00 00 00</p>
+    <svg class="entete-branche" viewBox="0 0 250 340" aria-hidden="true" focusable="false"><circle class="soleil" cx="168" cy="108" r="64"/><use href="#branche"/></svg>
   </div>
+  <div class="entete-bas">
+    <div class="onglets" role="tablist" aria-label="Choisir la vue">
+      <button type="button" role="tab" id="onglet-client" aria-controls="vue-client" aria-selected="true" data-vue="client">Espace client</button>
+      <button type="button" role="tab" id="onglet-gestion" aria-controls="vue-gestion" aria-selected="false" tabindex="-1" data-vue="gestion">Gestion de l’institut</button>
+    </div>
+    <p class="entete-note">Démonstration : rien n’est enregistré, tout repart de zéro au rechargement de la page.</p>
+  </div>
+</header>
+
+<main class="page" id="contenu">
+  <div class="sans-js" role="note">
+    <h2>Cette démonstration demande JavaScript</h2>
+    <p>Le parcours de réservation et le planning sont interactifs et ne s’affichent pas sans JavaScript. Voici ce que propose l’institut fictif :</p>
+    <ul>
+      <li><b>Visage</b> : soin éclat express (30 min), hydratation profonde (60 min), nettoyage de peau (75 min).</li>
+      <li><b>Corps</b> : massage dos et nuque (30 min), massage relaxant (60 min), gommage et enveloppement (45 min).</li>
+      <li><b>Mains et pieds</b> : pose de vernis, manucure, pédicure.</li>
+      <li><b>Rituels</b> : rituel Naïa (90 min), rituel détente (60 min).</li>
+    </ul>
+    <p>Ouvert du lundi au samedi, fermé le dimanche. Prix fictifs, en dirhams.</p>
+  </div>
+
+  <section id="vue-client" class="vue" role="tabpanel" aria-labelledby="onglet-client" tabindex="-1" hidden>
+    <nav class="sousnav" aria-label="Espace client">
+      <button type="button" data-sous="reserver" aria-current="page">Réserver un soin</button>
+      <button type="button" data-sous="mes">Mes rendez-vous <span class="pastille" id="nb-mes" hidden>0</span></button>
+    </nav>
+    <div id="zone-reserver">
+      <ol class="etapes" id="etapes" aria-label="Étapes de la réservation"></ol>
+      <div class="resa">
+        <div class="resa-etape" id="etape" tabindex="-1"></div>
+        <aside class="recap" id="recap" aria-label="Votre rendez-vous"></aside>
+      </div>
+    </div>
+    <div id="zone-mes" hidden></div>
+  </section>
+
+  <section id="vue-gestion" class="vue" role="tabpanel" aria-labelledby="onglet-gestion" tabindex="-1" hidden></section>
 </main>
-<footer class="demo-pied"><div class="env"><span>Page de démonstration : ce n'est pas un client de Legantis, aucune commande réelle.</span><a href="../../../estimer-mon-projet/">Un projet comparable ? Demander un devis gratuit</a></div></footer>
+
+<footer class="pied">
+  <p>Page de démonstration : l’Institut Naïa n’existe pas, ce n’est pas un client de Legantis. Prix, praticiennes, clientes et rendez-vous sont fictifs. Aucun SMS ni e-mail n’est envoyé.</p>
+  <p><a href="/estimer-mon-projet/">Un projet comparable ? Demander un devis gratuit</a></p>
+</footer>
+
+<dialog id="dlg" class="dlg" aria-labelledby="dlg-titre"></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

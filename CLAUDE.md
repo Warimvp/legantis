@@ -14,6 +14,8 @@ Prix ou hypothèses de prix, prospects, stratégie commerciale, état réel des 
 
 - `site/` : les pages publiées, sans aucune étape de construction. `site/assets/site.css` est la feuille unique.
 - `site/assets/lumiere.js` : effets à la souris. `site/assets/conversion.js` : formulaires et simulateur. Le site fonctionne sans script.
+- `site/realisations/demos/distribution-os/` : démonstration interactive Distribution OS (données fictives, aucune requête), mode d'emploi dans `docs/distribution-os.md`.
+- `site/realisations/demos/restaurant/`, `reservation/`, `services/` : démonstrations interactives, entreprises fictives, état en mémoire, aucune requête. Après modification : `node outils/captures_demos.js`.
 - `worker/` : Worker des formulaires, tests dans `worker/test/`, mise en service dans `worker/README.md`.
 - `config/commercial.json` : valeurs commerciales de production, appliquées à `site/` par `outils/commercial.py`.
 - `mesure/` : mesure préparée, non activée. `docs/` : modes d'emploi techniques.
@@ -33,6 +35,30 @@ node outils/largeurs.js
 
 ```bash
 node outils/parcours_test.mjs
+```
+
+```bash
+node --test outils/test_distribution_os.js
+```
+
+```bash
+node outils/parcours_distribution_os.mjs
+```
+
+```bash
+node outils/test_demo_restaurant.mjs
+```
+
+```bash
+node outils/test_demo_reservation.mjs
+```
+
+```bash
+node outils/test_demo_services.mjs
+```
+
+```bash
+node outils/test_cls_assistant.mjs
 ```
 
 Depuis `worker/` :

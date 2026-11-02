@@ -2,3 +2,5 @@
 worker/node_modules/
 worker/.wrangler/
 worker/.dev.vars
+docs/legantis-v3
+prive/

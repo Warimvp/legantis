@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://legantis-devis.rihla-serveur.workers.dev; form-action 'self' https://legantis-devis.rihla-serveur.workers.dev; base-uri 'self'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Préparer mon devis gratuit de site ou d'application — Legantis</title>
 <meta name="description" content="Décrivez votre projet de site web, d'application ou de logiciel en quelques étapes : devis gratuit et sans engagement, réponse sous 48 heures ouvrées.">
@@ -82,6 +83,7 @@
             <li><a href="../application-web-maroc/">Application web</a></li>
             <li><a href="../application-mobile-casablanca/">Application mobile</a></li>
             <li><a href="../logiciel-sur-mesure-maroc/">Logiciel sur mesure</a></li>
+            <li><a href="../commandes/">Logiciel de commandes</a></li>
             <li><a href="../conseil-reprise-application-maroc/">Conseil et reprise</a></li>
           </ul>
         </li>
@@ -105,6 +107,7 @@
         <li><a href="../application-web-maroc/">Application web</a></li>
         <li><a href="../application-mobile-casablanca/">Application mobile</a></li>
         <li><a href="../logiciel-sur-mesure-maroc/">Logiciel sur mesure</a></li>
+            <li><a href="../commandes/">Logiciel de commandes</a></li>
         <li><a href="../conseil-reprise-application-maroc/">Conseil et reprise</a></li>
       </ul>
     </li>
@@ -139,7 +142,7 @@
         <p class="devis-statut devis-statut--ok" id="devis-envoye" role="status" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span><b>Merci, votre demande est bien partie.</b> Nous revenons vers vous sous 48 heures ouvrées, à l'adresse e-mail que vous avez indiquée.</span></p>
         <p class="devis-statut devis-statut--echec" id="devis-echec" role="alert" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 8v5m0 4h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg><span><b>Votre demande n'a pas pu être envoyée.</b> <span data-detail>Réessayez dans un instant, ou écrivez-nous à </span><a href="mailto:contact@legantis.net">contact@legantis.net</a>.</span></p>
         <ol class="assistant-progression" aria-label="Étapes de la demande" hidden><li>Projet</li><li>Fonctionnalités</li><li>Délai</li><li>Récapitulatif</li><li>Contact</li></ol>
-        <p class="assistant-compteur" aria-live="polite" hidden></p>
+        <p class="assistant-compteur" aria-live="polite" hidden>Étape 1 sur 5</p>
         <!-- commercial:grille --><script type="application/json" id="grille-tarifs">{"valide":false}</script><!-- /commercial -->
         <form class="devis-form assistant" method="post" action="https://legantis-devis.rihla-serveur.workers.dev/" data-envoi aria-label="Demande de devis guidée">
           <input type="hidden" name="langue" value="fr">

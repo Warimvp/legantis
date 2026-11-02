@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://legantis-devis.rihla-serveur.workers.dev; form-action 'self' https://legantis-devis.rihla-serveur.workers.dev; base-uri 'self'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Création de sites web, applications et logiciels à Casablanca</title>
 <meta name="description" content="Création de sites web, développement d'applications web et mobiles, logiciels métier et conseil à Casablanca, en français et en arabe. Devis gratuit.">
@@ -121,6 +122,7 @@
             <li><a href="application-web-maroc/">Application web</a></li>
             <li><a href="application-mobile-casablanca/">Application mobile</a></li>
             <li><a href="logiciel-sur-mesure-maroc/">Logiciel sur mesure</a></li>
+            <li><a href="commandes/">Logiciel de commandes</a></li>
             <li><a href="conseil-reprise-application-maroc/">Conseil et reprise</a></li>
           </ul>
         </li>
@@ -144,6 +146,7 @@
         <li><a href="application-web-maroc/">Application web</a></li>
         <li><a href="application-mobile-casablanca/">Application mobile</a></li>
         <li><a href="logiciel-sur-mesure-maroc/">Logiciel sur mesure</a></li>
+            <li><a href="commandes/">Logiciel de commandes</a></li>
         <li><a href="conseil-reprise-application-maroc/">Conseil et reprise</a></li>
       </ul>
     </li>
@@ -163,8 +166,6 @@
   <section class="ouverture ouverture--accroche grain" aria-labelledby="titre">
     <div class="halo" aria-hidden="true"></div>
     <div class="capteurs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <div class="forme forme--cercle" aria-hidden="true"></div>
-    <div class="forme forme--carre" aria-hidden="true"></div>
     <svg class="rond-tournant" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
       <path id="cercle-texte" d="M50 50m-37 0a37 37 0 1 1 74 0a37 37 0 1 1-74 0" fill="none"/>
       <text><textPath href="#cercle-texte">Legantis · Casablanca · Web · Mobile · </textPath></text>
@@ -176,16 +177,24 @@
         <span class="ligne contour"><span class="mot" style="--i:4">Plus</span> <span class="mot" style="--i:5">de</span> <span class="mot" style="--i:6">temps</span></span>
         <span class="ligne"><span class="mot" style="--i:7">pour</span> <span class="mot" style="--i:8">développer</span> <span class="mot" style="--i:9">votre</span> <span class="mot" style="--i:10">entreprise.</span></span>
       </h1>
-      <p class="chapeau">Legantis, studio de développement à Casablanca, accompagne les entreprises marocaines : sites web, applications et logiciels métier sur mesure, pensés pour simplifier votre activité.</p>
-      <div class="actions">
-        <a class="bouton bouton--plein" href="estimer-mon-projet/">Demander un devis gratuit <span class="fleche" aria-hidden="true">→</span></a>
-        <a class="bouton bouton--trait" href="realisations/">Découvrir nos réalisations</a>
+      <div class="ouverture-bas">
+        <div class="ouverture-texte">
+          <p class="chapeau">Legantis, studio de développement à Casablanca, accompagne les entreprises marocaines : sites web, applications et logiciels métier sur mesure, pensés pour simplifier votre activité.</p>
+          <div class="actions">
+            <a class="bouton bouton--plein" href="estimer-mon-projet/">Demander un devis gratuit <span class="fleche" aria-hidden="true">→</span></a>
+            <a class="bouton bouton--trait" href="#demonstrations">Essayer une démonstration</a>
+          </div>
+          <!-- commercial:offre-ouverture --><!-- /commercial -->
+        </div>
+        <a class="ouverture-demo" href="realisations/demos/distribution-os/">
+          <span class="ouverture-demo-cadre"><img src="assets/captures/dos-tableau-960.webp" srcset="assets/captures/demo-distribution-os.webp 640w, assets/captures/dos-tableau-960.webp 960w" sizes="(min-width: 1000px) 500px, 340px" alt="Tableau de bord de Distribution OS : ventes, commandes en cours, alertes de stock et encours d'un distributeur fictif" width="960" height="600" fetchpriority="high"></span>
+          <span class="ouverture-demo-legende"><b>Démonstration interactive</b><span>Un logiciel de gestion à essayer, sans inscription. Données fictives. <span aria-hidden="true">→</span></span></span>
+        </a>
       </div>
-      <!-- commercial:offre-ouverture --><!-- /commercial -->
     </div>
     <div class="enveloppe ouverture-pied">
       <p class="compteur"><span class="chiffre-n"><span class="n" style="--n:3">3</span></span><span class="chiffre-l">titres publiés au catalogue</span></p>
-      <a class="descendre" href="#comparer" aria-label="Descendre à la suite de la page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></a>
+      <a class="descendre" href="#demonstrations" aria-label="Descendre à la suite de la page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></a>
     </div>
   </section>
 
@@ -205,67 +214,51 @@
     </div>
   </section>
 
-  <section class="section" id="comparer" aria-labelledby="comparer-titre">
+  <section class="section" id="demonstrations" aria-labelledby="demonstrations-titre">
     <div class="enveloppe">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">01</span>Avant, après</span>
-        <h2 id="comparer-titre">Trois situations <em>qui font perdre du temps.</em></h2>
-        <p class="intro">Un site illisible, des commandes dispersées, un formulaire trop long : trois situations courantes, montrées sur une entreprise fictive. Faites glisser le séparateur pour comparer.</p>
+        <span class="surtitre"><span class="no">01</span>Démonstrations</span>
+        <h2 id="demonstrations-titre">Essayez, <em>avant d'en parler.</em></h2>
+        <p class="intro">Quatre démonstrations que vous pouvez vraiment utiliser, sans inscription. Les entreprises et les données sont fictives&nbsp;: ce sont des exemples de ce que nous construisons, pas des références clients.</p>
       </div>
-      <div class="comparateur">
-        <fieldset class="comparer-choix">
-          <legend>Situation à comparer</legend>
-          <label><input type="radio" name="comparer" id="comparer-gestion" checked> Gestion</label>
-          <label><input type="radio" name="comparer" id="comparer-site"> Site web</label>
-          <label><input type="radio" name="comparer" id="comparer-formulaire"> Prise de contact</label>
-        </fieldset>
-        <figure class="comparaison" data-comparaison="gestion">
-          <div class="comparaison-cadre">
-            <div class="comparaison-panneau comparaison-avant" role="img" aria-label="Avant : un tableur rempli à la main et des notes volantes">
-              <span class="comparaison-etiquette">Avant</span>
-              <div class="mq mq-tableur" aria-hidden="true"><div class="mq-grille"><span>CLIENT</span><span>COMMANDE</span><span>PAYÉ ?</span><span>M. Exemple</span><span>voir WhatsApp</span><span>?</span><span>Mme Fictive</span><span>2 ou 3 cartons</span><span>oui je crois</span><span>Société Démo</span><span>à rappeler</span><span></span><span>M. Exemple (2)</span><span>doublon ?</span><span>non</span></div><p class="mq-post">Rappeler lundi !! (où est le bon ?)</p></div>
-            </div>
-            <div class="comparaison-panneau comparaison-apres" role="img" aria-label="Après : un écran de suivi avec les commandes et leur état">
-              <span class="comparaison-etiquette">Après</span>
-              <div class="mq mq-moderne" aria-hidden="true"><div class="mq-cartes"><span><b>12</b>en cours</span><span><b>3</b>à relancer</span><span><b>5</b>livrées</span></div><div class="mq-liste"><span>Client exemple A<i>À préparer</i></span><span>Client exemple B<i>En livraison</i></span><span>Client exemple C<i>Payée</i></span></div></div>
-            </div>
-            <span class="comparaison-poignee" aria-hidden="true"></span>
-            <input type="range" min="0" max="100" value="50" aria-label="Séparateur entre la version avant et la version après">
+      <ul class="demos reveler" role="list">
+        <li class="demo-carte demo-carte--large">
+          <a class="demo-image" href="realisations/demos/distribution-os/" tabindex="-1" aria-hidden="true"><img src="assets/captures/dos-commandes.webp" alt="Écran Commandes de la démonstration Distribution OS, données fictives" width="1440" height="900" loading="lazy" decoding="async"></a>
+          <div class="demo-corps">
+            <span class="demo-besoin">Gestion commerciale</span>
+            <h3>Vos commandes passent par WhatsApp et Excel&nbsp;?</h3>
+            <p>Distribution OS&nbsp;: créez une commande, réservez le stock, préparez la livraison, simulez le règlement, et regardez les indicateurs se mettre à jour.</p>
+            <div class="liens"><a class="suivre" href="realisations/demos/distribution-os/" aria-label="Essayer Distribution OS">Essayer <span aria-hidden="true">→</span></a><a class="suivre" href="commandes/">Voir l'offre Commandes <span aria-hidden="true">→</span></a></div>
           </div>
-          <figcaption><span class="comparaison-mention">Démonstration · données fictives</span>Une seule source d'information, avec l'état de chaque commande.</figcaption>
-        </figure>
-        <figure class="comparaison" data-comparaison="site">
-          <div class="comparaison-cadre">
-            <div class="comparaison-panneau comparaison-avant" role="img" aria-label="Avant : un site ancien, petits caractères, faible contraste, informations entassées">
-              <span class="comparaison-etiquette">Avant</span>
-              <div class="mq mq-ancien" aria-hidden="true"><p class="mq-bandeau">BIENVENUE SUR NOTRE SITE !!!</p><p class="mq-menu"><span>Accueil</span><span>Qui sommes-nous</span><span>Produits</span><span>Divers</span><span>Liens</span><span>Contact</span></p><p>Notre société fictive vous propose depuis de nombreuses années une large gamme de services de qualité pour tous vos besoins, n'hésitez pas à nous contacter pour plus de renseignements sur nos différentes activités.</p><div class="mq-table"><span>Texte très long sur deux colonnes, difficile à lire sur téléphone.</span><span>Numéro de téléphone caché en bas de page.</span></div></div>
-            </div>
-            <div class="comparaison-panneau comparaison-apres" role="img" aria-label="Après : un message clair, un bouton visible, trois informations utiles">
-              <span class="comparaison-etiquette">Après</span>
-              <div class="mq mq-moderne" aria-hidden="true"><b class="mq-titre">Votre réparation à domicile, à Rabat.</b><p>Dites-nous ce qui ne marche pas, nous vous rappelons.</p><span class="mq-bouton">Demander un rappel</span><div class="mq-cartes"><span><b>7 j/7</b>exemple</span><span><b>FR · AR</b>exemple</span><span><b>Devis</b>exemple</span></div></div>
-            </div>
-            <span class="comparaison-poignee" aria-hidden="true"></span>
-            <input type="range" min="0" max="100" value="50" aria-label="Séparateur entre la version avant et la version après">
+        </li>
+        <li class="demo-carte">
+          <a class="demo-image" href="realisations/demos/restaurant/" tabindex="-1" aria-hidden="true"><img src="assets/captures/demo-restaurant.webp" alt="Démonstration du site de restaurant Maison Tilal, entreprise fictive" width="640" height="400" loading="lazy" decoding="async"></a>
+          <div class="demo-corps">
+            <span class="demo-besoin">Restaurant</span>
+            <h3>Vos réservations arrivent par téléphone&nbsp;?</h3>
+            <p>Maison Tilal&nbsp;: la carte, la réservation en ligne et la gestion des créneaux.</p>
+            <div class="liens"><a class="suivre" href="realisations/demos/restaurant/" aria-label="Essayer la démonstration Maison Tilal">Essayer <span aria-hidden="true">→</span></a></div>
           </div>
-          <figcaption><span class="comparaison-mention">Démonstration · entreprise fictive</span>Un message clair et un bouton visible dès le premier écran, surtout sur téléphone.</figcaption>
-        </figure>
-        <figure class="comparaison" data-comparaison="formulaire">
-          <div class="comparaison-cadre">
-            <div class="comparaison-panneau comparaison-avant" role="img" aria-label="Avant : un long formulaire de douze champs tous obligatoires">
-              <span class="comparaison-etiquette">Avant</span>
-              <div class="mq mq-tableur" aria-hidden="true"><p><b>Tous les champs sont obligatoires *</b></p><div class="mq-champs"><span>Civilité *</span><span>Nom *</span><span>Prénom *</span><span>Société *</span><span>Fonction *</span><span>Adresse *</span><span>Code postal *</span><span>Ville *</span><span>Pays *</span><span>Fax *</span><span>Objet *</span><span>Message *</span></div></div>
-            </div>
-            <div class="comparaison-panneau comparaison-apres" role="img" aria-label="Après : un parcours en quelques étapes, une question à la fois">
-              <span class="comparaison-etiquette">Après</span>
-              <div class="mq mq-moderne" aria-hidden="true"><div class="mq-etapes"><span>1. Besoin</span><span>2. Délai</span><span>3. Contact</span></div><b class="mq-titre">De quoi avez-vous besoin&nbsp;?</b><div class="mq-choix"><span>Un rendez-vous</span><span>Un devis</span><span>Une information</span><span>Autre</span></div></div>
-            </div>
-            <span class="comparaison-poignee" aria-hidden="true"></span>
-            <input type="range" min="0" max="100" value="50" aria-label="Séparateur entre la version avant et la version après">
+        </li>
+        <li class="demo-carte">
+          <a class="demo-image" href="realisations/demos/services/" tabindex="-1" aria-hidden="true"><img src="assets/captures/demo-services.webp" alt="Démonstration du site de Mizan Technique, entreprise fictive" width="640" height="400" loading="lazy" decoding="async"></a>
+          <div class="demo-corps">
+            <span class="demo-besoin">Entreprise de services</span>
+            <h3>Votre site n'explique pas ce que vous faites&nbsp;?</h3>
+            <p>Mizan Technique&nbsp;: pages de services, exemples et parcours de devis.</p>
+            <div class="liens"><a class="suivre" href="realisations/demos/services/" aria-label="Essayer la démonstration Mizan Technique">Essayer <span aria-hidden="true">→</span></a></div>
           </div>
-          <figcaption><span class="comparaison-mention">Démonstration · entreprise fictive</span>Une question à la fois, et seulement celles qui servent à vous répondre.</figcaption>
-        </figure>
-      </div>
-      <div class="demarrer-cta reveler"><a class="bouton bouton--plein" href="commandes/">Sortir d'Excel et de WhatsApp <span class="fleche" aria-hidden="true">→</span></a><a class="bouton bouton--trait" href="audit-gratuit/">Moderniser mon site</a></div>
+        </li>
+        <li class="demo-carte">
+          <a class="demo-image" href="realisations/demos/reservation/" tabindex="-1" aria-hidden="true"><img src="assets/captures/demo-reservation.webp" alt="Démonstration de réservation de l'Institut Naïa, entreprise fictive" width="640" height="400" loading="lazy" decoding="async"></a>
+          <div class="demo-corps">
+            <span class="demo-besoin">Rendez-vous</span>
+            <h3>Votre agenda tient dans un cahier&nbsp;?</h3>
+            <p>Institut Naïa&nbsp;: calendrier, créneaux, confirmation et planning de gestion.</p>
+            <div class="liens"><a class="suivre" href="realisations/demos/reservation/" aria-label="Essayer la démonstration Institut Naïa">Essayer <span aria-hidden="true">→</span></a></div>
+          </div>
+        </li>
+      </ul>
     </div>
   </section>
 
@@ -352,12 +345,76 @@
     </div>
   </section>
 
-  <section class="section section--2" id="produits" aria-labelledby="produits-titre">
+  <section class="section section--2" id="comparer" aria-labelledby="comparer-titre">
     <div class="enveloppe">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">04</span>Réalisations</span>
+        <span class="surtitre"><span class="no">04</span>Avant, après</span>
+        <h2 id="comparer-titre">Trois situations <em>qui font perdre du temps.</em></h2>
+        <p class="intro">Un site illisible, des commandes dispersées, un formulaire trop long : trois situations courantes, montrées sur une entreprise fictive. Faites glisser le séparateur pour comparer.</p>
+      </div>
+      <div class="comparateur">
+        <fieldset class="comparer-choix">
+          <legend>Situation à comparer</legend>
+          <label><input type="radio" name="comparer" id="comparer-gestion" checked> Gestion</label>
+          <label><input type="radio" name="comparer" id="comparer-site"> Site web</label>
+          <label><input type="radio" name="comparer" id="comparer-formulaire"> Prise de contact</label>
+        </fieldset>
+        <figure class="comparaison" data-comparaison="gestion">
+          <div class="comparaison-cadre">
+            <div class="comparaison-panneau comparaison-avant" role="img" aria-label="Avant : un tableur rempli à la main et des notes volantes">
+              <span class="comparaison-etiquette">Avant</span>
+              <div class="mq mq-tableur" aria-hidden="true"><div class="mq-grille"><span>CLIENT</span><span>COMMANDE</span><span>PAYÉ ?</span><span>M. Exemple</span><span>voir WhatsApp</span><span>?</span><span>Mme Fictive</span><span>2 ou 3 cartons</span><span>oui je crois</span><span>Société Démo</span><span>à rappeler</span><span></span><span>M. Exemple (2)</span><span>doublon ?</span><span>non</span></div><p class="mq-post">Rappeler lundi !! (où est le bon ?)</p></div>
+            </div>
+            <div class="comparaison-panneau comparaison-apres" role="img" aria-label="Après : un écran de suivi avec les commandes et leur état">
+              <span class="comparaison-etiquette">Après</span>
+              <div class="mq mq-moderne" aria-hidden="true"><div class="mq-cartes"><span><b>12</b>en cours</span><span><b>3</b>à relancer</span><span><b>5</b>livrées</span></div><div class="mq-liste"><span>Client exemple A<i>À préparer</i></span><span>Client exemple B<i>En livraison</i></span><span>Client exemple C<i>Payée</i></span></div></div>
+            </div>
+            <span class="comparaison-poignee" aria-hidden="true"></span>
+            <input type="range" min="0" max="100" value="50" aria-label="Séparateur entre la version avant et la version après">
+          </div>
+          <figcaption><span class="comparaison-mention">Démonstration · données fictives</span>Une seule source d'information, avec l'état de chaque commande.</figcaption>
+        </figure>
+        <figure class="comparaison" data-comparaison="site">
+          <div class="comparaison-cadre">
+            <div class="comparaison-panneau comparaison-avant" role="img" aria-label="Avant : un site ancien, petits caractères, faible contraste, informations entassées">
+              <span class="comparaison-etiquette">Avant</span>
+              <div class="mq mq-ancien" aria-hidden="true"><p class="mq-bandeau">BIENVENUE SUR NOTRE SITE !!!</p><p class="mq-menu"><span>Accueil</span><span>Qui sommes-nous</span><span>Produits</span><span>Divers</span><span>Liens</span><span>Contact</span></p><p>Notre société fictive vous propose depuis de nombreuses années une large gamme de services de qualité pour tous vos besoins, n'hésitez pas à nous contacter pour plus de renseignements sur nos différentes activités.</p><div class="mq-table"><span>Texte très long sur deux colonnes, difficile à lire sur téléphone.</span><span>Numéro de téléphone caché en bas de page.</span></div></div>
+            </div>
+            <div class="comparaison-panneau comparaison-apres" role="img" aria-label="Après : un message clair, un bouton visible, trois informations utiles">
+              <span class="comparaison-etiquette">Après</span>
+              <div class="mq mq-moderne" aria-hidden="true"><b class="mq-titre">Votre réparation à domicile, à Rabat.</b><p>Dites-nous ce qui ne marche pas, nous vous rappelons.</p><span class="mq-bouton">Demander un rappel</span><div class="mq-cartes"><span><b>7 j/7</b>exemple</span><span><b>FR · AR</b>exemple</span><span><b>Devis</b>exemple</span></div></div>
+            </div>
+            <span class="comparaison-poignee" aria-hidden="true"></span>
+            <input type="range" min="0" max="100" value="50" aria-label="Séparateur entre la version avant et la version après">
+          </div>
+          <figcaption><span class="comparaison-mention">Démonstration · entreprise fictive</span>Un message clair et un bouton visible dès le premier écran, surtout sur téléphone.</figcaption>
+        </figure>
+        <figure class="comparaison" data-comparaison="formulaire">
+          <div class="comparaison-cadre">
+            <div class="comparaison-panneau comparaison-avant" role="img" aria-label="Avant : un long formulaire de douze champs tous obligatoires">
+              <span class="comparaison-etiquette">Avant</span>
+              <div class="mq mq-tableur" aria-hidden="true"><p><b>Tous les champs sont obligatoires *</b></p><div class="mq-champs"><span>Civilité *</span><span>Nom *</span><span>Prénom *</span><span>Société *</span><span>Fonction *</span><span>Adresse *</span><span>Code postal *</span><span>Ville *</span><span>Pays *</span><span>Fax *</span><span>Objet *</span><span>Message *</span></div></div>
+            </div>
+            <div class="comparaison-panneau comparaison-apres" role="img" aria-label="Après : un parcours en quelques étapes, une question à la fois">
+              <span class="comparaison-etiquette">Après</span>
+              <div class="mq mq-moderne" aria-hidden="true"><div class="mq-etapes"><span>1. Besoin</span><span>2. Délai</span><span>3. Contact</span></div><b class="mq-titre">De quoi avez-vous besoin&nbsp;?</b><div class="mq-choix"><span>Un rendez-vous</span><span>Un devis</span><span>Une information</span><span>Autre</span></div></div>
+            </div>
+            <span class="comparaison-poignee" aria-hidden="true"></span>
+            <input type="range" min="0" max="100" value="50" aria-label="Séparateur entre la version avant et la version après">
+          </div>
+          <figcaption><span class="comparaison-mention">Démonstration · entreprise fictive</span>Une question à la fois, et seulement celles qui servent à vous répondre.</figcaption>
+        </figure>
+      </div>
+      <div class="demarrer-cta reveler"><a class="bouton bouton--plein" href="commandes/">Sortir d'Excel et de WhatsApp <span class="fleche" aria-hidden="true">→</span></a><a class="bouton bouton--trait" href="audit-gratuit/">Demander un mini-audit gratuit</a></div>
+    </div>
+  </section>
+
+  <section class="section" id="produits" aria-labelledby="produits-titre">
+    <div class="enveloppe">
+      <div class="entete reveler">
+        <span class="surtitre"><span class="no">05</span>Réalisations</span>
         <h2 id="produits-titre">Nos produits, en ligne.</h2>
-        <p class="intro">Trois titres conçus, développés et maintenus par Legantis. Ce que nous proposons à nos clients, nous le pratiquons d'abord sur nos propres produits.</p>
+        <p class="intro">Trois titres conçus, développés et maintenus par Legantis. Ce que nous proposons, nous le pratiquons d'abord sur nos propres produits.</p>
       </div>
       <div class="catalogue">
         <article class="titre titre--atlasya reveler" aria-labelledby="atlasya-nom">
@@ -366,7 +423,7 @@
             <div class="couverture-bas">
               <img src="assets/atlasya.png" alt="Icône de l'application Atlasya" width="56" height="56" loading="lazy">
               <h3 id="atlasya-nom">Atlasya</h3>
-              <p>La plateforme médicale de confiance au Maroc</p>
+              <p>Plateforme médicale et logiciel de cabinet</p>
             </div>
             <div class="ecran"><img src="assets/captures/atlasya-iphone-recherche.webp" alt="Capture d'écran de l'app iPhone d'Atlasya : la recherche d'un médecin par nom, spécialité ou ville" width="420" height="913" loading="lazy" decoding="async"></div>
           </div>
@@ -463,7 +520,7 @@
   <section class="section" id="methode" aria-labelledby="methode-titre">
     <div class="enveloppe">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">05</span>Comment nous travaillons</span>
+        <span class="surtitre"><span class="no">06</span>Comment nous travaillons</span>
         <h2 id="methode-titre">Six étapes, <em>sans surprise.</em></h2>
         <p class="intro">Voici comment se déroule un projet, de la première prise de contact au suivi.</p>
       </div>
@@ -481,13 +538,13 @@
   <section class="section section--2" id="pourquoi" aria-labelledby="pourquoi-titre">
     <div class="enveloppe">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">06</span>Pourquoi Legantis</span>
+        <span class="surtitre"><span class="no">07</span>Pourquoi Legantis</span>
         <h2 id="pourquoi-titre">Un projet clair, de la première question <em>à la mise en ligne.</em></h2>
       </div>
       <div class="atouts atouts--4 reveler">
         <div class="atout"><h3>Un devis écrit avant de démarrer</h3><p>Les écrans, les fonctions, le prix et le délai, par écrit&nbsp;: vous savez ce que vous payez.</p></div>
         <div class="atout"><h3>Le code source vous est remis</h3><p>À la mise en ligne, vous recevez le code source et la documentation.</p></div>
-        <div class="atout"><h3>Des produits à essayer vous-même</h3><p>Atlasya, Rihla et Ostad sont nos propres produits, en ligne&nbsp;: vous jugez sur pièces.</p></div>
+        <div class="atout"><h3>Des produits publiés</h3><p>Atlasya, Rihla et Ostad sont nos propres produits&nbsp;: ils montrent notre façon de construire un outil complet.</p></div>
         <div class="atout"><h3>Pensé pour le Maroc</h3><p>Français et arabe de droite à gauche, dirhams, numéros locaux, paiement à la livraison.</p></div>
       </div>
       <div class="bloc">
@@ -512,7 +569,7 @@
         <li class="chiffre reveler"><span class="chiffre-n"><span class="n" style="--n:3">3</span></span><span class="chiffre-l">titres publiés</span></li>
         <li class="chiffre reveler"><span class="chiffre-n"><span class="n" style="--n:48">48</span><span class="unite">h</span></span><span class="chiffre-l">ouvrées pour répondre à une demande de devis</span></li>
         <li class="chiffre reveler"><span class="chiffre-n"><span class="n" style="--n:3">3</span></span><span class="chiffre-l">langues : français, arabe, anglais</span></li>
-        <li class="chiffre reveler"><span class="chiffre-n"><span class="n" style="--n:100">100</span><span class="unite">%</span></span><span class="chiffre-l">du code source remis au client</span></li>
+        <li class="chiffre reveler"><span class="chiffre-n"><span class="n" style="--n:100">100</span><span class="unite">%</span></span><span class="chiffre-l">du code source remis à la mise en ligne</span></li>
       </ul>
     </div>
   </section>
@@ -521,10 +578,10 @@
   <section class="section section--2" id="societe" aria-labelledby="societe-titre">
     <div class="enveloppe">
       <div class="societe-texte reveler">
-        <span class="numero-fantome" aria-hidden="true">07</span>
-        <span class="surtitre"><span class="no">07</span>La société</span>
+        <span class="numero-fantome" data-n="08" aria-hidden="true"></span>
+        <span class="surtitre"><span class="no">08</span>La société</span>
         <h2 id="societe-titre">Une société marocaine qui édite ses propres applications.</h2>
-        <p>Legantis édite Atlasya, Rihla et Ostad et développe des applications pour ses clients. Elle est immatriculée au registre du commerce de Casablanca.</p>
+        <p>Legantis édite Atlasya, Rihla et Ostad et développe des applications sur mesure. Elle est immatriculée au registre du commerce de Casablanca.</p>
         <div class="actions">
           <a class="bouton bouton--plein" href="estimer-mon-projet/">Demander un devis gratuit <span class="fleche" aria-hidden="true">→</span></a>
           <a class="bouton bouton--trait" href="realisations/">Découvrir nos réalisations</a>
@@ -537,20 +594,20 @@
   <section class="section" id="questions" aria-labelledby="questions-titre">
     <div class="enveloppe">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">08</span>Questions fréquentes</span>
+        <span class="surtitre"><span class="no">09</span>Questions fréquentes</span>
         <h2 id="questions-titre">Avant de nous écrire.</h2>
       </div>
-      <div class="atouts atouts--2 reveler">
-        <div class="atout"><h3>Combien coûte un projet&nbsp;?</h3><!-- commercial:faq-cout --><p>Cela dépend de ce qu'il fait&nbsp;: nombre d'écrans, comptes utilisateurs, langues, supports visés. Nous ne publions pas de prix unique, car deux projets ne se ressemblent pas&nbsp;: nous vous remettons gratuitement un devis détaillé, avec le prix et le délai, et vous décidez ensuite, librement.</p><!-- /commercial --></div>
-        <div class="atout"><h3>Sous quel délai répondez-vous&nbsp;?</h3><p>Sous 48 heures ouvrées&nbsp;: un premier échange, par téléphone ou par écrit, pour comprendre votre besoin. Le devis détaillé suit, gratuit et sans engagement.</p></div>
-        <div class="atout"><h3>Combien de temps dure un projet&nbsp;?</h3><p>Le délai figure dans le devis, une fois les écrans et les fonctions listés. Pendant le développement, vous essayez l'application sur une adresse de test à chaque livraison.</p></div>
-        <div class="atout"><h3>Recevrai-je le code source&nbsp;?</h3><p>Oui&nbsp;: à la mise en ligne, nous vous remettons le code source et la documentation.</p></div>
-        <div class="atout"><h3>Et après la mise en ligne&nbsp;?</h3><p>La même équipe assure les corrections et les évolutions de votre application dans la durée.</p></div>
-        <div class="atout"><h3>Travaillez-vous en arabe&nbsp;?</h3><p>Oui&nbsp;: interface en français, en arabe ou dans les deux langues, avec le sens de lecture de droite à gauche géré dès la maquette. L'anglais s'ajoute si votre public le demande.</p></div>
-        <div class="atout"><h3>La demande guidée donne-t-elle un prix&nbsp;?</h3><p>Il prépare votre demande&nbsp;: type de projet, fonctionnalités, délai. Le prix figure dans le devis gratuit que nous vous remettons ensuite.</p></div>
-        <div class="atout"><h3>Faut-il déjà un cahier des charges&nbsp;?</h3><p>Non. Décrivez votre besoin avec vos mots&nbsp;: nous le mettons par écrit avec vous au cadrage (écrans, règles, priorités).</p></div>
-        <div class="atout"><h3>J'ai déjà un site&nbsp;: par où commencer&nbsp;?</h3><p>Demandez un <a href="audit-gratuit/">mini-audit gratuit</a>&nbsp;: une première analyse faite à la main, sans engagement.</p></div>
-        <div class="atout"><h3>Présentez-vous des projets clients&nbsp;?</h3><p>Nos <a href="realisations/">réalisations</a> sont nos propres produits et des démonstrations, indiqués comme tels. La société date de septembre 2026&nbsp;: nous ne publions aucune référence que nous ne pourrions pas prouver.</p></div>
+      <div class="faq reveler">
+        <details class="faq-item" open><summary><h3>Combien coûte un projet&nbsp;?</h3></summary><div class="faq-reponse"><!-- commercial:faq-cout --><p>Cela dépend de ce qu'il fait&nbsp;: nombre d'écrans, comptes utilisateurs, langues, supports visés. Nous ne publions pas de prix unique, car deux projets ne se ressemblent pas&nbsp;: nous vous remettons gratuitement un devis détaillé, avec le prix et le délai, et vous décidez ensuite, librement.</p><!-- /commercial --></div></details>
+        <details class="faq-item"><summary><h3>Sous quel délai répondez-vous&nbsp;?</h3></summary><div class="faq-reponse"><p>Sous 48 heures ouvrées&nbsp;: un premier échange, par téléphone ou par écrit, pour comprendre votre besoin. Le devis détaillé suit, gratuit et sans engagement.</p></div></details>
+        <details class="faq-item"><summary><h3>Combien de temps dure un projet&nbsp;?</h3></summary><div class="faq-reponse"><p>Le délai figure dans le devis, une fois les écrans et les fonctions listés. Pendant le développement, vous essayez l'application sur une adresse de test à chaque livraison.</p></div></details>
+        <details class="faq-item"><summary><h3>Recevrai-je le code source&nbsp;?</h3></summary><div class="faq-reponse"><p>Oui&nbsp;: à la mise en ligne, nous vous remettons le code source et la documentation.</p></div></details>
+        <details class="faq-item"><summary><h3>Et après la mise en ligne&nbsp;?</h3></summary><div class="faq-reponse"><p>La même équipe assure les corrections et les évolutions de votre application dans la durée.</p></div></details>
+        <details class="faq-item"><summary><h3>Travaillez-vous en arabe&nbsp;?</h3></summary><div class="faq-reponse"><p>Oui&nbsp;: interface en français, en arabe ou dans les deux langues, avec le sens de lecture de droite à gauche géré dès la maquette. L'anglais s'ajoute si votre public le demande.</p></div></details>
+        <details class="faq-item"><summary><h3>La demande guidée donne-t-elle un prix&nbsp;?</h3></summary><div class="faq-reponse"><p>Elle prépare votre demande&nbsp;: type de projet, fonctionnalités, délai. Le prix figure dans le devis gratuit que nous vous remettons ensuite.</p></div></details>
+        <details class="faq-item"><summary><h3>Faut-il déjà un cahier des charges&nbsp;?</h3></summary><div class="faq-reponse"><p>Non. Décrivez votre besoin avec vos mots&nbsp;: nous le mettons par écrit avec vous au cadrage (écrans, règles, priorités).</p></div></details>
+        <details class="faq-item"><summary><h3>J'ai déjà un site&nbsp;: par où commencer&nbsp;?</h3></summary><div class="faq-reponse"><p>Demandez un <a href="audit-gratuit/">mini-audit gratuit</a>&nbsp;: une première analyse faite à la main, sans engagement.</p></div></details>
+        <details class="faq-item"><summary><h3>Présentez-vous des projets clients&nbsp;?</h3></summary><div class="faq-reponse"><p>Nos <a href="realisations/">réalisations</a> sont nos propres produits et des démonstrations, indiqués comme tels. La société date de septembre 2026&nbsp;: nous ne publions aucune référence que nous ne pourrions pas prouver.</p></div></details>
         <!-- commercial:faq-packs --><!-- /commercial -->
       </div>
     </div>
@@ -559,7 +616,7 @@
   <section class="section section--2" id="ecrire" aria-labelledby="ecrire-titre">
     <div class="enveloppe">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">09</span>Demande directe</span>
+        <span class="surtitre"><span class="no">10</span>Demande directe</span>
         <h2 id="ecrire-titre">Vous préférez <em>nous écrire&nbsp;?</em></h2>
         <p class="intro">Si vous savez déjà ce qu'il vous faut, ce formulaire suffit. Pour être guidé pas à pas, utilisez la <a href="estimer-mon-projet/">demande de devis guidée</a>.</p>
       </div>
@@ -610,7 +667,7 @@
     <div class="forme forme--a" aria-hidden="true"></div>
     <div class="forme forme--b" aria-hidden="true"></div>
     <div class="enveloppe">
-      <span class="surtitre reveler"><span class="no">10</span>Contact</span>
+      <span class="surtitre reveler"><span class="no">11</span>Contact</span>
       <h2 id="contact-titre" class="reveler"><span>Parlons de</span><span class="contour">votre projet.</span></h2>
       <p class="intro reveler">Un projet d'application à cadrer, une question sur un produit ou un partenariat ? Décrivez-nous votre besoin en quelques lignes : nous vous répondons sous 48 heures ouvrées, et le devis est gratuit.</p>
       <dl class="contact reveler">

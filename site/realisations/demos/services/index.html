@@ -2,66 +2,90 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://legantis-devis.rihla-serveur.workers.dev; form-action 'self' https://legantis-devis.rihla-serveur.workers.dev; base-uri 'self'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Site d'entreprise de services — démonstration Legantis</title>
-<meta name="description" content="Démonstration de site d'entreprise de services : message clair, services, zones couvertes et demande de rappel. Entreprise fictive.">
+<title>Mizan Technique · Maintenance technique à Casablanca (démonstration)</title>
+<meta name="description" content="Vitrine de démonstration d&#x27;une entreprise fictive de maintenance technique : climatisation, électricité, maintenance de locaux.">
 <meta name="robots" content="noindex, follow">
 <meta name="color-scheme" content="light">
-<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../demos.css">
-<script src="../demos.js" defer></script>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/realisations/demos/services/fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/realisations/demos/services/services.css">
 </head>
-<body class="serv">
-<p class="demo-bandeau"><span>Démonstration créée par Legantis · entreprise et données fictives</span> <a href="../../">Retour aux réalisations</a></p>
-<div class="serv-hero">
-  <div class="env">
-    <header class="entete"><b>Clim Démo Services</b><nav aria-label="Navigation de la démonstration"><a href="#services">Services</a><a href="#zones">Zones</a><a href="#etapes">Comment ça marche</a></nav></header>
-    <div class="inner">
-      <div>
-        <h1>Climatisation et dépannage pour les professionnels.</h1>
-        <p>Installation, entretien et dépannage de vos équipements, avec un interlocuteur unique et un devis écrit.</p>
-        <a class="btn" href="#rappel">Être rappelé</a>
-      </div>
-      <form class="carte-rappel" id="rappel" data-demo aria-labelledby="rappel-titre">
-        <h2 id="rappel-titre">Demander un rappel</h2>
-        <label class="champ">Nom<input type="text" autocomplete="off" required></label>
-        <label class="champ">Téléphone<input type="tel" autocomplete="off" required></label>
-        <label class="champ">Besoin<select><option>Installation</option><option>Entretien</option><option>Dépannage</option></select></label>
-        <button class="btn" type="submit">Être rappelé</button>
-        <p class="demo-note">Démonstration : ce formulaire n'envoie rien.</p>
-        <p class="demo-retour" tabindex="-1" hidden>Démonstration : rien n'a été envoyé.</p>
-      </form>
-    </div>
-  </div>
-</div>
-<main>
-  <section class="section" id="services" aria-labelledby="services-titre">
-    <div class="env">
-      <h2 id="services-titre">Nos services</h2>
-      <ul class="services">
-        <li><h3>Installation</h3><p>Étude de vos locaux, pose et mise en service.</p></li>
-        <li><h3>Contrat d'entretien</h3><p>Visites planifiées et suivi de vos équipements.</p></li>
-        <li><h3>Dépannage</h3><p>Diagnostic sur place et devis avant intervention.</p></li>
-      </ul>
-    </div>
-  </section>
-  <section class="section" style="background:var(--fond-2)" id="zones" aria-labelledby="zones-titre">
-    <div class="env">
-      <h2 id="zones-titre">Zones couvertes</h2>
-      <ul class="zones"><li>Casablanca</li><li>Mohammedia</li><li>Rabat</li><li>Salé</li><li>Kénitra</li></ul>
-    </div>
-  </section>
-  <section class="section" id="etapes" aria-labelledby="etapes-titre">
-    <div class="env">
-      <h2 id="etapes-titre">Comment ça marche</h2>
-      <ul class="services">
-        <li><h3>1. Vous demandez un rappel</h3><p>En quelques secondes, depuis votre téléphone.</p></li>
-        <li><h3>2. Nous évaluons</h3><p>Un technicien vous rappelle et prépare un devis écrit.</p></li>
-        <li><h3>3. Nous intervenons</h3><p>À la date convenue, avec un compte rendu.</p></li>
-      </ul>
-    </div>
-  </section>
+<body>
+<p class="demo-bandeau"><span>Démonstration créée par Legantis · entreprise et données fictives</span> <a href="/realisations/">Retour aux réalisations</a></p>
+<a class="saut" href="#contenu">Aller au contenu</a>
+<header class="entete"><div class="wrap">
+<a class="marque" href="/realisations/demos/services/" aria-label="Mizan Technique, accueil"><svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="1.5" y="1.5" width="37" height="37" fill="#fff" stroke="#12171c" stroke-width="3"/><path d="M8 31V9l12 14L32 9v22" fill="none" stroke="#12171c" stroke-width="3.5" stroke-linejoin="miter"/><rect x="26" y="26" width="8" height="8" fill="#ff5a00" stroke="#12171c" stroke-width="2"/></svg><span><b>Mizan Technique</b><small>Maintenance technique · Casablanca</small></span></a>
+<button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-principale"><i aria-hidden="true"></i>Menu</button>
+<nav class="nav" id="nav-principale" aria-label="Navigation principale"><ul><li><a href="/realisations/demos/services/" aria-current="page">Accueil</a></li><li><a href="/realisations/demos/services/services/">Services</a></li><li><a href="/realisations/demos/services/realisations/">Réalisations</a></li><li><a href="/realisations/demos/services/a-propos/">À propos</a></li><li><a href="/realisations/demos/services/contact/">Contact</a></li><li><a class="nav-cta" href="/realisations/demos/services/devis/">Demander un devis</a></li></ul></nav>
+</div></header>
+<main id="contenu">
+<section class="hero"><div class="wrap">
+<div><span class="etiq">Casablanca · Entreprise fictive</span>
+<h1>Maintenance technique<em>sans approximation.</em></h1>
+<p class="lead">Climatisation, électricité et maintenance de locaux professionnels. Un diagnostic précis, un devis écrit avant d'intervenir, un compte rendu après.</p>
+<div class="actions"><a class="btn fl" href="/realisations/demos/services/devis/">Demander un devis</a><a class="btn btn--ligne" href="/realisations/demos/services/services/">Voir les services</a></div></div>
+<figure class="plan"><svg viewBox="0 0 700 500" role="img" aria-labelledby="plan-t plan-d">
+<title id="plan-t">Plan technique d'un plateau de bureaux</title>
+<desc id="plan-d">Vue en plan d'un local avec quatre cassettes de climatisation, un tableau électrique, un réseau frigorifique et un groupe extérieur, repérés par trois numéros.</desc>
+<defs><pattern id="hach" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V8" stroke="#12171c" stroke-width="2"/></pattern>
+<marker id="fl" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse"><path d="M0 0L8 4L0 8" fill="none" stroke="#12171c" stroke-width="1.5"/></marker></defs>
+<g stroke="#8a96a1" stroke-width="1" stroke-dasharray="10 4 2 4"><path d="M90 40V420M310 40V420M530 40V420M30 110H570M30 250H570M30 380H570"/></g>
+<g fill="#fff" stroke="#12171c" stroke-width="1.5"><circle cx="90" cy="26" r="13"/><circle cx="310" cy="26" r="13"/><circle cx="530" cy="26" r="13"/><circle cx="20" cy="110" r="13"/><circle cx="20" cy="250" r="13"/><circle cx="20" cy="380" r="13"/></g>
+<g class="svgt-b" text-anchor="middle" style="font-size:14px"><text x="90" y="31" class="svgt-b">A</text><text x="310" y="31" class="svgt-b">B</text><text x="530" y="31" class="svgt-b">C</text><text x="20" y="115" class="svgt-b">1</text><text x="20" y="255" class="svgt-b">2</text><text x="20" y="385" class="svgt-b">3</text></g>
+<rect x="60" y="70" width="520" height="340" fill="#f1f3f5"/>
+<rect x="60" y="70" width="520" height="340" fill="none" stroke="#12171c" stroke-width="7"/>
+<rect x="53" y="63" width="534" height="354" fill="none" stroke="#12171c" stroke-width="1"/>
+<path d="M310 70V215M310 265V300H410M470 300H580" fill="none" stroke="#12171c" stroke-width="5"/>
+<path d="M310 215A50 50 0 0 1 360 265" fill="none" stroke="#8a96a1" stroke-width="1.5"/><path d="M310 215V265" stroke="#12171c" stroke-width="2"/>
+<rect x="60" y="300" width="22" height="70" fill="url(#hach)" stroke="#12171c" stroke-width="1.5"/>
+<path d="M82 335H175" stroke="#12171c" stroke-width="2" stroke-dasharray="14 3 3 3"/>
+<path d="M175 335V300M175 300H175" stroke="#12171c" stroke-width="2" stroke-dasharray="14 3 3 3"/>
+<path d="M175 335H430" stroke="#12171c" stroke-width="2" stroke-dasharray="14 3 3 3"/>
+<g stroke="#ff5a00" stroke-width="3" fill="none"><path d="M190 150H450V200M190 150V175M450 200H580"/></g>
+<g stroke="#12171c" stroke-width="1" fill="none"><path d="M193 153H447V203M193 153V175M447 203H580" transform="translate(0 0)" opacity=".0"/></g>
+<path d="M190 150V250H300" stroke="#ff5a00" stroke-width="3" fill="none" stroke-dasharray="1 0"/>
+<g transform="translate(190 150)"><rect x="-24" y="-24" width="48" height="48" fill="#fff" stroke="#12171c" stroke-width="2.5"/><rect x="-14" y="-14" width="28" height="28" fill="none" stroke="#ff5a00" stroke-width="2.5"/><path d="M-24-24L-14-14M24-24L14-14M-24 24L-14 14M24 24L14 14M-14 0H14M0-14V14" stroke="#12171c" stroke-width="1.5"/></g><g transform="translate(190 250)"><rect x="-24" y="-24" width="48" height="48" fill="#fff" stroke="#12171c" stroke-width="2.5"/><rect x="-14" y="-14" width="28" height="28" fill="none" stroke="#ff5a00" stroke-width="2.5"/><path d="M-24-24L-14-14M24-24L14-14M-24 24L-14 14M24 24L14 14M-14 0H14M0-14V14" stroke="#12171c" stroke-width="1.5"/></g><g transform="translate(450 150)"><rect x="-24" y="-24" width="48" height="48" fill="#fff" stroke="#12171c" stroke-width="2.5"/><rect x="-14" y="-14" width="28" height="28" fill="none" stroke="#ff5a00" stroke-width="2.5"/><path d="M-24-24L-14-14M24-24L14-14M-24 24L-14 14M24 24L14 14M-14 0H14M0-14V14" stroke="#12171c" stroke-width="1.5"/></g><g transform="translate(450 360)"><rect x="-24" y="-24" width="48" height="48" fill="#fff" stroke="#12171c" stroke-width="2.5"/><rect x="-14" y="-14" width="28" height="28" fill="none" stroke="#ff5a00" stroke-width="2.5"/><path d="M-24-24L-14-14M24-24L14-14M-24 24L-14 14M24 24L14 14M-14 0H14M0-14V14" stroke="#12171c" stroke-width="1.5"/></g>
+<path d="M450 384V395H585" stroke="#ff5a00" stroke-width="3" fill="none"/>
+<g transform="translate(585 120)"><rect x="0" y="0" width="86" height="190" fill="#fff" stroke="#12171c" stroke-width="2.5"/><circle cx="43" cy="48" r="30" fill="none" stroke="#12171c" stroke-width="2"/><circle cx="43" cy="48" r="4" fill="#12171c"/><path d="M43 48L43 20M43 48L69 63M43 48L17 63" stroke="#12171c" stroke-width="3" stroke-linecap="round"/><circle cx="43" cy="140" r="30" fill="none" stroke="#12171c" stroke-width="2"/><circle cx="43" cy="140" r="4" fill="#12171c"/><path d="M43 140L43 112M43 140L69 155M43 140L17 155" stroke="#12171c" stroke-width="3" stroke-linecap="round"/></g>
+<path d="M580 200H585M580 395H600V310" stroke="#ff5a00" stroke-width="3" fill="none"/>
+<g stroke="#12171c" stroke-width="1.5" fill="none"><path d="M60 445H580" marker-start="url(#fl)" marker-end="url(#fl)"/><path d="M60 417V455M580 417V455"/><path d="M310 445V465"/></g>
+<text x="320" y="438" text-anchor="middle" class="svgt">20 000</text>
+<g stroke="#12171c" stroke-width="1.5" fill="none"><path d="M60 475H310" marker-start="url(#fl)" marker-end="url(#fl)"/><path d="M60 465V485M310 465V485"/></g>
+<text x="185" y="470" text-anchor="middle" class="svgt">10 000</text>
+<g><path d="M190 150L130 98" stroke="#12171c" stroke-width="1.5"/><circle cx="130" cy="98" r="13" fill="#ff5a00" stroke="#12171c" stroke-width="2"/><text x="130" y="103.5" text-anchor="middle" class="svgt-b" style="font-size:16px">1</text></g><g><path d="M71 335L71 335" stroke="#12171c" stroke-width="1.5"/><circle cx="71" cy="335" r="13" fill="#ff5a00" stroke="#12171c" stroke-width="2"/><text x="71" y="340.5" text-anchor="middle" class="svgt-b" style="font-size:16px">2</text></g><g><path d="M628 310L628 350" stroke="#12171c" stroke-width="1.5"/><circle cx="628" cy="350" r="13" fill="#ff5a00" stroke="#12171c" stroke-width="2"/><text x="628" y="355.5" text-anchor="middle" class="svgt-b" style="font-size:16px">3</text></g>
+<text x="330" y="60" class="svgt" text-anchor="middle">PLATEAU 01 · NIVEAU +0.00</text>
+</svg>
+<figcaption><div><b>Plan 01 · Plateau de bureaux</b><ul class="legende"><li><span class="num">1</span>Cassette de climatisation</li><li><span class="num">2</span>Tableau électrique</li><li><span class="num">3</span>Groupe extérieur</li></ul></div><div><span class="fictif sig">Exemple fictif</span></div></figcaption></figure>
+</div></section>
+
+<section class="bloc" aria-labelledby="t-serv"><div class="wrap rub"><header><span class="etiq">01 · Services</span><h2 id="t-serv">Trois métiers, un seul interlocuteur</h2><p>Chaque domaine a sa page : problèmes traités, déroulé, équipements et questions fréquentes.</p></header>
+<ul class="registre"><li><a href="/realisations/demos/services/services/climatisation/"><span class="num">01</span><div><h3>Climatisation</h3><p>Un local à bonne température, des équipements qui durent, des interventions tracées.</p></div><span class="fl" aria-hidden="true"></span></a></li><li><a href="/realisations/demos/services/services/electricite/"><span class="num">02</span><div><h3>Électricité</h3><p>Des installations lisibles, protégées et documentées, du tableau général au dernier départ.</p></div><span class="fl" aria-hidden="true"></span></a></li><li><a href="/realisations/demos/services/services/maintenance/"><span class="num">03</span><div><h3>Maintenance de locaux</h3><p>Un seul interlocuteur pour le suivi courant : visites planifiées, petits travaux, anomalies tracées.</p></div><span class="fl" aria-hidden="true"></span></a></li></ul></div></section>
+
+<section class="bloc bloc--mist" aria-labelledby="t-meth"><div class="wrap">
+<span class="etiq">02 · Méthode</span><h2 id="t-meth" style="margin:12px 0 36px">De l'appel au compte rendu</h2>
+<ol class="etapes etapes--4"><li><h3>Qualifier</h3><p>Nous comprenons le besoin, le local et le niveau d'urgence.</p></li><li><h3>Diagnostiquer</h3><p>Relevé sur place, mesures, photos de l'existant.</p></li><li><h3>Chiffrer</h3><p>Un devis écrit, détaillé, avant tout travail.</p></li><li><h3>Intervenir</h3><p>Travaux, essais, compte rendu remis à la fin.</p></li></ol></div></section>
+
+<section class="bloc" aria-labelledby="t-real"><div class="wrap rub"><header><span class="etiq">03 · Réalisations</span><h2 id="t-real">Exemples de chantiers</h2><p>Des cas inventés pour montrer comment nous décrivons une intervention. Aucun résultat chiffré.</p><div class="actions"><a class="btn btn--ligne" href="/realisations/demos/services/realisations/">Toutes les réalisations</a></div></header>
+<ul class="ligne-reals"><li><span class="tag etiq">Climatisation</span><div><h3>Remplacement de la production de froid d'un plateau de bureaux</h3><p>Les anciennes unités étaient remplacées par des cassettes, avec reprise des condensats et nouvelle régulation par zone.</p></div><span class="fictif">Exemple fictif</span></li><li><span class="tag etiq">Électricité</span><div><h3>Reprise du tableau général d'un atelier</h3><p>Protections remplacées, départs repérés, nouveau schéma remis au responsable des lieux.</p></div><span class="fictif">Exemple fictif</span></li><li><span class="tag etiq">Maintenance</span><div><h3>Plan de visites d'un petit centre commercial</h3><p>Inventaire des équipements, calendrier de visites par lot technique et carnet de suivi partagé.</p></div><span class="fictif">Exemple fictif</span></li></ul></div></section>
+
+<section class="bloc bloc--mist" aria-labelledby="t-eng"><div class="wrap rub"><header><span class="etiq">04 · Engagements fictifs</span><h2 id="t-eng">Ce que nous promettons de faire</h2></header>
+<div class="engagements"><div><h3>Un devis avant les travaux</h3><p>Aucune intervention de remise en état sans accord écrit sur le contenu.</p></div><div><h3>Un compte rendu à chaque passage</h3><p>Constats, actions réalisées, points à surveiller.</p></div><div><h3>Des pièces identifiées</h3><p>Chaque pièce remplacée est notée dans le compte rendu.</p></div><div><h3>Une urgence prise au sérieux</h3><p>Une demande urgente passe avant la planification courante.</p></div></div></div></section>
+
+<section class="bande" aria-labelledby="t-cta"><div class="wrap"><div><h2 id="t-cta">Une panne, un projet, <span>un devis&nbsp;?</span></h2><p style="margin-top:14px">Le parcours en sept étapes donne une fourchette indicative fictive et un numéro de simulation. Rien n'est envoyé.</p></div>
+<div class="actions"><a class="btn fl" href="/realisations/demos/services/devis/">Demander un devis</a><a class="btn btn--ligne" href="/realisations/demos/services/contact/">Nous contacter</a></div></div></section>
 </main>
-<footer class="demo-pied"><div class="env"><span>Page de démonstration : ce n'est pas un client de Legantis, aucune commande réelle.</span><a href="../../../estimer-mon-projet/">Un projet comparable ? Demander un devis gratuit</a></div></footer>
+<footer class="pied"><div class="wrap">
+<div class="grille-pied">
+<div><a class="marque" href="/realisations/demos/services/" aria-label="Mizan Technique, accueil"><svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="1.5" y="1.5" width="37" height="37" fill="#fff" stroke="#12171c" stroke-width="3"/><path d="M8 31V9l12 14L32 9v22" fill="none" stroke="#12171c" stroke-width="3.5" stroke-linejoin="miter"/><rect x="26" y="26" width="8" height="8" fill="#ff5a00" stroke="#12171c" stroke-width="2"/></svg><span><b>Mizan Technique</b><small>Maintenance technique · Casablanca</small></span></a>
+<p style="margin-top:18px;max-width:26em">Climatisation, électricité et maintenance de locaux professionnels. Une entreprise inventée pour cette démonstration.</p></div>
+<div><h2>Services</h2><ul><li><a href="/realisations/demos/services/services/climatisation/">Climatisation</a></li><li><a href="/realisations/demos/services/services/electricite/">Électricité</a></li><li><a href="/realisations/demos/services/services/maintenance/">Maintenance de locaux</a></li></ul></div>
+<div><h2>Société</h2><ul><li><a href="/realisations/demos/services/realisations/">Réalisations</a></li><li><a href="/realisations/demos/services/a-propos/">À propos</a></li><li><a href="/realisations/demos/services/devis/">Demander un devis</a></li><li><a href="/realisations/demos/services/contact/">Contact</a></li></ul></div>
+<div><h2>Coordonnées fictives</h2><address>Adresse fictive, Casablanca<br>05 00 00 00 00<br>contact@exemple.invalid</address></div>
+</div>
+<div class="mention"><p style="margin:0"><strong>Entreprise fictive.</strong> Mizan Technique n'existe pas : noms, adresses, téléphones et exemples sont inventés pour une démonstration. Aucun formulaire n'envoie quoi que ce soit.</p><p style="margin:0">Démonstration créée par Legantis · <a href="/realisations/">Retour aux réalisations</a></p></div>
+</div></footer>
+<script src="/realisations/demos/services/services.js"></script>
 </body>
 </html>

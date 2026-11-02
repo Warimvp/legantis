@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://legantis-devis.rihla-serveur.workers.dev; form-action 'self' https://legantis-devis.rihla-serveur.workers.dev; base-uri 'self'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Atlasya case study: a medical platform — Legantis</title>
 <meta name="description" content="Finding a doctor, booking online, a personal health space and practice software: what Atlasya contains and the choices that shape the platform.">
@@ -134,6 +135,7 @@
         <ol role="list"><li><a href="../">Home</a></li><li aria-current="page">Atlasya case study</li></ol>
       </nav>
       <span class="surtitre">Case study · Healthcare</span>
+      <span class="nature nature--interne">In-house Legantis product, not client work</span>
       <h1 id="titre">Atlasya, a <em>medical platform</em> for patients and practices</h1>
       <p class="chapeau">Atlasya, which we publish and maintain, brings patients and medical practices together on a single platform: patients can look for a doctor and book appointments online, while practices manage their calendar and patient files and record the fees they collect with Atlasya Pro. This page describes what it contains and the technical choices that shape it.</p>
       <div class="actions">
@@ -196,10 +198,27 @@
     </div>
   </section>
 
-  <section class="section" id="choix" aria-labelledby="choix-titre">
+  <section class="section" aria-labelledby="parcours-titre">
     <div class="enveloppe">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">03</span>Technical choices</span>
+        <span class="surtitre"><span class="no">03</span>The journey</span>
+        <h2 id="parcours-titre">From patient to practice, one appointment.</h2>
+        <p class="intro">What a patient goes through, then what the practice sees, on the same platform.</p>
+      </div>
+      <ol class="frise" role="list">
+        <li class="etape"><span class="pilule">Step 01</span><h3>Search</h3><p>The patient looks for a doctor by specialty, city or neighbourhood, then refines the search.</p></li>
+        <li class="etape"><span class="pilule">Step 02</span><h3>Book</h3><p>They book the chosen slot online. A slot can hold only one confirmed appointment.</p></li>
+        <li class="etape"><span class="pilule">Step 03</span><h3>Receive</h3><p>The appointment goes straight into the practice's calendar; the waiting room updates automatically.</p></li>
+        <li class="etape"><span class="pilule">Step 04</span><h3>Follow up</h3><p>The doctor completes the record and the practice logs the payment in the cash register.</p></li>
+      </ol>
+      <p class="note">Does your business run on appointments? <a class="suivre" href="../web-app-morocco/">See our web applications <span aria-hidden="true">→</span></a></p>
+    </div>
+  </section>
+
+  <section class="section section--2" id="choix" aria-labelledby="choix-titre">
+    <div class="enveloppe">
+      <div class="entete reveler">
+        <span class="surtitre"><span class="no">04</span>Technical choices</span>
         <h2 id="choix-titre">The choices that shape the platform.</h2>
       </div>
       <div class="atouts atouts--2 reveler">
@@ -217,12 +236,13 @@
     </div>
   </section>
 
-  <section class="section section--2" aria-labelledby="etat-titre">
+  <section class="section" aria-labelledby="etat-titre">
     <div class="enveloppe preuve">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">04</span>Today</span>
+        <span class="surtitre"><span class="no">05</span>Today</span>
         <h2 id="etat-titre">Where Atlasya stands.</h2>
         <p class="intro">Atlasya is online, at the launch stage: the patient site and Atlasya Pro are accessible, the iPhone app is available on the App Store. This page describes what the platform contains, not its audience: it gives no usage figures.</p>
+        <p class="intro">Its limits, to date: no published Android app; Atlasya Pro exists in French only; the cash register is a payment log, not an online payment service.</p>
         <p class="intro">Health data falls under <span style="white-space:nowrap">law&nbsp;09-08</span>; Atlasya's compliance file is being prepared.</p>
       </div>
           <article class="titre titre--atlasya reveler" aria-labelledby="preuve-nom">
@@ -250,7 +270,7 @@
       <ul class="suite" role="list">
         <li><a href="../web-app-morocco/"><b>Web applications</b><span>Platforms, customer portals, dashboards, online shops.</span></a></li>
         <li><a href="../custom-software-morocco/"><b>Custom business software</b><span>Point of sale, management, field tracking, internal tools.</span></a></li>
-        <li><a href="../case-study-rihla/"><b>Rihla case study</b><span>A language-learning app, free and offline.</span></a></li>
+        <li><a href="../case-study-rihla/"><b>Rihla case study</b><span>A language-learning app, free, offline on iPhone.</span></a></li>
         <li><a href="../case-study-ostad/"><b>Ostad case study</b><span>A learning platform: classes, homework, marks and student progress.</span></a></li>
       </ul>
     </div>
@@ -260,7 +280,7 @@
     <div class="forme forme--a" aria-hidden="true"></div>
     <div class="forme forme--b" aria-hidden="true"></div>
     <div class="enveloppe">
-      <span class="surtitre reveler"><span class="no">05</span>Contact</span>
+      <span class="surtitre reveler"><span class="no">06</span>Contact</span>
       <h2 id="contact-titre" class="reveler"><span>Tell us about</span><span class="contour">your project.</span></h2>
       <p class="intro reveler">A platform or business software to build? Describe your needs in a few lines: we reply within two business days, and the quote is free.</p>
       <dl class="contact reveler">

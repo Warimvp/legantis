@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://legantis-devis.rihla-serveur.workers.dev; form-action 'self' https://legantis-devis.rihla-serveur.workers.dev; base-uri 'self'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rihla case study: a language-learning app — Legantis</title>
-<meta name="description" content="Rihla, a free language-learning app: no account, works offline, with a French and Arabic interface, on iPhone and on the web.">
+<meta name="description" content="Rihla, a free language-learning app: no account, offline on iPhone, with a French and Arabic interface, on iPhone and on the web.">
 <meta name="robots" content="max-image-preview:large">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#F6F7F9" media="(prefers-color-scheme: light)">
@@ -21,7 +22,7 @@
 <meta property="og:locale:alternate" content="fr_MA">
 <meta property="og:url" content="https://legantis.net/en/case-study-rihla/">
 <meta property="og:title" content="Rihla case study: a language-learning app — Legantis">
-<meta property="og:description" content="Rihla, a free language-learning app: no account, works offline, with a French and Arabic interface, on iPhone and on the web.">
+<meta property="og:description" content="Rihla, a free language-learning app: no account, offline on iPhone, with a French and Arabic interface, on iPhone and on the web.">
 <meta property="og:image" content="https://legantis.net/assets/partage.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -36,7 +37,7 @@
       "@id": "https://legantis.net/en/case-study-rihla/#page",
       "url": "https://legantis.net/en/case-study-rihla/",
       "name": "Rihla case study: a language-learning app — Legantis",
-      "description": "Rihla, a free language-learning app: no account, works offline, with a French and Arabic interface, on iPhone and on the web.",
+      "description": "Rihla, a free language-learning app: no account, offline on iPhone, with a French and Arabic interface, on iPhone and on the web.",
       "inLanguage": "en",
       "about": {
         "@type": "Brand",
@@ -137,7 +138,8 @@
         <ol role="list"><li><a href="../">Home</a></li><li aria-current="page">Rihla case study</li></ol>
       </nav>
       <span class="surtitre">Case study · Education</span>
-      <h1 id="titre">Rihla, a free <em>app for learning languages</em> that works offline</h1>
+      <span class="nature nature--interne">In-house Legantis product, not client work</span>
+      <h1 id="titre">Rihla, a free <em>app for learning languages</em> that works offline on iPhone</h1>
       <p class="chapeau">Rihla is our language-learning app: fifteen languages, on iPhone and on the web, an interface in French or Arabic, no account to create, and everything works offline on iPhone. This page describes what it contains and the choices that shape it: a concrete example of what we build.</p>
       <div class="actions">
         <a class="bouton bouton--plein" href="../#devis">Get a free quote <span class="fleche" aria-hidden="true">→</span></a>
@@ -199,10 +201,27 @@
     </div>
   </section>
 
-  <section class="section" id="choix" aria-labelledby="choix-titre">
+  <section class="section" aria-labelledby="parcours-titre">
     <div class="enveloppe">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">03</span>Design choices</span>
+        <span class="surtitre"><span class="no">03</span>The journey</span>
+        <h2 id="parcours-titre">From the first word to the visa stamp.</h2>
+        <p class="intro">What a learner does, from opening the app to finishing a first destination.</p>
+      </div>
+      <ol class="frise" role="list">
+        <li class="etape"><span class="pilule">Step 01</span><h3>Open</h3><p>No account to create: you pick a language, which is a destination.</p></li>
+        <li class="etape"><span class="pilule">Step 02</span><h3>Learn</h3><p>A stage comes in two parts: word cards with pronunciation, then a quiz.</p></li>
+        <li class="etape"><span class="pilule">Step 03</span><h3>Review</h3><p>Learned words return in the notebook at growing intervals, and five games let you practise them.</p></li>
+        <li class="etape"><span class="pilule">Step 04</span><h3>Finish</h3><p>Each finished destination earns a visa stamp in the passport.</p></li>
+      </ol>
+      <p class="note">Planning a mobile app? <a class="suivre" href="../mobile-app-casablanca/">See our mobile app offer <span aria-hidden="true">→</span></a></p>
+    </div>
+  </section>
+
+  <section class="section section--2" id="choix" aria-labelledby="choix-titre">
+    <div class="enveloppe">
+      <div class="entete reveler">
+        <span class="surtitre"><span class="no">04</span>Design choices</span>
         <h2 id="choix-titre">The choices that shape the app.</h2>
       </div>
       <div class="atouts atouts--2 reveler">
@@ -220,10 +239,10 @@
     </div>
   </section>
 
-  <section class="section section--2" aria-labelledby="etat-titre">
+  <section class="section" aria-labelledby="etat-titre">
     <div class="enveloppe preuve">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">04</span>Today</span>
+        <span class="surtitre"><span class="no">05</span>Today</span>
         <h2 id="etat-titre">Where Rihla stands.</h2>
         <p class="intro">Rihla is available, free, on the App Store and on the web. The app contains no analytics, so we publish no usage figures.</p>
         <p class="intro">Its limits: no Android version (on Android, the web version installs from the browser); the content is basic vocabulary and phrases, not a certified course.</p>
@@ -263,7 +282,7 @@
     <div class="forme forme--a" aria-hidden="true"></div>
     <div class="forme forme--b" aria-hidden="true"></div>
     <div class="enveloppe">
-      <span class="surtitre reveler"><span class="no">05</span>Contact</span>
+      <span class="surtitre reveler"><span class="no">06</span>Contact</span>
       <h2 id="contact-titre" class="reveler"><span>Tell us about</span><span class="contour">your project.</span></h2>
       <p class="intro reveler">A similar app to build? Describe your needs in a few lines: we reply within two business days, and the quote is free.</p>
       <dl class="contact reveler">

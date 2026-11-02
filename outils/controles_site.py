@@ -4,7 +4,7 @@ fr/en/ar/x-default réciproques et identiques au sitemap, lien de pied vers les 
     python3 outils/controles_site.py [dossier-du-site]        (sans argument : ../site)
 Sortie : « tout passe » ou la liste des échecs. Éprouvé sur des copies cassées (ancre absente, titre dupliqué, URL de sitemap sans fichier,
 hreflang non réciproque, lien de pied retiré). Ne mesure pas la largeur des titres en pixels (voir CLAUDE.md : Chromium, Arial 20 px / 14 px)."""
-import re, os, json, sys
+import re, os, json, sys, glob
 from html.parser import HTMLParser
 from urllib.parse import urljoin, urlparse
 RACINE = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'site')
@@ -231,7 +231,8 @@ for u in gabarit:
     else: cible = '../estimer-mon-projet/' + TYPES_PAGE.get(rel, '')
     for cls in CTA_UNIQUES:
         liens = re.findall(r'<a class="[^"]*\b' + cls + r'\b[^"]*" href="([^"]*)"', h)
-        if liens != [cible]: echecs.append(f'{u}: lien « {cls} » = {liens} (attendu une fois {cible})')
+        attendu = '#demande' if rel == 'audit-gratuit/' and cls == 'barre-cta' else cible   # page d'arrivée de la publicité Services : son bouton de barre reste sur son formulaire
+        if liens != [attendu]: echecs.append(f'{u}: lien « {cls} » = {liens} (attendu une fois {attendu})')
     for classes, href in re.findall(r'<a class="([^"]*)" href="([^"]*)"', h):
         if any(c in classes.split() for c in CTA_UNIQUES + ('bouton--plein',)) and href.startswith('mailto:'): echecs.append(f'{u}: bouton « {classes} » ouvre encore un mailto')
         if 'bouton--plein' in classes.split() and '#devis' in href and href != cible: echecs.append(f'{u}: bouton « {classes} » vise {href} (attendu {cible})')
@@ -260,7 +261,7 @@ for u, lang in ((BASE, 'fr'), (BASE + 'en/', 'en')):
     for img in re.findall(r'<div class="ecran">(<img [^>]*>)</div>', h):
         if not re.search(r'\bwidth="\d+" height="\d+"', img) or 'loading="lazy"' not in img: echecs.append(f'{u}: capture {img[:60]}… sans width/height ou sans loading="lazy"')
 # ── Conversion (30/10/2026) ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-HORS_SITEMAP = ['offre-lancement/', 'realisations/demos/restaurant/', 'realisations/demos/services/', 'realisations/demos/reservation/', 'realisations/demos/gestion/']
+HORS_SITEMAP = ['offre-lancement/', 'realisations/demos/restaurant/', 'realisations/demos/services/', 'realisations/demos/reservation/', 'realisations/demos/gestion/', 'realisations/demos/distribution-os/', 'realisations/demos/services/services/', 'realisations/demos/services/services/climatisation/', 'realisations/demos/services/services/electricite/', 'realisations/demos/services/services/maintenance/', 'realisations/demos/services/realisations/', 'realisations/demos/services/a-propos/', 'realisations/demos/services/contact/', 'realisations/demos/services/devis/']
 for rel in HORS_SITEMAP:
     u = BASE + rel
     if f'<loc>{u}</loc>' in sm: echecs.append(f'{u}: page d\'offre ou démonstration dans le sitemap')
@@ -277,6 +278,48 @@ for rel in HORS_SITEMAP:
         if 'entreprise et données fictives' not in t: echecs.append(f'{u}: mention « données fictives » absente du bandeau')
         if re.search(r'<form[^>]*\baction=', t): echecs.append(f'{u}: une démonstration ne doit rien envoyer (action trouvée)')
         if re.search(r'href="(mailto|tel):', t): echecs.append(f'{u}: une démonstration ne doit proposer aucun contact réel fictif')
+# CSP en <meta> : GitHub Pages ne permet pas d'en-têtes ; aucun script en ligne exécutable, sinon script-src 'self' le bloquerait.
+for f in (os.path.join(d, n) for d, _, fs in os.walk(RACINE) for n in fs if n.endswith('.html')):
+    t = open(f, encoding='utf-8').read(); rel = os.path.relpath(f, RACINE)
+    if "Content-Security-Policy" not in t or "script-src 'self'" not in t: echecs.append(f'{rel}: politique de sécurité absente')
+    if re.search(r'<script(?![^>]*\bsrc=)(?![^>]*\btype="application/(?:ld\+)?json")[^>]*>', t): echecs.append(f'{rel}: script en ligne, bloqué par la politique de sécurité')
+# Hiérarchie des titres : aucun niveau sauté, démonstrations comprises.
+for f in (os.path.join(d, n) for d, _, fs in os.walk(RACINE) for n in fs if n == 'index.html'):
+    niveaux = [int(x) for x in re.findall(r'<h([1-6])\b', open(f, encoding='utf-8').read())]
+    for a_, b_ in zip(niveaux, niveaux[1:]):
+        if b_ > a_ + 1: echecs.append(f'{os.path.relpath(f, RACINE)}: titre h{b_} juste après h{a_}'); break
+# Rihla : « hors ligne » sans réserve est faux (le jeu en ligne du web envoie des scores à un serveur).
+for f in (os.path.join(d, n) for d, _, fs in os.walk(RACINE) for n in fs if n == 'index.html'):
+    if '/demos/' in f: continue
+    t = open(f, encoding='utf-8').read()
+    if re.search(r'Rihla[^<\n]{0,120}(gratuite et hors|free and offline|sans compte, hors ligne,|works offline, with)', t) or re.search(r'gratuite et hors(\s|&nbsp;)ligne|free and offline', t):
+        echecs.append(f'{os.path.relpath(f, RACINE)}: Rihla « hors ligne » sans la réserve « sur l\'iPhone »')
+# Distribution OS (01/11/2026) : démonstration interactive, données fictives, rien ne quitte le navigateur. Ses scripts ne contiennent aucun moyen d'envoi
+#   (fetch, XMLHttpRequest, sendBeacon, WebSocket, formulaire, image ou script tiers), ne touchent qu'au sessionStorage (jamais localStorage ni cookie),
+#   le bandeau porte la mention complète, et /commandes/ y renvoie (vitrine #demonstration, bouton principal) avec un retour vers son formulaire.
+DOS = os.path.join(RACINE, 'realisations', 'demos', 'distribution-os')
+if os.path.isdir(DOS):
+    u = 'realisations/demos/distribution-os/'
+    for nom in sorted(os.listdir(DOS)):
+        if not nom.endswith('.js'): continue
+        src = open(os.path.join(DOS, nom), encoding='utf-8').read()
+        for motif, quoi in ((r'\bfetch\s*\(', 'fetch'), (r'XMLHttpRequest', 'XMLHttpRequest'), (r'sendBeacon', 'sendBeacon'), (r'WebSocket|EventSource', 'WebSocket'), (r'\blocalStorage\b', 'localStorage'), (r'document\.cookie', 'cookie'), (r'\.submit\s*\(', 'envoi de formulaire'), (r'https?://(?!www\.w3\.org/2000/svg)', 'adresse externe'), (r'\bimport\s*\(|createElement\(\s*[\'"]script', 'chargement de code')):
+            if re.search(motif, src): echecs.append(f'{u}{nom}: {quoi} dans une démonstration qui ne doit rien transmettre')
+    h = open(os.path.join(DOS, 'index.html'), encoding='utf-8').read()
+    if 'Démonstration interactive créée par Legantis.</b> Entreprises, opérations et données fictives.' not in h: echecs.append(f'{u}: bandeau « Démonstration interactive créée par Legantis. Entreprises, opérations et données fictives. » absent')
+    if re.search(r'<(script|link|img)[^>]+(src|href)="https?://', h): echecs.append(f'{u}: ressource externe chargée')
+    app = open(os.path.join(DOS, 'app.js'), encoding='utf-8').read() if os.path.exists(os.path.join(DOS, 'app.js')) else ''
+    if "'../../../commandes/'" not in app or "'#demande'" not in app or 'utm_source' not in app: echecs.append(f'{u}: le retour vers le formulaire de /commandes/ (avec la campagne) a disparu')
+    if os.path.exists(ACQ):
+        c = open(ACQ, encoding='utf-8').read()
+        if not re.search(r'<section class="section vitrine" id="demonstration"', c) or not re.search(r'<a class="bouton bouton--plein" href="\.\./realisations/demos/distribution-os/">Essayer la démonstration interactive', c) or '<a class="bouton" href="#demande">Demander mon diagnostic gratuit</a>' not in c:
+            echecs.append('/commandes/: vitrine de la démonstration (bouton principal, diagnostic) absente')
+        for img in re.findall(r'<img [^>]*dos-[a-z-]+\.webp[^>]*>', c):
+            if not re.search(r'\bwidth="\d+" height="\d+"', img) or 'loading="lazy"' not in img or not re.search(r'alt="[^"]{20,}"', img): echecs.append(f'/commandes/: capture {img[:70]}… sans dimensions, sans chargement paresseux ou sans texte alternatif')
+            src = re.search(r'src="\.\./([^"]+)"', img).group(1)
+            if not os.path.exists(os.path.join(RACINE, src)): echecs.append(f'/commandes/: {src} absente')
+    cv = open(os.path.join(RACINE, 'assets', 'conversion.js'), encoding='utf-8').read()
+    if 'a[href*="demos/distribution-os/"]' not in cv: echecs.append('conversion.js : la campagne n\'est plus transmise aux liens vers la démonstration')
 # réalisations : chaque carte dit sa nature ; aucune démonstration sans étiquette ; aucun témoignage ni client
 rea = BASE + 'realisations/'
 if rea in pages:
@@ -286,7 +329,7 @@ if rea in pages:
     cartes = re.findall(r'<li class="projet[^>]*data-nature="(\w+)"[^>]*>(.*?)</li>\s*(?=<li class="projet|</ul>)', t, re.S)
     if len(cartes) < 7: echecs.append(f'{rea}: {len(cartes)} cartes de projet')
     for nature, corps in cartes:
-        attendu = {'interne': 'Produit interne Legantis', 'demo': 'Démonstration conceptuelle'}.get(nature)
+        attendu = {'interne': 'Produit interne Legantis', 'demo': 'Démonstration interactive'}.get(nature)
         if not attendu or attendu not in corps: echecs.append(f'{rea}: carte de nature {nature} sans son étiquette')
 # parcours : mêmes contrôles que le formulaire de l'accueil, plus le consentement et le retour prévu par le Worker
 WS = open(WORKER_SRC, encoding='utf-8').read() if os.path.exists(WORKER_SRC) else ''
@@ -351,6 +394,12 @@ for u in [*pages, BASE + 'offre-lancement/']:
             if not ligne or mot not in visible(ligne.group(1)): echecs.append(f'{u}: ligne légale sans « {mot} »')
     for mot in PAGES_LEGALES.get(u, ()):
         if mot not in t: echecs.append(f'{u}: page légale sans « {mot} »')
+# aucun client signé : aucune formulation ne doit laisser croire le contraire, en français comme en anglais
+SUGGERE_CLIENTS = ('à nos clients', 'pour ses clients', 'nos clients', 'remis au client', 'clients concernés', 'our clients', 'its clients', 'to the client')
+for chemin in glob.glob(os.path.join(RACINE, '**', '*.html'), recursive=True):
+    texte_page = open(chemin, encoding='utf-8').read()
+    for mot in SUGGERE_CLIENTS:
+        if mot in texte_page: echecs.append(f'{os.path.relpath(chemin, RACINE)}: formulation qui suggère des clients : « {mot} »')
 IMAGES = os.path.join(RACINE, '..', 'outils', 'images.py')
 if os.path.exists(IMAGES) and 'CAPITAL' in open(IMAGES, encoding='utf-8').read(): echecs.append('outils/images.py : capital sur l\'image de partage')
 import subprocess

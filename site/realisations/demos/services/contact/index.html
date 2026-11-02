@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://legantis-devis.rihla-serveur.workers.dev; form-action 'self' https://legantis-devis.rihla-serveur.workers.dev; base-uri 'self'; object-src 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact · Mizan Technique (démonstration)</title>
+<meta name="description" content="Formulaire de contact simulé et coordonnées fictives d&#x27;une entreprise de maintenance technique inventée.">
+<meta name="robots" content="noindex, follow">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/realisations/demos/services/fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/realisations/demos/services/services.css">
+</head>
+<body>
+<p class="demo-bandeau"><span>Démonstration créée par Legantis · entreprise et données fictives</span> <a href="/realisations/">Retour aux réalisations</a></p>
+<a class="saut" href="#contenu">Aller au contenu</a>
+<header class="entete"><div class="wrap">
+<a class="marque" href="/realisations/demos/services/" aria-label="Mizan Technique, accueil"><svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="1.5" y="1.5" width="37" height="37" fill="#fff" stroke="#12171c" stroke-width="3"/><path d="M8 31V9l12 14L32 9v22" fill="none" stroke="#12171c" stroke-width="3.5" stroke-linejoin="miter"/><rect x="26" y="26" width="8" height="8" fill="#ff5a00" stroke="#12171c" stroke-width="2"/></svg><span><b>Mizan Technique</b><small>Maintenance technique · Casablanca</small></span></a>
+<button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-principale"><i aria-hidden="true"></i>Menu</button>
+<nav class="nav" id="nav-principale" aria-label="Navigation principale"><ul><li><a href="/realisations/demos/services/">Accueil</a></li><li><a href="/realisations/demos/services/services/">Services</a></li><li><a href="/realisations/demos/services/realisations/">Réalisations</a></li><li><a href="/realisations/demos/services/a-propos/">À propos</a></li><li><a href="/realisations/demos/services/contact/" aria-current="page">Contact</a></li><li><a class="nav-cta" href="/realisations/demos/services/devis/">Demander un devis</a></li></ul></nav>
+</div></header>
+<main id="contenu">
+<section class="tete"><div class="wrap"><div><nav class="fil" aria-label="Fil d'Ariane"><ol><li><a href="/realisations/demos/services/">Accueil</a></li><li aria-current="page">Contact</li></ol></nav><h1>Contact</h1><p class="lead">Une question avant un devis ? Écrivez-nous. Dans cette démonstration, le message est simulé : il n'est ni envoyé ni conservé.</p></div></div></section>
+<section class="bloc" aria-labelledby="t-f"><div class="wrap rub"><header><span class="etiq">Coordonnées fictives</span><h2 id="t-f">Écrire à Mizan Technique</h2>
+<dl class="coord" style="margin-top:24px"><div><dt>Adresse</dt><dd>Adresse fictive, Casablanca</dd></div><div><dt>Téléphone</dt><dd>05 00 00 00 00</dd></div><div><dt>E-mail</dt><dd>contact@exemple.invalid</dd></div><div><dt>Horaires</dt><dd>Lundi au vendredi, 8 h à 18 h (fictif)</dd></div></dl></header>
+<div id="contact-app"><div class="sansjs" id="contact-sansjs"><p style="margin:0"><strong>Le formulaire demande JavaScript.</strong> Il est simulé : il n'enverrait rien. Les coordonnées fictives sont affichées ci-contre.</p></div>
+<div class="msgs" aria-live="polite"></div>
+<div class="retour" hidden><p><strong>Message simulé.</strong> Rien n'a été envoyé. Référence de simulation : <span class="ref"></span></p><p style="margin-top:14px"><button class="btn btn--ligne" type="button" id="contact-nouveau">Écrire un autre message</button></p></div>
+<template id="tpl-contact"><form novalidate aria-label="Formulaire de contact simulé">
+<p class="note" style="margin-bottom:24px">Formulaire simulé : n'utilisez que des données fictives. Il se réinitialise au rechargement.</p>
+<div class="champ"><label for="c-nom"><span>Nom et prénom</span></label><input id="c-nom" name="nom" type="text" autocomplete="off"></div>
+<div class="champ"><label for="c-email"><span>Adresse e-mail</span></label><input id="c-email" name="email" type="email" autocomplete="off"></div>
+<div class="champ"><label for="c-sujet"><span>Sujet</span></label><select id="c-sujet" name="sujet"><option value="">Choisir un sujet</option><option>Une question avant devis</option><option>Un suivi de chantier (exemple)</option><option>Une demande de contrat d'entretien</option><option>Autre</option></select></div>
+<div class="champ"><label for="c-message"><span>Message</span></label><textarea id="c-message" name="message" maxlength="800"></textarea><small>Au moins 15 caractères.</small></div>
+<button class="btn btn--ink" type="submit">Envoyer (simulation)</button></form></template></div>
+</div></section>
+</main>
+<footer class="pied"><div class="wrap">
+<div class="grille-pied">
+<div><a class="marque" href="/realisations/demos/services/" aria-label="Mizan Technique, accueil"><svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="1.5" y="1.5" width="37" height="37" fill="#fff" stroke="#12171c" stroke-width="3"/><path d="M8 31V9l12 14L32 9v22" fill="none" stroke="#12171c" stroke-width="3.5" stroke-linejoin="miter"/><rect x="26" y="26" width="8" height="8" fill="#ff5a00" stroke="#12171c" stroke-width="2"/></svg><span><b>Mizan Technique</b><small>Maintenance technique · Casablanca</small></span></a>
+<p style="margin-top:18px;max-width:26em">Climatisation, électricité et maintenance de locaux professionnels. Une entreprise inventée pour cette démonstration.</p></div>
+<div><h2>Services</h2><ul><li><a href="/realisations/demos/services/services/climatisation/">Climatisation</a></li><li><a href="/realisations/demos/services/services/electricite/">Électricité</a></li><li><a href="/realisations/demos/services/services/maintenance/">Maintenance de locaux</a></li></ul></div>
+<div><h2>Société</h2><ul><li><a href="/realisations/demos/services/realisations/">Réalisations</a></li><li><a href="/realisations/demos/services/a-propos/">À propos</a></li><li><a href="/realisations/demos/services/devis/">Demander un devis</a></li><li><a href="/realisations/demos/services/contact/">Contact</a></li></ul></div>
+<div><h2>Coordonnées fictives</h2><address>Adresse fictive, Casablanca<br>05 00 00 00 00<br>contact@exemple.invalid</address></div>
+</div>
+<div class="mention"><p style="margin:0"><strong>Entreprise fictive.</strong> Mizan Technique n'existe pas : noms, adresses, téléphones et exemples sont inventés pour une démonstration. Aucun formulaire n'envoie quoi que ce soit.</p><p style="margin:0">Démonstration créée par Legantis · <a href="/realisations/">Retour aux réalisations</a></p></div>
+</div></footer>
+<script src="/realisations/demos/services/services.js"></script>
+</body>
+</html>

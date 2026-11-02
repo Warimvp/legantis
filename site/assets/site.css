@@ -604,18 +604,18 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 .etape::after { content: counter(etape, decimal-leading-zero); position: absolute; left: -10px; top: -34px; font-weight: 700; font-size: clamp(6rem, 12vw, 10.5rem); line-height: 1; font-stretch: 118%; letter-spacing: -0.06em; color: color-mix(in srgb, var(--encre) 5%, transparent); pointer-events: none; user-select: none; }
 .etape > * { position: relative; z-index: 1; }
 .pilule { display: inline-block; font: 500 0.7rem/1 var(--f-mono); letter-spacing: 0.08em; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--filet); background: var(--chaux); color: var(--gris); margin-bottom: 20px; }
-.etape h4 { font-weight: 700; font-size: clamp(1.9rem, 3.6vw, 3.1rem); line-height: 1; font-stretch: 116%; letter-spacing: -0.04em; margin-bottom: 14px; color: var(--gris); }
+.etape :is(h3, h4) { font-weight: 700; font-size: clamp(1.9rem, 3.6vw, 3.1rem); line-height: 1; font-stretch: 116%; letter-spacing: -0.04em; margin-bottom: 14px; color: var(--gris); }
 .etape p { color: var(--gris); font-size: 1.02rem; max-width: 52ch; }
 @supports (animation-timeline: view()) {
   .frise::after { animation: tracer linear both; animation-timeline: view(); animation-range: cover 18% cover 82%; }
   .etape::before { animation: allumer linear both; animation-timeline: view(); animation-range: cover 40% cover 55%; }
-  .etape h4 { animation: encrer linear both; animation-timeline: view(); animation-range: cover 40% cover 60%; }
+  .etape :is(h3, h4) { animation: encrer linear both; animation-timeline: view(); animation-range: cover 40% cover 60%; }
   .etape .pilule:not(.pilule--offert) { animation: allumer-pilule linear both; animation-timeline: view(); animation-range: cover 40% cover 55%; }
 }
 /* sans animation-timeline (Firefox) : l'état final, tout allumé */
 @supports not (animation-timeline: view()) {
   .etape::before { border-color: var(--tampon); background: var(--tampon); box-shadow: var(--point-allume); }
-  .etape h4 { color: var(--encre); }
+  .etape :is(h3, h4) { color: var(--encre); }
   .etape .pilule:not(.pilule--offert) { border-color: color-mix(in srgb, var(--tampon) 50%, var(--filet)); color: var(--tampon); background: var(--tampon-pale); }
 }
 @keyframes tracer { from { transform: scaleY(0); } to { transform: scaleY(1); } }
@@ -769,6 +769,7 @@ html[dir="rtl"] .couverture .ecran { rotate: -4deg; }
 #societe { overflow-x: clip; }
 .societe-texte { position: relative; padding-top: 24px; }
 .numero-fantome { position: absolute; z-index: 0; top: -70px; left: -20px; font-weight: 800; font-size: clamp(9rem, 18vw, 16rem); line-height: 1; font-stretch: 118%; letter-spacing: -0.07em; color: color-mix(in srgb, var(--encre) 4%, transparent); pointer-events: none; user-select: none; }
+.numero-fantome::before { content: attr(data-n); }   /* décor : hors du texte de la page, donc hors des contrôles de contraste */
 .societe-texte > :not(.numero-fantome) { position: relative; z-index: 1; }
 .societe-texte h2 { margin: 18px 0 28px; }
 .societe-texte p { color: var(--gris); font-size: clamp(1.05rem, 1.35vw, 1.2rem); max-width: 50ch; }
@@ -988,7 +989,7 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
 .service .section h2 { font-size: clamp(2.1rem, 4.6vw, 3.7rem); }
 .service h1, .service .section h2 { overflow-wrap: anywhere; }   /* filet de sécurité : un mot plus long que la colonne se coupe au lieu d'élargir la page */
 @media (max-width: 420px) { .service .section h2 { font-size: min(2.1rem, calc((100vw - 40px) / 10.5)); } }   /* « recommandations » tient à 320 px */
-@media (max-width: 420px) { .service .etape h4 { font-size: min(1.9rem, calc((100vw - 104px) / 9.4)); overflow-wrap: anywhere; } }   /* intertitre de la frise : « Recommandations » tient entre 320 et 360 px (colonne de 44 px de moins que le texte) */
+@media (max-width: 420px) { .service .etape :is(h3, h4) { font-size: min(1.9rem, calc((100vw - 104px) / 9.4)); overflow-wrap: anywhere; } }   /* intertitre de la frise : « Recommandations » tient entre 320 et 360 px (colonne de 44 px de moins que le texte) */
 .preuve { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px clamp(32px, 5vw, 72px); align-items: center; }
 .preuve .entete { margin-bottom: 0; }
 .atouts--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 44px clamp(32px, 4vw, 64px); }
@@ -1068,11 +1069,11 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-  .reveler, .ouverture-corps, .ouverture-pied, .barre, .progression, .cachet--offre, .frise::after, .etape::before, .etape h4, .etape .pilule, .defile ul, .halo, .forme, .rond-tournant, .descendre, .societe::before { animation: none !important; }
+  .reveler, .ouverture-corps, .ouverture-pied, .barre, .progression, .cachet--offre, .frise::after, .etape::before, .etape :is(h3, h4), .etape .pilule, .defile ul, .halo, .forme, .rond-tournant, .descendre, .societe::before { animation: none !important; }
   .barre { background: color-mix(in srgb, var(--chaux) 84%, transparent); border-color: var(--filet); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
   .progression { display: none; }
   .etape::before { border-color: var(--tampon); background: var(--tampon); box-shadow: var(--point-allume); }
-  .etape h4 { color: var(--encre); }
+  .etape :is(h3, h4) { color: var(--encre); }
   .etape .pilule:not(.pilule--offert) { border-color: color-mix(in srgb, var(--tampon) 50%, var(--filet)); color: var(--tampon); background: var(--tampon-pale); }
   .chiffre-n .n { color: inherit; }
   .chiffre-n .n::before { content: none; }
@@ -1262,6 +1263,24 @@ button.bouton[aria-disabled="true"] { opacity: .7; cursor: progress; }
 .assistant-compteur { margin: 0 0 22px; font-size: 0.88rem; color: var(--gris); }
 @media (max-width: 560px) { .assistant-progression li { font-size: 0; } }
 .devis-form.assistant { display: block; }
+/* Assistant avant son script (31/10/2026, correctif du CLS intermittent de 0,70 à 820 px) : sans cela le formulaire s'affiche avec ses cinq étapes, puis se replie en une quand le script démarre,
+   et tout ce qui est dessous (pied de page, ligne de contact) saute dans la fenêtre. Ici, JavaScript activé mais l'assistant pas encore démarré (`.assistant--actif` absent) : seule l'étape 1 est
+   affichée, avec la progression, le compteur et le bouton « Continuer » à leur place finale : au démarrage, rien ne bouge. Sans script (`scripting: none`) ou dans un navigateur qui ne connaît pas
+   `scripting` ou `:has()`, ces règles ne s'appliquent pas : tout est visible, le formulaire s'envoie d'un bloc. Si le script ne démarre jamais (réseau, bloqueur), l'animation sans durée
+   rend à tout le monde le formulaire complet après 6 s : il reste utilisable, sans l'assistant. */
+@media (scripting: enabled) {
+  .assistant-bloc:has(form.assistant:not(.assistant--actif)) .assistant-nav[hidden] { display: flex !important; }
+  .assistant-bloc:has(form.assistant:not(.assistant--actif)) .assistant-progression[hidden] { display: grid !important; animation: assistant-secours-nav 0s 6s forwards !important; }
+  .assistant-bloc:has(form.assistant:not(.assistant--actif)) .assistant-compteur[hidden] { display: block !important; animation: assistant-secours-nav 0s 6s forwards !important; }
+  /* Le délai est « !important » : la règle de mouvement réduit (animation-delay: 0s !important) le supprimerait, et le formulaire complet réapparaîtrait aussitôt. */
+  form.assistant:not(.assistant--actif) :is([data-etape]:not([data-etape="1"]), .assistant-envoi) { visibility: hidden; max-height: 0; overflow: hidden; margin: 0; animation: assistant-secours 0s 6s forwards !important; }
+  form.assistant:not(.assistant--actif) [data-etape]:not([data-etape="1"]) > legend { height: 0; margin: 0; padding: 0; overflow: hidden; font-size: 0; line-height: 0; animation: assistant-secours-legende 0s 6s forwards !important; }   /* une légende de fieldset ne se laisse pas rogner par max-height */
+  form.assistant:not(.assistant--actif) [data-etape="1"] { margin-bottom: 26px; }   /* la marge de l'étape quand l'assistant est démarré */
+  form.assistant:not(.assistant--actif) .assistant-nav[hidden] { animation: assistant-secours-nav 0s 6s forwards !important; }
+}
+@keyframes assistant-secours { to { visibility: visible; max-height: 100000px; margin-block-end: 26px; } }
+@keyframes assistant-secours-legende { to { height: auto; margin-block-end: 18px; overflow: visible; font-size: inherit; line-height: inherit; } }
+@keyframes assistant-secours-nav { to { visibility: hidden; max-height: 0; overflow: hidden; margin: 0; padding: 0; } }
 .assistant-etape { min-width: 0; margin: 0 0 clamp(36px, 5vw, 56px); padding: 0; border: 0; }
 .assistant--actif .assistant-etape { margin-bottom: 26px; animation: apparaitre .25s ease both; }
 .assistant-etape > legend { display: block; width: 100%; padding: 0; margin-bottom: 18px; font: inherit; letter-spacing: 0; text-transform: none; color: var(--encre); }
@@ -1366,7 +1385,47 @@ body.page-offre:has(.contact-rapide) .pied--court { padding-bottom: 96px; }
 .acquisition .offre { margin-block-start: 0; }
 .acq-demo { margin: 36px 0 0; max-inline-size: 640px; }   /* capture de la démonstration de gestion (données fictives, bandeau dans l'image) */
 .acq-demo a { display: block; }
+.acq-demo--tete { margin-top: 28px; }
+.acq-demo figcaption { margin-top: 10px; font-size: 0.82rem; color: var(--gris); }
+.interlocuteur { margin-top: 16px; font-size: 0.92rem; line-height: 1.5; color: var(--gris); max-width: var(--mesure); }
+.interlocuteur b { color: var(--encre); font-weight: 600; }
+.interlocuteur a { color: var(--tampon); }
 .acq-demo img { display: block; inline-size: 100%; block-size: auto; border: 1px solid var(--filet); border-radius: 12px; box-shadow: 0 18px 40px -26px color-mix(in srgb, var(--encre) 45%, transparent); }
+/* Vitrine de la démonstration Distribution OS (31/10 → 01/11/2026) : texte et parcours à gauche, capture du tableau de bord à droite avec la même vue
+   sur téléphone en surimpression, puis trois vues secondaires. Captures réelles de la démonstration (outils/captures_distribution_os.js), données fictives.
+   Sur téléphone : seule la capture téléphone est montrée (l'image d'ordinateur, paresseuse et non affichée, n'est pas téléchargée), vues secondaires en liste compacte. */
+.vitrine { overflow: hidden; background: radial-gradient(90% 70% at 85% 10%, var(--tampon-pale), transparent 70%), var(--chaux); border-block: 1px solid var(--filet); }
+.vitrine-grille { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.35fr); gap: clamp(36px, 5vw, 80px); align-items: start; }
+.vitrine h2 { font-size: clamp(2rem, 3.4vw, 3.1rem); font-stretch: 104%; margin-block: 18px 20px; }
+.vitrine .intro { margin-block-end: 26px; }
+.vitrine-scenario { display: grid; gap: 12px; margin: 0 0 30px; padding: 0; list-style: none; counter-reset: etape; }
+.vitrine-scenario li { position: relative; padding-inline-start: 40px; color: var(--gris); counter-increment: etape; }
+.vitrine-scenario li::before { content: counter(etape); position: absolute; inset-inline-start: 0; inset-block-start: -1px; display: grid; place-items: center; inline-size: 26px; block-size: 26px; border-radius: 50%; background: var(--tampon-pale); color: var(--tampon); font: 600 0.78rem/1 var(--f-mono); }
+.vitrine-scenario b { color: var(--encre); font-weight: 600; }
+.vitrine .actions { animation: none; }
+.vitrine-guide { margin-block-start: 18px; }
+.vitrine .note { margin-block-start: 14px; }
+.vitrine-principale { position: relative; margin: clamp(0px, 4vw, 64px) 0 36px; }
+.vitrine-principale a { display: block; }
+.vitrine-bureau { display: block; inline-size: 100%; block-size: auto; border: 1px solid var(--filet); border-radius: 14px; box-shadow: 0 2px 6px color-mix(in srgb, var(--encre) 6%, transparent), 0 40px 90px -40px color-mix(in srgb, var(--tampon) 55%, transparent); }
+.vitrine-mobile { position: absolute; inset-inline-end: -3%; inset-block-end: -12%; inline-size: 23%; block-size: auto; border: 5px solid #16172E; border-radius: 22px; background: #16172E; box-shadow: 0 30px 60px -24px color-mix(in srgb, var(--encre) 60%, transparent); }
+.vitrine-vues { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 2.4vw, 28px); margin: clamp(48px, 6vw, 80px) 0 0; padding: 0; list-style: none; }
+.vitrine-vues a { display: grid; gap: 14px; color: inherit; text-decoration: none; }
+.vitrine-vues img { display: block; inline-size: 100%; block-size: auto; border: 1px solid var(--filet); border-radius: 10px; box-shadow: 0 18px 40px -28px color-mix(in srgb, var(--encre) 45%, transparent); transition: transform .3s var(--sortie), box-shadow .3s; }
+.vitrine-vues span { display: grid; gap: 2px; color: var(--gris); font-size: 0.94rem; }
+.vitrine-vues b { color: var(--encre); font-weight: 600; font-size: 1.02rem; }
+@media (hover: hover) { .vitrine-vues a:hover img { transform: translateY(-3px); box-shadow: 0 26px 50px -28px color-mix(in srgb, var(--tampon) 55%, transparent); } }
+@media (max-width: 900px) {
+  .vitrine-grille { grid-template-columns: minmax(0, 1fr); }
+  .vitrine-principale { margin-block-end: 0; }
+}
+@media (max-width: 600px) {
+  .vitrine-bureau { display: none; }
+  .vitrine-mobile { position: static; display: block; inline-size: min(270px, 74%); margin-inline: auto; border-width: 6px; border-radius: 28px; }
+  .vitrine .actions .bouton { inline-size: 100%; justify-content: center; }
+  .vitrine-vues { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .vitrine-vues a { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); align-items: center; }
+}
 .acquisition .offre-texte { grid-column: 1 / -1; }
 .acquisition .offre-texte > p { margin-block-end: 0; }
 .acquisition .atout .suivre { justify-self: start; margin-block-start: 6px; }
@@ -1438,3 +1497,59 @@ html[dir="rtl"] .pied-marque { padding-right: 0; border-right: 0; padding-left: 
   html[dir="rtl"] .service-cta { margin-right: 44px; margin-left: 0; }
 }
 @media (max-width: 1024px) { html[dir="rtl"] .pied-marque { grid-column: 1 / -1; border-left: 0; padding-left: 0; } }
+
+/* V3 : accueil. Une vraie démonstration dès le premier écran, puis les quatre démonstrations classées par problème du client ; questions repliables. */
+.ouverture-bas { display: grid; gap: 28px; }
+.ouverture--accroche .ouverture-bas .chapeau { margin-bottom: 26px; }
+.ouverture-demo { display: grid; gap: 10px; color: inherit; text-decoration: none; }
+.ouverture-demo-cadre { display: block; overflow: hidden; border: 1px solid var(--filet); border-radius: 14px; background: var(--chaux); box-shadow: 0 24px 54px -30px color-mix(in srgb, var(--encre) 55%, transparent); transition: transform .3s var(--sortie), box-shadow .3s var(--sortie); }
+.ouverture-demo-cadre img { display: block; inline-size: 100%; block-size: auto; }
+.ouverture-demo-legende { display: grid; gap: 1px; font-size: 0.9rem; line-height: 1.4; color: var(--gris); }
+.ouverture-demo-legende b { color: var(--encre); font-weight: 600; }
+.ouverture-demo:focus-visible { outline: 2px solid var(--tampon); outline-offset: 4px; border-radius: 14px; }
+@media (min-width: 1000px) {
+  .ouverture-bas { grid-template-columns: minmax(0, 1fr) minmax(0, 500px); gap: clamp(32px, 5vw, 72px); align-items: start; }
+  .ouverture--accroche .ouverture-corps { padding-top: 12px; padding-bottom: 16px; }
+  .ouverture--accroche h1 { margin-bottom: 22px; }
+  .ouverture--accroche .badge { margin-bottom: 22px; }
+  .ouverture--accroche .ouverture-pied { margin-top: -14px; }
+}
+@media (hover: hover) { .ouverture-demo:hover .ouverture-demo-cadre { transform: translateY(-3px); box-shadow: 0 30px 60px -30px color-mix(in srgb, var(--tampon) 55%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .ouverture-demo-cadre { transition: none; } .ouverture-demo:hover .ouverture-demo-cadre { transform: none; } }
+
+.demos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 2.2vw, 26px); margin: 0; padding: 0; list-style: none; }
+.demo-carte { display: grid; align-content: start; overflow: hidden; border: 1px solid var(--filet); border-radius: 14px; background: var(--papier, var(--chaux)); }
+.demo-carte--large { grid-column: 1 / -1; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: center; }
+.demo-image { display: block; overflow: hidden; background: var(--chaux-2); }
+.demo-image img { display: block; inline-size: 100%; block-size: auto; }
+.demo-corps { display: grid; gap: 10px; padding: clamp(18px, 2.4vw, 30px); }
+.demo-besoin { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--tampon); }
+.demo-carte h3 { font-size: clamp(1.14rem, 1.6vw, 1.4rem); font-stretch: 106%; line-height: 1.2; }
+.demo-carte--large h3 { font-size: clamp(1.4rem, 2.4vw, 2.1rem); }
+.demo-carte p { color: var(--gris); }
+.demo-carte .liens { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-block-start: 4px; }
+@media (max-width: 900px) {
+  .demos { grid-template-columns: minmax(0, 1fr); }
+  .demo-carte--large { grid-template-columns: minmax(0, 1fr); }
+  .demo-carte:not(.demo-carte--large) { grid-template-columns: 112px minmax(0, 1fr); align-items: center; }
+  .demo-carte:not(.demo-carte--large) .demo-image, .demo-carte:not(.demo-carte--large) .demo-image img { block-size: 100%; object-fit: cover; object-position: left top; }
+  .demo-carte:not(.demo-carte--large) .demo-corps { padding: 14px; gap: 6px; }
+}
+
+.faq { display: grid; max-inline-size: 860px; border-block-start: 1px solid var(--filet); }
+.faq-item { border-block-end: 1px solid var(--filet); }
+.faq-item summary { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-block-size: 56px; padding-block: 14px; cursor: pointer; list-style: none; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: "+"; flex: none; font-size: 1.4rem; line-height: 1; color: var(--tampon); }
+.faq-item[open] summary::after { content: "\2212"; }
+.faq-item summary:focus-visible { outline: 2px solid var(--tampon); outline-offset: 2px; }
+.faq-item h3 { font-size: 1.08rem; font-stretch: 104%; line-height: 1.3; }
+.faq-reponse { padding-block-end: 18px; color: var(--gris); max-inline-size: var(--mesure); }
+
+/* Accueil au téléphone : la page reste complète, sans ce qui se répète. */
+@media (max-width: 700px) {
+  body:has(#demonstrations) :is(.defile, #comparer, .prestation .etiquettes, .titre .etiquettes) { display: none; }
+  body:has(#demonstrations) main > .section { padding-block: 52px; }
+  body:has(#demonstrations) .couverture { aspect-ratio: 16 / 10; }
+}
+.service-tete .nature { margin-block: 10px 14px; }

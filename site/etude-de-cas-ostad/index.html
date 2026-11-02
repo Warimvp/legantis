@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://legantis-devis.rihla-serveur.workers.dev; form-action 'self' https://legantis-devis.rihla-serveur.workers.dev; base-uri 'self'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Étude de cas Ostad : plateforme pédagogique — Legantis</title>
 <meta name="description" content="Ostad, plateforme pédagogique en ligne : classes par code, cours, devoirs, exercices corrigés, notes, présence et bulletins, en français, arabe et anglais.">
@@ -72,6 +73,7 @@
 </script>
 <link rel="stylesheet" href="../assets/site.css">
 <script src="../assets/lumiere.js" defer></script>
+<script src="../assets/conversion.js" defer></script>
 </head>
 <body>
 <a class="lien-evitement" href="#contenu">Aller au contenu</a>
@@ -91,6 +93,7 @@
             <li><a href="../application-web-maroc/">Application web</a></li>
             <li><a href="../application-mobile-casablanca/">Application mobile</a></li>
             <li><a href="../logiciel-sur-mesure-maroc/">Logiciel sur mesure</a></li>
+            <li><a href="../commandes/">Logiciel de commandes</a></li>
             <li><a href="../conseil-reprise-application-maroc/">Conseil et reprise</a></li>
           </ul>
         </li>
@@ -114,6 +117,7 @@
         <li><a href="../application-web-maroc/">Application web</a></li>
         <li><a href="../application-mobile-casablanca/">Application mobile</a></li>
         <li><a href="../logiciel-sur-mesure-maroc/">Logiciel sur mesure</a></li>
+            <li><a href="../commandes/">Logiciel de commandes</a></li>
         <li><a href="../conseil-reprise-application-maroc/">Conseil et reprise</a></li>
       </ul>
     </li>
@@ -136,6 +140,7 @@
         <ol role="list"><li><a href="../">Accueil</a></li><li aria-current="page">Étude de cas Ostad</li></ol>
       </nav>
       <span class="surtitre">Étude de cas · Éducation</span>
+      <span class="nature nature--interne">Produit interne Legantis, pas une mission réalisée pour un client</span>
       <h1 id="titre"><em>Ostad</em>, une plateforme pédagogique pour les professeurs et leurs&nbsp;élèves</h1>
       <p class="chapeau">Ostad («&nbsp;professeur&nbsp;» en arabe) est la plateforme pédagogique que nous éditons&nbsp;: le professeur y crée ses classes, publie ses cours et ses devoirs, corrige, note et fait l'appel&nbsp;; l'élève sait ce qu'il doit faire maintenant&nbsp;; un parent ou un tuteur peut suivre son enfant. Elle est en ligne sur le web, en français, en arabe et en anglais. Cette page décrit ce qu'elle contient et la façon dont elle est construite.</p>
       <div class="actions">

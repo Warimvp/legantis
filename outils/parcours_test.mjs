@@ -111,6 +111,8 @@ const visible = (page, s) => page.locator(s).isVisible();
   await page.goto(ORIGINE + '/application-mobile-casablanca/');
   await page.click('.barre-cta');
   await page.waitForURL('**/estimer-mon-projet/?type=mobile');
+  await page.waitForSelector('form.assistant--actif');
+  await page.waitForSelector('[data-pour="web mobile logiciel"]', { state: 'visible', timeout: 3000 }).catch(() => {});
   verifier('page de prestation : le type est repris, étape 2 directement', await visible(page, '[data-etape="2"]') && await visible(page, '[data-pour="web mobile logiciel"]') && await page.isChecked('input[name="type"][value="mobile"]'));
   await page.click('[data-retour]');
   verifier('Retour : étape 1, choix conservé', await visible(page, '[data-etape="1"]') && await page.isChecked('input[name="type"][value="mobile"]'));
@@ -319,15 +321,21 @@ const visible = (page, s) => page.locator(s).isVisible();
   verifier('filtre produits internes', await page.locator('.projet:visible').count() === 3);
   await page.check('#f-site', { force: true });
   verifier('filtre sites web', await page.locator('.projet:visible').count() === 2);
+  // Les démonstrations ont leurs propres tests (outils/test_demo_*.mjs, parcours_distribution_os.mjs) : ici, le bandeau et aucun envoi au chargement.
   for (const nom of ['restaurant', 'services', 'reservation']) {
     const avant = envois.length;
     await page.goto(`${ORIGINE}/realisations/demos/${nom}/`);
-    verifier(`démonstration ${nom} : bandeau`, (await page.locator('.demo-bandeau').innerText()).includes('entreprise et données fictives'));
-    const f = page.locator('form[data-demo]').first();
-    for (const c of await f.locator('input:not([type="radio"]):visible').all()) await c.fill(await c.getAttribute('type') === 'date' ? '2027-01-15' : 'test');
-    await f.locator('button[type="submit"]').click();
-    verifier(`démonstration ${nom} : dit qu'elle n'envoie rien, et n'envoie rien`, await f.locator('.demo-retour').isVisible() && envois.length === avant);
+    verifier(`démonstration ${nom} : bandeau, rien n'est envoyé`, (await page.locator('.demo-bandeau').innerText()).includes('entreprise et données fictives') && envois.length === avant);
   }
+  // Politique de sécurité : un script injecté dans la page ne s'exécute pas.
+  await page.goto(`${ORIGINE}/`);
+  const injecte = await page.evaluate(() => new Promise(fin => { const s = document.createElement('script'); s.textContent = 'window.__injecte = true'; document.body.append(s); setTimeout(() => fin(window.__injecte === true), 50); }));
+  verifier('politique de sécurité : script injecté bloqué', injecte === false);
+  // Source de campagne : elle suit le visiteur vers /commandes/ et depuis les pages de service, jusqu'au formulaire.
+  await page.goto(`${ORIGINE}/?utm_source=essai&utm_campaign=v3`); await page.waitForTimeout(150);
+  verifier('UTM : accueil → /commandes/', (await page.locator('main a[href*="commandes/"]').first().getAttribute('href')).includes('utm_campaign=v3'));
+  await page.goto(`${ORIGINE}/application-web-maroc/?utm_source=essai`); await page.waitForTimeout(150);
+  verifier('UTM : page de service → formulaire', (await page.locator('main a[href*="estimer-mon-projet/"]').first().getAttribute('href')).includes('utm_source=essai'));
   await ctx.close();
   const tel = await contexte({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }); const q = await tel.newPage();
   await q.goto(ORIGINE + '/');

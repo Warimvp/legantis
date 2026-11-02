@@ -2,9 +2,10 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://legantis-devis.rihla-serveur.workers.dev; form-action 'self' https://legantis-devis.rihla-serveur.workers.dev; base-uri 'self'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Étude de cas Rihla : application de langues — Legantis</title>
-<meta name="description" content="Rihla, application gratuite d'apprentissage des langues : sans compte, hors ligne, interface en français et en arabe, sur iPhone et sur le web.">
+<meta name="description" content="Rihla, application gratuite d'apprentissage des langues : sans compte, hors ligne sur l'iPhone, interface en français et en arabe, sur iPhone et sur le web.">
 <meta name="robots" content="max-image-preview:large">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#F6F7F9" media="(prefers-color-scheme: light)">
@@ -21,7 +22,7 @@
 <meta property="og:locale:alternate" content="en_US">
 <meta property="og:url" content="https://legantis.net/etude-de-cas-rihla/">
 <meta property="og:title" content="Étude de cas Rihla : application de langues — Legantis">
-<meta property="og:description" content="Rihla, application gratuite d'apprentissage des langues : sans compte, hors ligne, interface en français et en arabe, sur iPhone et sur le web.">
+<meta property="og:description" content="Rihla, application gratuite d'apprentissage des langues : sans compte, hors ligne sur l'iPhone, interface en français et en arabe, sur iPhone et sur le web.">
 <meta property="og:image" content="https://legantis.net/assets/partage.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -36,7 +37,7 @@
       "@id": "https://legantis.net/etude-de-cas-rihla/#page",
       "url": "https://legantis.net/etude-de-cas-rihla/",
       "name": "Étude de cas Rihla : application de langues — Legantis",
-      "description": "Rihla, application gratuite d'apprentissage des langues : sans compte, hors ligne, interface en français et en arabe, sur iPhone et sur le web.",
+      "description": "Rihla, application gratuite d'apprentissage des langues : sans compte, hors ligne sur l'iPhone, interface en français et en arabe, sur iPhone et sur le web.",
       "inLanguage": "fr",
       "about": {
         "@type": "Brand",
@@ -75,6 +76,7 @@
 </script>
 <link rel="stylesheet" href="../assets/site.css">
 <script src="../assets/lumiere.js" defer></script>
+<script src="../assets/conversion.js" defer></script>
 </head>
 <body>
 <a class="lien-evitement" href="#contenu">Aller au contenu</a>
@@ -94,6 +96,7 @@
             <li><a href="../application-web-maroc/">Application web</a></li>
             <li><a href="../application-mobile-casablanca/">Application mobile</a></li>
             <li><a href="../logiciel-sur-mesure-maroc/">Logiciel sur mesure</a></li>
+            <li><a href="../commandes/">Logiciel de commandes</a></li>
             <li><a href="../conseil-reprise-application-maroc/">Conseil et reprise</a></li>
           </ul>
         </li>
@@ -117,6 +120,7 @@
         <li><a href="../application-web-maroc/">Application web</a></li>
         <li><a href="../application-mobile-casablanca/">Application mobile</a></li>
         <li><a href="../logiciel-sur-mesure-maroc/">Logiciel sur mesure</a></li>
+            <li><a href="../commandes/">Logiciel de commandes</a></li>
         <li><a href="../conseil-reprise-application-maroc/">Conseil et reprise</a></li>
       </ul>
     </li>
@@ -139,7 +143,8 @@
         <ol role="list"><li><a href="../">Accueil</a></li><li aria-current="page">Étude de cas Rihla</li></ol>
       </nav>
       <span class="surtitre">Étude de cas · Éducation</span>
-      <h1 id="titre">Rihla, une application d'<em>apprentissage des langues</em> gratuite et hors&nbsp;ligne</h1>
+      <span class="nature nature--interne">Produit interne Legantis, pas une mission réalisée pour un client</span>
+      <h1 id="titre">Rihla, une application d'<em>apprentissage des langues</em> gratuite, hors&nbsp;ligne sur l'iPhone</h1>
       <p class="chapeau">Rihla est notre application d'apprentissage des langues&nbsp;: quinze langues, sur l'iPhone comme sur le web, une interface en français ou en arabe, aucun compte à créer, et tout fonctionne hors ligne sur l'iPhone. Cette page décrit ce qu'elle contient et les choix qui la structurent&nbsp;: un exemple concret de ce que nous construisons.</p>
       <div class="actions">
         <a class="bouton bouton--plein" href="../estimer-mon-projet/?type=mobile">Demander un devis gratuit <span class="fleche" aria-hidden="true">→</span></a>
@@ -201,10 +206,27 @@
     </div>
   </section>
 
-  <section class="section" id="choix" aria-labelledby="choix-titre">
+  <section class="section" aria-labelledby="parcours-titre">
     <div class="enveloppe">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">03</span>Les choix de conception</span>
+        <span class="surtitre"><span class="no">03</span>Le parcours</span>
+        <h2 id="parcours-titre">Du premier mot au tampon de visa.</h2>
+        <p class="intro">Ce que fait un apprenant, de l'ouverture de l'application à la première destination terminée.</p>
+      </div>
+      <ol class="frise" role="list">
+        <li class="etape"><span class="pilule">Étape 01</span><h3>Ouvrir</h3><p>Aucun compte à créer : on choisit une langue, qui est une destination.</p></li>
+        <li class="etape"><span class="pilule">Étape 02</span><h3>Apprendre</h3><p>Une étape se joue en deux temps, cartes de mots avec prononciation, puis quiz.</p></li>
+        <li class="etape"><span class="pilule">Étape 03</span><h3>Réviser</h3><p>Les mots appris reviennent dans le carnet, de plus en plus espacés, et cinq jeux permettent de les reprendre.</p></li>
+        <li class="etape"><span class="pilule">Étape 04</span><h3>Terminer</h3><p>Chaque destination terminée donne un tampon de visa dans le passeport.</p></li>
+      </ol>
+      <p class="note">Une application mobile à concevoir&nbsp;? <a class="suivre" href="../application-mobile-casablanca/">Voir notre offre d'application mobile <span aria-hidden="true">→</span></a></p>
+    </div>
+  </section>
+
+  <section class="section section--2" id="choix" aria-labelledby="choix-titre">
+    <div class="enveloppe">
+      <div class="entete reveler">
+        <span class="surtitre"><span class="no">04</span>Les choix de conception</span>
         <h2 id="choix-titre">Les choix qui structurent l'application.</h2>
       </div>
       <div class="atouts atouts--2 reveler">
@@ -222,10 +244,10 @@
     </div>
   </section>
 
-  <section class="section section--2" aria-labelledby="etat-titre">
+  <section class="section" aria-labelledby="etat-titre">
     <div class="enveloppe preuve">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">04</span>Aujourd'hui</span>
+        <span class="surtitre"><span class="no">05</span>Aujourd'hui</span>
         <h2 id="etat-titre">Où en est Rihla.</h2>
         <p class="intro">Rihla est disponible, gratuite, sur l'App Store et sur le web. L'application ne contient aucun outil de mesure&nbsp;: nous ne publions donc aucun chiffre de fréquentation.</p>
         <p class="intro">Ses limites&nbsp;: pas de version Android (sur Android, la version web s'installe depuis le navigateur)&nbsp;; un contenu de vocabulaire et de phrases de base, pas un cours certifié.</p>
@@ -265,7 +287,7 @@
     <div class="forme forme--a" aria-hidden="true"></div>
     <div class="forme forme--b" aria-hidden="true"></div>
     <div class="enveloppe">
-      <span class="surtitre reveler"><span class="no">05</span>Contact</span>
+      <span class="surtitre reveler"><span class="no">06</span>Contact</span>
       <h2 id="contact-titre" class="reveler"><span>Parlons de</span><span class="contour">votre projet.</span></h2>
       <p class="intro reveler">Un projet d'application comparable&nbsp;? Décrivez-nous votre besoin en quelques lignes&nbsp;: nous vous répondons sous 48 heures ouvrées, et le devis est gratuit.</p>
       <dl class="contact reveler">

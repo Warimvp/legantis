@@ -34,7 +34,7 @@
   var CHAMPS_UTM = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
   var parametres = new URLSearchParams(location.search);
 
-  /* Source marketing : sans stockage. Recopiée dans les formulaires de la page et transmise aux liens vers les autres formulaires. */
+  /* Source marketing : sans stockage. Recopiée dans les formulaires de la page et transmise aux liens vers les autres formulaires et vers la démonstration Distribution OS (qui la rend au retour). */
   function reporterSource() {
     var utm = CHAMPS_UTM.filter(function (c) { return parametres.get(c); });
     if (!utm.length) return;
@@ -45,7 +45,7 @@
         form.appendChild(champ);
       });
     });
-    document.querySelectorAll('a[href*="estimer-mon-projet/"], a[href*="audit-gratuit/"], a[href*="offre-lancement/"]').forEach(function (a) {
+    document.querySelectorAll('a[href*="estimer-mon-projet/"], a[href*="audit-gratuit/"], a[href*="offre-lancement/"], a[href*="commandes/"], a[href*="demos/distribution-os/"]').forEach(function (a) {
       var url = new URL(a.href);
       utm.forEach(function (c) { url.searchParams.set(c, parametres.get(c).slice(0, 80)); });
       a.href = url.href;

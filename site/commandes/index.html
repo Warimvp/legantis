@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://legantis-devis.rihla-serveur.workers.dev; form-action 'self' https://legantis-devis.rihla-serveur.workers.dev; base-uri 'self'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Logiciel de commandes pour distributeurs au Maroc — Legantis</title>
 <meta name="description" content="Distributeurs et grossistes au Maroc : logiciel de commandes sur mesure, pour sortir de WhatsApp et d'Excel. Diagnostic gratuit, code source remis.">
@@ -80,6 +81,10 @@
         <!-- commercial:whatsapp type=commandes style=bouton --><!-- /commercial -->
       </div>
       <ul class="garanties" role="list"><li>30 minutes</li><li>Sans engagement</li><li>Réponse sous 48 h ouvrées</li></ul>
+      <figure class="acq-demo acq-demo--tete">
+        <a href="../realisations/demos/distribution-os/" tabindex="-1" aria-hidden="true"><img src="../assets/captures/dos-tableau.webp" alt="Tableau de bord de la démonstration Distribution OS : chiffre d'affaires, commandes en cours et alertes de stock, données fictives" width="1440" height="900" loading="lazy"></a>
+        <figcaption>Démonstration interactive créée par Legantis, avec des données fictives.</figcaption>
+      </figure>
     </div>
   </section>
 
@@ -111,17 +116,48 @@
         <div class="atout"><h3>Stock</h3><p>Les entrées et les sorties suivies dans l'outil, à la place de plusieurs fichiers.</p></div>
         <div class="atout"><h3>Relances et vue d'ensemble</h3><p>Les commandes à traiter et les paiements à relancer, avec des exports vers Excel.</p></div>
       </div>
-      <figure class="acq-demo reveler">
-        <a href="../realisations/demos/gestion/" tabindex="-1" aria-hidden="true"><img src="../assets/captures/demo-gestion.webp" alt="Capture d'une démonstration de tableau de bord : commandes en cours, relances, livraisons du jour et dernières commandes, avec des données fictives" width="640" height="400" loading="lazy" decoding="async"></a>
-      </figure>
-      <p class="note"><a class="suivre" href="../realisations/demos/gestion/">Voir un exemple de tableau de bord <span aria-hidden="true">→</span></a> Démonstration créée par Legantis, avec des données fictives.</p>
+    </div>
+  </section>
+
+  <section class="section vitrine" id="demonstration" aria-labelledby="vitrine-titre">
+    <div class="enveloppe">
+      <div class="vitrine-grille">
+        <div class="vitrine-texte reveler">
+          <span class="surtitre"><span class="no">03</span>Démonstration interactive</span>
+          <h2 id="vitrine-titre">Essayez <em>Distribution OS</em>, sans inscription.</h2>
+          <p class="intro">Un logiciel de démonstration complet, construit par Legantis pour un distributeur fictif de Casablanca : 18 clients, 24 produits, 18 semaines d'activité. Vous saisissez une commande, le stock se réserve, la préparation avance, et le tableau de bord, le stock et l'encours suivent.</p>
+          <ol class="vitrine-scenario">
+            <li><b>Saisir</b> une commande pour un client, avec sa remise et ses conditions</li>
+            <li><b>Réserver</b> le stock à la confirmation, avec alerte si la quantité manque</li>
+            <li><b>Préparer et expédier</b> depuis le tableau de suivi de l'entrepôt</li>
+            <li><b>Suivre</b> l'encours, les relances et les indicateurs, mis à jour en direct</li>
+          </ol>
+          <div class="actions">
+            <a class="bouton bouton--plein" href="../realisations/demos/distribution-os/">Essayer la démonstration interactive <span class="fleche" aria-hidden="true">→</span></a>
+            <a class="bouton" href="#demande">Demander mon diagnostic gratuit</a>
+          </div>
+          <p class="vitrine-guide"><a class="suivre" href="../realisations/demos/distribution-os/?scenario=1">Ou suivre le scénario guidé de 3 minutes <span aria-hidden="true">→</span></a></p>
+          <p class="note">Démonstration créée par Legantis : entreprise, opérations et chiffres fictifs, qui ne sont pas des résultats obtenus pour un client. Rien de ce que vous y saisissez n'est envoyé.</p>
+        </div>
+        <figure class="vitrine-principale reveler">
+          <a href="../realisations/demos/distribution-os/" tabindex="-1" aria-hidden="true">
+            <img class="vitrine-bureau" src="../assets/captures/dos-tableau.webp" alt="Tableau de bord de la démonstration Distribution OS : chiffre d'affaires, commandes en cours et en retard, alertes de stock, encours clients, ventes par semaine et actions prioritaires, avec des données fictives" width="1440" height="900" loading="lazy" decoding="async">
+            <img class="vitrine-mobile" src="../assets/captures/dos-tableau-mobile.webp" alt="Le même tableau de bord de démonstration sur un téléphone" width="780" height="1688" loading="lazy" decoding="async">
+          </a>
+        </figure>
+      </div>
+      <ul class="vitrine-vues reveler" role="list">
+        <li><a href="../realisations/demos/distribution-os/#/commandes"><img src="../assets/captures/dos-commandes.webp" alt="Écran Commandes de la démonstration : recherche, filtres par statut, ville et paiement, montants et statuts" width="720" height="450" loading="lazy" decoding="async"><span><b>Commandes</b>Recherche, filtres, statuts et actions selon l'étape</span></a></li>
+        <li><a href="../realisations/demos/distribution-os/#/stocks"><img src="../assets/captures/dos-stocks.webp" alt="Écran Stocks de la démonstration : stock physique, réservé, disponible, seuils et ruptures" width="720" height="450" loading="lazy" decoding="async"><span><b>Stocks</b>Disponible, réservé, seuils et mouvements tracés</span></a></li>
+        <li><a href="../realisations/demos/distribution-os/#/rapports"><img src="../assets/captures/dos-analyses.webp" alt="Écran Rapports de la démonstration : ventes par semaine, commandes par statut et produits les plus demandés" width="720" height="450" loading="lazy" decoding="async"><span><b>Analyses</b>Ventes, statuts, produits, clients et retards</span></a></li>
+      </ul>
     </div>
   </section>
 
   <section class="section" aria-labelledby="preuves-titre">
     <div class="enveloppe">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">03</span>Ce que nous avons déjà publié</span>
+        <span class="surtitre"><span class="no">04</span>Ce que nous avons déjà publié</span>
         <h2 id="preuves-titre">Nos produits, à vérifier vous-même.</h2>
         <p class="intro">Ce sont nos propres produits, que nous éditons et maintenons : pas des projets clients. Ils montrent notre façon de construire un outil complet.</p>
       </div>
@@ -136,7 +172,7 @@
   <section class="section section--2" aria-labelledby="methode-titre">
     <div class="enveloppe">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">04</span>Comment ça se passe</span>
+        <span class="surtitre"><span class="no">05</span>Comment ça se passe</span>
         <h2 id="methode-titre">Trois étapes, sans engagement au départ.</h2>
       </div>
       <div class="atouts reveler">
@@ -156,15 +192,16 @@
           <span class="surtitre">Diagnostic gratuit</span>
           <h2 id="demande-titre" class="acq-titre-form">Parlons de vos <em>commandes</em>.</h2>
           <p>Ces questions nous permettent de préparer l'échange et de vous dire vite si nous pouvons vous aider.</p>
+          <p class="interlocuteur"><b>Votre interlocuteur&nbsp;:</b> Yassir Legmara, président de Legantis. <a href="tel:+212672759097">+212&nbsp;6&nbsp;72&nbsp;75&nbsp;90&nbsp;97</a> · <a href="mailto:contact@legantis.net">contact@legantis.net</a> · du lundi au samedi, 9&nbsp;h à 18&nbsp;h, à Casablanca.</p>
         </div>
         <form class="devis-form" method="post" action="https://legantis-devis.rihla-serveur.workers.dev/" aria-labelledby="demande-titre">
           <input type="hidden" name="langue" value="fr">
           <input type="hidden" name="parcours" value="commandes">
           <input type="hidden" name="type" value="logiciel">
-          <p class="devis-consigne">Tous les champs sont obligatoires.</p>
+          <p class="devis-consigne">Merci de répondre à chaque question.</p>
           <div class="champ"><label for="acq-entreprise">Entreprise</label><input id="acq-entreprise" name="entreprise" type="text" autocomplete="organization" required maxlength="120"></div>
           <div class="champ"><label for="acq-nom">Votre nom</label><input id="acq-nom" name="nom" type="text" autocomplete="name" required maxlength="100"></div>
-          <div class="champ"><label for="acq-tel">Téléphone</label><input id="acq-tel" name="telephone" type="tel" inputmode="tel" autocomplete="tel" required maxlength="30"></div>
+          <div class="champ"><label for="acq-tel">Téléphone</label><input id="acq-tel" name="telephone" type="tel" inputmode="tel" autocomplete="tel" required maxlength="30" pattern="[+0-9 \(\)\.\-]{8,30}" title="Chiffres, espaces et signe + uniquement"></div>
           <div class="champ"><label for="acq-email">E-mail professionnel</label><input id="acq-email" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="254"></div>
           <div class="champ"><label for="acq-activite">Activité</label>
             <select id="acq-activite" name="activite" required><option value="">Choisissez</option><option value="distribution">Distribution ou vente en gros</option><option value="import">Import ou négoce</option><option value="commerce">Commerce à plusieurs points de vente</option><option value="services">Services aux entreprises</option><option value="autre">Autre activité</option></select></div>
@@ -191,7 +228,7 @@
   <section class="section section--2" aria-labelledby="questions-titre">
     <div class="enveloppe">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">05</span>Questions fréquentes</span>
+        <span class="surtitre"><span class="no">06</span>Questions fréquentes</span>
         <h2 id="questions-titre">Avant de nous écrire.</h2>
       </div>
       <div class="atouts atouts--2 reveler">

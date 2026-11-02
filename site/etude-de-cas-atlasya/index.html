@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://legantis-devis.rihla-serveur.workers.dev; form-action 'self' https://legantis-devis.rihla-serveur.workers.dev; base-uri 'self'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Étude de cas Atlasya : plateforme médicale — Legantis</title>
 <meta name="description" content="Recherche d'un médecin, rendez-vous en ligne, espace santé et logiciel de cabinet : ce que contient Atlasya et les choix qui structurent la plateforme.">
@@ -72,6 +73,7 @@
 </script>
 <link rel="stylesheet" href="../assets/site.css">
 <script src="../assets/lumiere.js" defer></script>
+<script src="../assets/conversion.js" defer></script>
 </head>
 <body>
 <a class="lien-evitement" href="#contenu">Aller au contenu</a>
@@ -91,6 +93,7 @@
             <li><a href="../application-web-maroc/">Application web</a></li>
             <li><a href="../application-mobile-casablanca/">Application mobile</a></li>
             <li><a href="../logiciel-sur-mesure-maroc/">Logiciel sur mesure</a></li>
+            <li><a href="../commandes/">Logiciel de commandes</a></li>
             <li><a href="../conseil-reprise-application-maroc/">Conseil et reprise</a></li>
           </ul>
         </li>
@@ -114,6 +117,7 @@
         <li><a href="../application-web-maroc/">Application web</a></li>
         <li><a href="../application-mobile-casablanca/">Application mobile</a></li>
         <li><a href="../logiciel-sur-mesure-maroc/">Logiciel sur mesure</a></li>
+            <li><a href="../commandes/">Logiciel de commandes</a></li>
         <li><a href="../conseil-reprise-application-maroc/">Conseil et reprise</a></li>
       </ul>
     </li>
@@ -136,6 +140,7 @@
         <ol role="list"><li><a href="../">Accueil</a></li><li aria-current="page">Étude de cas Atlasya</li></ol>
       </nav>
       <span class="surtitre">Étude de cas · Santé</span>
+      <span class="nature nature--interne">Produit interne Legantis, pas une mission réalisée pour un client</span>
       <h1 id="titre">Atlasya, une <em>plateforme médicale</em> pour les patients et les cabinets</h1>
       <p class="chapeau">Atlasya, que nous éditons et maintenons, réunit sur une même plateforme les patients, qui peuvent chercher un médecin et prendre rendez-vous en ligne, et les cabinets médicaux, qui gèrent leur agenda, leurs dossiers patients et leurs encaissements avec Atlasya Pro. Cette page décrit ce qu'elle contient et les choix techniques qui la structurent.</p>
       <div class="actions">
@@ -198,10 +203,27 @@
     </div>
   </section>
 
-  <section class="section" id="choix" aria-labelledby="choix-titre">
+  <section class="section" aria-labelledby="parcours-titre">
     <div class="enveloppe">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">03</span>Les choix techniques</span>
+        <span class="surtitre"><span class="no">03</span>Le parcours</span>
+        <h2 id="parcours-titre">Du patient au cabinet, un même rendez-vous.</h2>
+        <p class="intro">Ce que vit un patient, puis ce que voit le cabinet, sur la même plateforme.</p>
+      </div>
+      <ol class="frise" role="list">
+        <li class="etape"><span class="pilule">Étape 01</span><h3>Chercher</h3><p>Le patient cherche un médecin par spécialité, par ville ou par quartier, puis affine sa recherche.</p></li>
+        <li class="etape"><span class="pilule">Étape 02</span><h3>Réserver</h3><p>Il réserve en ligne le créneau choisi. Un créneau ne peut porter qu'un seul rendez-vous confirmé.</p></li>
+        <li class="etape"><span class="pilule">Étape 03</span><h3>Recevoir</h3><p>Le rendez-vous arrive directement dans l'agenda du cabinet ; la salle d'attente se met à jour automatiquement.</p></li>
+        <li class="etape"><span class="pilule">Étape 04</span><h3>Suivre</h3><p>Le médecin complète le dossier, le cabinet enregistre l'encaissement en caisse.</p></li>
+      </ol>
+      <p class="note">Votre activité repose sur des rendez-vous&nbsp;? <a class="suivre" href="../realisations/demos/reservation/">Essayez la démonstration de réservation <span aria-hidden="true">→</span></a></p>
+    </div>
+  </section>
+
+  <section class="section section--2" id="choix" aria-labelledby="choix-titre">
+    <div class="enveloppe">
+      <div class="entete reveler">
+        <span class="surtitre"><span class="no">04</span>Les choix techniques</span>
         <h2 id="choix-titre">Les choix qui structurent la plateforme.</h2>
       </div>
       <div class="atouts atouts--2 reveler">
@@ -219,12 +241,13 @@
     </div>
   </section>
 
-  <section class="section section--2" aria-labelledby="etat-titre">
+  <section class="section" aria-labelledby="etat-titre">
     <div class="enveloppe preuve">
       <div class="entete reveler">
-        <span class="surtitre"><span class="no">04</span>Aujourd'hui</span>
+        <span class="surtitre"><span class="no">05</span>Aujourd'hui</span>
         <h2 id="etat-titre">Où en est Atlasya.</h2>
         <p class="intro">Atlasya est en ligne, au stade du lancement&nbsp;: le site patient et Atlasya Pro sont accessibles, l'application iPhone est disponible sur l'App Store. Cette page décrit ce que contient la plateforme, pas son audience&nbsp;: elle ne donne aucun chiffre d'usage.</p>
+        <p class="intro">Ses limites, à ce jour&nbsp;: pas d'application Android publiée&nbsp;; Atlasya Pro n'existe qu'en français&nbsp;; la caisse est un registre d'encaissements, pas un service de paiement en ligne.</p>
         <p class="intro">Les données de santé relèvent de la <span style="white-space:nowrap">loi&nbsp;09-08</span>&nbsp;; le dossier de conformité d'Atlasya est en préparation.</p>
       </div>
           <article class="titre titre--atlasya reveler" aria-labelledby="preuve-nom">
@@ -252,7 +275,7 @@
       <ul class="suite" role="list">
         <li><a href="../application-web-maroc/"><b>Applications web sur mesure</b><span>Plateformes, espaces clients, tableaux de bord, boutiques en ligne.</span></a></li>
         <li><a href="../logiciel-sur-mesure-maroc/"><b>Logiciels métier sur mesure</b><span>Caisse, gestion, suivi de terrain, outils internes.</span></a></li>
-        <li><a href="../etude-de-cas-rihla/"><b>Étude de cas Rihla</b><span>Une application d'apprentissage des langues, gratuite et hors ligne.</span></a></li>
+        <li><a href="../etude-de-cas-rihla/"><b>Étude de cas Rihla</b><span>Une application d'apprentissage des langues, gratuite, hors ligne sur l'iPhone.</span></a></li>
         <li><a href="../etude-de-cas-ostad/"><b>Étude de cas Ostad</b><span>Une plateforme pédagogique&nbsp;: classes, devoirs, notes et suivi des élèves.</span></a></li>
       </ul>
     </div>
@@ -262,7 +285,7 @@
     <div class="forme forme--a" aria-hidden="true"></div>
     <div class="forme forme--b" aria-hidden="true"></div>
     <div class="enveloppe">
-      <span class="surtitre reveler"><span class="no">05</span>Contact</span>
+      <span class="surtitre reveler"><span class="no">06</span>Contact</span>
       <h2 id="contact-titre" class="reveler"><span>Parlons de</span><span class="contour">votre projet.</span></h2>
       <p class="intro reveler">Une plateforme ou un logiciel métier à construire&nbsp;? Décrivez-nous votre besoin en quelques lignes&nbsp;: nous vous répondons sous 48 heures ouvrées, et le devis est gratuit.</p>
       <dl class="contact reveler">
