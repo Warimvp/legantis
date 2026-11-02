@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="format-detection" content="telephone=no">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'self'; object-src 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Espace client et gestion · Mizan Technique (démonstration)</title>
+<meta name="description" content="Démonstration d'un espace client et d'une gestion des demandes pour une entreprise fictive de maintenance technique : suivi, devis, planning, compte rendu. État en mémoire, rien n'est envoyé.">
+<meta name="robots" content="noindex, follow">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/realisations/demos/services/fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/realisations/demos/services/services.css">
+<link rel="stylesheet" href="/realisations/demos/services/espace/espace.css">
+</head>
+<body>
+<p class="demo-bandeau"><span>Démonstration créée par Legantis · entreprise et données fictives</span> <a href="/realisations/">Retour aux réalisations</a></p>
+<a class="saut" href="#contenu">Aller au contenu</a>
+<header class="entete"><div class="wrap">
+<a class="marque" href="/realisations/demos/services/" aria-label="Mizan Technique, accueil"><svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="1.5" y="1.5" width="37" height="37" fill="#fff" stroke="#12171c" stroke-width="3"/><path d="M8 31V9l12 14L32 9v22" fill="none" stroke="#12171c" stroke-width="3.5" stroke-linejoin="miter"/><rect x="26" y="26" width="8" height="8" fill="#ff5a00" stroke="#12171c" stroke-width="2"/></svg><span><b>Mizan Technique</b><small>Maintenance technique · Casablanca</small></span></a>
+<button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-principale"><i aria-hidden="true"></i>Menu</button>
+<nav class="nav" id="nav-principale" aria-label="Navigation principale"><ul><li><a href="/realisations/demos/services/">Accueil</a></li><li><a href="/realisations/demos/services/services/">Services</a></li><li><a href="/realisations/demos/services/realisations/">Réalisations</a></li><li><a href="/realisations/demos/services/a-propos/">À propos</a></li><li><a href="/realisations/demos/services/contact/">Contact</a></li><li><a href="/realisations/demos/services/espace/" aria-current="page">Espace client</a></li><li><a class="nav-cta" href="/realisations/demos/services/devis/">Demander un devis</a></li></ul></nav>
+</div></header>
+<main id="contenu">
+<section class="tete tete--app"><div class="wrap"><div><nav class="fil" aria-label="Fil d'Ariane"><ol><li><a href="/realisations/demos/services/">Accueil</a></li><li aria-current="page">Espace client et gestion</li></ol></nav>
+<h1>Après le devis, <em>le suivi.</em></h1>
+<p class="lead">Une demande créée ici traverse tout le parcours : qualification, devis, créneau, intervention, compte rendu. Côté client, vous répondez. Côté gestion, vous traitez. Chaque action se voit de l'autre côté.</p>
+<p class="note">Démonstration fictive : les données et les techniciens sont inventés, l'état vit en mémoire et se réinitialise au rechargement de la page. Rien n'est envoyé.</p></div></div></section>
+
+<section class="bloc bloc--app" id="espace-app" aria-label="Application de démonstration"><div class="wrap">
+<div class="sansjs" id="sansjs-app"><p style="margin:0"><strong>Cette application demande JavaScript.</strong> Elle simule le suivi d'une demande : espace client (liste, étapes, devis, créneau, compte rendu) et gestion (tableau par colonnes, affectation, planning, devis par lignes, indicateurs). Sans script, rien ne peut être affiché ici ; les autres pages de la démonstration restent consultables.</p></div>
+
+<div id="app" hidden>
+<div class="app-barre">
+<div class="tabs" role="tablist" aria-label="Vues de la démonstration" id="tabs">
+<button type="button" role="tab" id="tab-demande" aria-controls="p-demande" aria-selected="false" tabindex="-1" data-tab="demande"><span class="feuille" aria-hidden="true">01</span><span>Nouvelle demande</span></button>
+<button type="button" role="tab" id="tab-client" aria-controls="p-client" aria-selected="true" data-tab="client"><span class="feuille" aria-hidden="true">02</span><span>Espace client</span><em class="badge" id="badge-client"></em></button>
+<button type="button" role="tab" id="tab-gestion" aria-controls="p-gestion" aria-selected="false" tabindex="-1" data-tab="gestion"><span class="feuille" aria-hidden="true">03</span><span>Gestion</span><em class="badge" id="badge-gestion"></em></button>
+</div>
+<button type="button" class="btn btn--ligne petit" data-reset="1">Réinitialiser les données</button>
+</div>
+<p class="effet" id="effet"></p>
+<p class="sr" id="app-annonce" aria-live="polite" role="status"></p>
+
+<div role="tabpanel" id="p-demande" aria-labelledby="tab-demande" hidden>
+<h2 class="h-app">Nouvelle demande de devis</h2>
+<p class="aide">Le parcours en sept étapes est le même que sur la page « Demander un devis ». À la confirmation, la demande est créée ici : elle apparaît dans l'espace client et dans la colonne « Reçue » de la gestion.</p>
+<div class="sansjs" id="devis-sansjs" hidden></div>
+<div class="devis" id="devis-app"><div><div class="progres" id="devis-progres"></div><div id="devis-etape"></div><p class="sr" id="devis-annonce" aria-live="polite"></p></div>
+<aside aria-label="Fiche de demande" class="fiche" id="devis-fiche"></aside></div>
+</div>
+<div role="tabpanel" id="p-client" aria-labelledby="tab-client"></div>
+<div role="tabpanel" id="p-gestion" aria-labelledby="tab-gestion" hidden></div>
+<dialog id="fiche" class="fiche-dlg" aria-labelledby="fiche-titre"></dialog>
+</div>
+</div></section>
+</main>
+<footer class="pied"><div class="wrap">
+<div class="grille-pied">
+<div><a class="marque" href="/realisations/demos/services/" aria-label="Mizan Technique, accueil"><svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="1.5" y="1.5" width="37" height="37" fill="#fff" stroke="#12171c" stroke-width="3"/><path d="M8 31V9l12 14L32 9v22" fill="none" stroke="#12171c" stroke-width="3.5" stroke-linejoin="miter"/><rect x="26" y="26" width="8" height="8" fill="#ff5a00" stroke="#12171c" stroke-width="2"/></svg><span><b>Mizan Technique</b><small>Maintenance technique · Casablanca</small></span></a>
+<p style="margin-top:18px;max-width:26em">Climatisation, électricité et maintenance de locaux professionnels. Une entreprise inventée pour cette démonstration.</p></div>
+<div><h2>Services</h2><ul><li><a href="/realisations/demos/services/services/climatisation/">Climatisation</a></li><li><a href="/realisations/demos/services/services/electricite/">Électricité</a></li><li><a href="/realisations/demos/services/services/maintenance/">Maintenance de locaux</a></li></ul></div>
+<div><h2>Société</h2><ul><li><a href="/realisations/demos/services/realisations/">Réalisations</a></li><li><a href="/realisations/demos/services/a-propos/">À propos</a></li><li><a href="/realisations/demos/services/devis/">Demander un devis</a></li><li><a href="/realisations/demos/services/espace/">Espace client et gestion</a></li><li><a href="/realisations/demos/services/contact/">Contact</a></li></ul></div>
+<div><h2>Coordonnées fictives</h2><address>Adresse fictive, Casablanca<br>05 00 00 00 00<br>contact@exemple.invalid</address></div>
+</div>
+<div class="mention"><p style="margin:0"><strong>Entreprise fictive.</strong> Mizan Technique n'existe pas : noms, adresses, téléphones et exemples sont inventés pour une démonstration. Aucun formulaire n'envoie quoi que ce soit.</p><p style="margin:0">Démonstration créée par Legantis · <a href="/realisations/">Retour aux réalisations</a></p></div>
+</div></footer>
+<script src="/realisations/demos/services/services.js"></script>
+<script src="/realisations/demos/services/espace/espace.js"></script>
+<script src="/realisations/demos/source.js" defer></script>
+</body>
+</html>

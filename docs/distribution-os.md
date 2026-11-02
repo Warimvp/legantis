@@ -11,7 +11,7 @@ Démonstration interactive d'un logiciel de distribution, publiée dans `site/re
 | `graphiques.js` | Colonnes, courbe, mini-courbes, barres horizontales, infobulle. SVG et HTML écrits à la main. |
 | `app.js` | Session, routes `#/module/id?filtres`, rendu, composants, tiroirs, fenêtres, menus contextuels, palette Ctrl/⌘ K, notifications. |
 | `ecrans.js` | Les huit écrans, les fiches et les fenêtres d'action, les exports CSV. |
-| `guide.js` | Scénario guidé en six étapes. |
+| `guide.js` | Scénario guidé en huit étapes, jusqu'à la livraison, la facture simulée et le règlement. |
 | `dos.css` | Design system : jetons clair et sombre, composants, adaptation mobile, impression. |
 
 Ordre de chargement : `moteur`, `graphiques`, `app`, `ecrans`, `guide`, tous en `defer`. `app.js` démarre au `DOMContentLoaded`.

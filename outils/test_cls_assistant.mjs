@@ -10,7 +10,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
-const { chromium } = require('/Users/user/Projects/RydeX/node_modules/playwright');
+const chromium = require('/Users/user/Projects/RydeX/node_modules/playwright')[process.env.NAVIGATEUR || 'chromium'];   // NAVIGATEUR=webkit|firefox, NAVIGATEUR_CHEMIN=exécutable
 const RACINE = process.env.SITE_ROOT || path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'site');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };
 const serveur = http.createServer(async (req, res) => {
@@ -22,7 +22,7 @@ await new Promise(r => serveur.listen(0, '127.0.0.1', r));
 const URL_PAGE = `http://127.0.0.1:${serveur.address().port}/estimer-mon-projet/`;
 let ok = 0, ko = 0;
 const verifier = (nom, c, d = '') => { if (c) { ok++; console.log('✓', nom); } else { ko++; console.log('✗', nom, d); } };
-const navigateur = await chromium.launch();
+const navigateur = await chromium.launch({ executablePath: process.env.NAVIGATEUR_CHEMIN || undefined });
 
 // ── 1. Le script démarre après le premier affichage : rien ne doit bouger quand l'assistant démarre ──────────────────────────────────────────────────
 for (const mouvement of ['no-preference', 'reduce']) {

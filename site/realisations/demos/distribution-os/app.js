@@ -133,10 +133,14 @@
     var cle = a.getAttribute('data-focus') || (a.id ? '#' + a.id : null);
     return cle ? { cle: cle, debut: a.selectionStart, fin: a.selectionEnd } : null;
   }
+  /* Sur un écran tactile (iOS en particulier), donner le focus à une liste déroulante ouvre aussitôt son sélecteur natif :
+     on ne le fait jamais automatiquement. Au clavier et à la souris, le focus reste rendu. */
+  var tactile = window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  A.focusAuto = function (el) { return !!el && !(tactile && el.tagName === 'SELECT'); };
   function restaurerFocus(f) {
     if (!f) return;
     var el = f.cle.charAt(0) === '#' ? document.getElementById(f.cle.slice(1)) : $('[data-focus="' + f.cle + '"]');
-    if (el && el !== document.activeElement) { el.focus({ preventScroll: true }); if (f.debut != null && el.setSelectionRange) try { el.setSelectionRange(f.debut, f.fin); } catch (err) { /* type sans sélection */ } }
+    if (el && el !== document.activeElement && A.focusAuto(el)) { el.focus({ preventScroll: true }); if (f.debut != null && el.setSelectionRange) try { el.setSelectionRange(f.debut, f.fin); } catch (err) { /* type sans sélection */ } }
   }
   function rendre() {
     if (!A.etat) return;
@@ -261,7 +265,7 @@
   /* ── Fenêtres (modales et tiroirs) : focus piégé, Échap, retour du focus ─────────────────────────────────────────────────────────── */
   var pileFocus = [];
   A.ouvrirModale = function (m) {   // m = { titre, rendre: fn → html du corps, large, onFermer }
-    pileFocus.push(document.activeElement);
+    if (!A.modaleActive) pileFocus.push(document.activeElement);   // une fenêtre qui en remplace une autre garde le point de retour d'origine
     A.modaleActive = m;
     var boite = $('#modale');
     boite.hidden = false;
@@ -269,7 +273,8 @@
     m.rendre = (function (f) { return function () { var fo = memoriserFocus(); $('#modale-corps').innerHTML = f(); restaurerFocus(fo); }; })(m.contenu);
     m.rendre();
     document.documentElement.classList.add('fige');
-    var premier = $('#modale [autofocus]') || $('#modale .modale-corps input, #modale .modale-corps select, #modale .modale-corps button');
+    var premier = $('#modale [data-premier]') || $('#modale .modale-corps input, #modale .modale-corps select, #modale .modale-corps button');
+    if (premier && !A.focusAuto(premier)) premier = $('#modale .modale-tete [data-action="fermer-modale"]');
     if (premier) premier.focus();
     A.emettre('modale', m);
   };
@@ -363,7 +368,8 @@
       A.etat = r.etat;
       A.actions = r.acceptees;   // une action qui ne se rejoue plus est écartée ; les autres restent, comme l'état affiché
     } catch (err) { erreurChargement(err); brancher(); return; }
-    A.role = ses && D.ROLES[ses.role] ? ses.role : D.ROLES[PARAMS.get('role')] ? PARAMS.get('role') : 'direction';
+    var roleConnu = function (r) { return Object.prototype.hasOwnProperty.call(D.ROLES, r); };
+    A.role = ses && roleConnu(ses.role) ? ses.role : roleConnu(PARAMS.get('role')) ? PARAMS.get('role') : 'direction';
     A.theme = ses && ses.theme === 'sombre' ? 'sombre' : PARAMS.get('theme') === 'sombre' ? 'sombre' : 'clair';
     A.accueil = ses ? ses.accueil !== false : true;
     A.guideEtat = ses ? ses.guide : null;

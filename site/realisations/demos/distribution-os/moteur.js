@@ -252,6 +252,7 @@
       var lignes = normaliserLignes(s, a.lignes);
       var prevue = a.livraisonPrevue == null ? cmd.livraisonPrevue : a.livraisonPrevue;
       if (!Number.isInteger(prevue) || prevue < ctx.jour) erreur('date', 'La date de livraison prévue ne peut pas être dans le passé.');
+      if (prevue > ctx.jour + 90) erreur('date', 'La date de livraison prévue doit tomber dans les 90 jours.');
       cmd.lignes = lignes.map(function (l) { return { produit: l.produit, qte: l.qte, prix: produit(s, l.produit).prix }; });
       cmd.livraisonPrevue = prevue;
       noter(s, ctx, 'commande', 'Commande ' + cmd.id + ' modifiée', cmd.id);
@@ -759,7 +760,20 @@
     return ecarts;
   }
 
+  /* Facture simulée : une pièce lisible, calculée depuis la commande et ses paiements. Elle n'existe qu'à partir de l'expédition. */
+  function factureDe(s, cmd) {
+    if (!FACTURE[cmd.statut]) return null;
+    var exp = cmd.historique.filter(function (h) { return h.statut === 'expediee'; })[0];
+    var mt = montants(cmd), paiements = s.paiements.filter(function (p) { return p.commande === cmd.id; });
+    return {
+      numero: 'FA-' + cmd.id.replace(/^CMD-/, ''), jour: exp ? exp.jour : cmd.echeance, echeance: cmd.echeance, client: client(s, cmd.client),
+      lignes: cmd.lignes.map(function (l) { var pr = produit(s, l.produit); return { nom: pr.nom, sku: pr.sku, unite: pr.unite, qte: l.qte, prix: l.prix, total: l.qte * l.prix }; }),
+      remise: cmd.remise, montants: mt, paiements: paiements, paye: totalPaye(s, cmd.id), reste: resteDu(s, cmd)
+    };
+  }
+
   var DOS = {
+    factureDe: factureDe,
     VERSION: VERSION, TVA_PCT: TVA_PCT, STATUTS: STATUTS, FLUX: FLUX, LIBELLE_STATUT: LIBELLE_STATUT, TRANSITIONS: TRANSITIONS, LIBELLE_ACTION: LIBELLE_ACTION,
     RESERVANT: RESERVANT, EN_COURS: EN_COURS, FACTURE: FACTURE, MOTIFS_ANNULATION: MOTIFS_ANNULATION, MODES_PAIEMENT: MODES_PAIEMENT, CANAUX: CANAUX,
     ROLES: ROLES, DROITS: DROITS, LIBELLE_DROIT: LIBELLE_DROIT, MODULES_ROLE: MODULES_ROLE, EQUIPE: EQUIPE, TRANSIT: TRANSIT, LIBELLE_PAIEMENT: LIBELLE_PAIEMENT,

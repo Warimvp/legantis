@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import worker from '../worker/src/index.js';
 
 const require = createRequire(import.meta.url);
-const { chromium } = require('/Users/user/Projects/RydeX/node_modules/playwright');
+const chromium = require('/Users/user/Projects/RydeX/node_modules/playwright')[process.env.NAVIGATEUR || 'chromium'];   // NAVIGATEUR=webkit|firefox, NAVIGATEUR_CHEMIN=exécutable
 const RACINE = process.env.SITE_ROOT || path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'site');
 const WORKER = 'https://legantis-devis.rihla-serveur.workers.dev/';
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };
@@ -39,7 +39,7 @@ globalThis.fetch = async (url, options) => {
 let ok = 0, ko = 0;
 const verifier = (nom, condition, detail = '') => { if (condition) { ok++; console.log('✓', nom); } else { ko++; console.log('✗', nom, detail); } };
 
-const navigateur = await chromium.launch();
+const navigateur = await chromium.launch({ executablePath: process.env.NAVIGATEUR_CHEMIN || undefined });
 const tiers = new Set();
 async function contexte(options = {}) {
   const ctx = await navigateur.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce', ...options });
@@ -49,6 +49,7 @@ async function contexte(options = {}) {
     if (q.method() === 'OPTIONS') return route.fulfill({ status: 204 });
     const requete = new Request(WORKER, { method: q.method(), body: q.postData() || undefined, headers: { 'Content-Type': q.headers()['content-type'] || '', Origin: q.headers().origin || ORIGINE, Accept: q.headers().accept || '', 'CF-Connecting-IP': '203.0.113.9' } });
     const r = await worker.fetch(requete, ENV);
+    if (process.env.NAVIGATEUR === 'webkit' && r.status === 303) return route.fulfill({ status: 200, contentType: 'text/html', body: `<meta http-equiv="refresh" content="0;url=${r.headers.get('Location')}">` });   // Playwright ne simule pas une redirection sur WebKit
     await route.fulfill({ status: r.status, headers: Object.fromEntries(r.headers), body: await r.text() });
   });
   return ctx;
@@ -72,14 +73,14 @@ const visible = (page, s) => page.locator(s).isVisible();
   verifier('étape 1 seule visible', await visible(page, '[data-etape="1"]') && !(await visible(page, '[data-etape="2"]')));
   await page.click('[data-suite]');
   verifier('Continuer sans choix : reste à l\'étape 1', await visible(page, '[data-etape="1"]'));
-  await page.check('input[name="type"][value="vitrine"]', { force: true });
+  await page.check('input[name="type"][value="vitrine"]');
   await page.click('[data-suite]');
   verifier('étape 2 : fonctionnalités du site vitrine', await visible(page, '[data-pour="vitrine"]') && !(await visible(page, '[data-pour="ecommerce"]')) && !(await visible(page, '[data-pour="web mobile logiciel"]')));
   await page.selectOption('#estimer-pages', '4a6');
   await page.check('input[name="fonctions"][value="formulaire"]');
   await page.check('input[name="fonctions"][value="multilingue"]');
   await page.click('[data-suite]');
-  await page.check('input[name="delai"][value="1a3mois"]', { force: true });
+  await page.check('input[name="delai"][value="1a3mois"]');
   await page.click('[data-suite]');
   const texte = await page.locator('[data-etape="4"]').innerText();
   verifier('étape 4 : message d\'estimation personnalisée, grille non validée', texte.includes('Votre projet nécessite une estimation personnalisée. Recevez un devis gratuit adapté à vos besoins.'));
@@ -116,12 +117,12 @@ const visible = (page, s) => page.locator(s).isVisible();
   verifier('page de prestation : le type est repris, étape 2 directement', await visible(page, '[data-etape="2"]') && await visible(page, '[data-pour="web mobile logiciel"]') && await page.isChecked('input[name="type"][value="mobile"]'));
   await page.click('[data-retour]');
   verifier('Retour : étape 1, choix conservé', await visible(page, '[data-etape="1"]') && await page.isChecked('input[name="type"][value="mobile"]'));
-  await page.check('input[name="type"][value="autre"]', { force: true });
+  await page.check('input[name="type"][value="autre"]');
   await page.click('[data-suite]');
   verifier('« Autre besoin » saute les fonctionnalités', await visible(page, '[data-etape="3"]'));
   await page.click('[data-retour]');
   verifier('Retour depuis le délai : revient au type', await visible(page, '[data-etape="1"]'));
-  await page.check('input[name="type"][value="ecommerce"]', { force: true });
+  await page.check('input[name="type"][value="ecommerce"]');
   await page.click('[data-suite]');
   await page.check('input[name="fonctions"][value="stock"]');
   await page.goBack();
@@ -144,7 +145,7 @@ const visible = (page, s) => page.locator(s).isVisible();
   await page.keyboard.press('Enter');
   verifier('clavier : Entrée avance sans envoyer', await visible(page, '[data-etape="2"]') && envois.length === 0);
   verifier('clavier : le focus suit le titre de l\'étape', (await page.evaluate(() => document.activeElement.textContent)).includes('De quoi avez-vous besoin'));
-  await page.keyboard.press('Tab');
+  await page.keyboard.press(process.env.TOUCHE_TAB || 'Tab');
   verifier('clavier : Tab entre dans les fonctionnalités visibles', await actif() === 'fonctions', await actif());
   await page.keyboard.press('Space');
   await page.keyboard.press('Enter');
@@ -154,7 +155,7 @@ const visible = (page, s) => page.locator(s).isVisible();
   await page.keyboard.press('Enter').catch(() => {});
   verifier('clavier : les étapes s\'enchaînent jusqu\'au contact', await visible(page, '[data-etape="4"]') || await visible(page, '[data-etape="5"]'));
   await page.goto(ORIGINE + '/');
-  await page.keyboard.press('Tab');
+  await page.keyboard.press(process.env.TOUCHE_TAB || 'Tab');
   verifier('clavier : premier arrêt sur le lien d\'évitement', (await page.evaluate(() => document.activeElement.className)) === 'lien-evitement');
   await ctx.close();
   const tel = await contexte({ viewport: { width: 390, height: 700 } }); const q = await tel.newPage();
@@ -170,7 +171,7 @@ const visible = (page, s) => page.locator(s).isVisible();
   envois = [];
   const ctx = await contexte(); const page = await ctx.newPage();
   await page.goto(ORIGINE + '/estimer-mon-projet/?type=autre');
-  await page.check('input[name="delai"][value="vite"]', { force: true });
+  await page.check('input[name="delai"][value="vite"]');
   await page.click('[data-suite]'); await page.click('[data-suite]');
   await contact(page, 'estimer');
   await page.fill('#estimer-tel', 'abc');
@@ -203,8 +204,8 @@ const visible = (page, s) => page.locator(s).isVisible();
   await page.goto(ORIGINE + '/estimer-mon-projet/');
   verifier('sans script : toutes les étapes visibles', await page.locator('[data-etape]:visible').count() === 5);
   verifier('sans script : navigation de l\'assistant masquée', !(await visible(page, '.assistant-nav')) && await visible(page, '.assistant-envoi button'));
-  await page.check('input[name="type"][value="vitrine"]', { force: true });
-  await page.check('input[name="delai"][value="vite"]', { force: true });
+  await page.check('input[name="type"][value="vitrine"]');
+  await page.check('input[name="delai"][value="vite"]');
   await contact(page, 'estimer');
   await page.selectOption('#estimer-budget', '15a50');
   await page.fill('#estimer-projet', 'Un site pour mon entreprise.');
@@ -214,7 +215,7 @@ const visible = (page, s) => page.locator(s).isVisible();
   verifier('sans script : retour sur la page, message affiché, formulaire masqué', await visible(page, '#devis-envoye') && !(await visible(page, 'form.assistant')));
   verifier('sans script : mail parti', envois.length === 1);
   await page.goto(ORIGINE + '/realisations/');
-  await page.check('#f-demo', { force: true });
+  await page.check('#f-demo');
   verifier('sans script : le filtre des réalisations fonctionne', await page.locator('.projet:visible').count() === 4);
   await page.goto(ORIGINE + '/');
   await page.fill('#devis-nom', 'Sara Test'); await page.fill('#devis-email', 'sara@exemple.ma'); await page.selectOption('#devis-type', 'site'); await page.fill('#devis-projet', 'Un site pour mon entreprise.');
@@ -267,7 +268,7 @@ const visible = (page, s) => page.locator(s).isVisible();
   verifier('/commandes/ : case de consentement obligatoire dans la page', envois.length === 0);
   await page.check('#acq-consentement');
   await page.click('form button[type="submit"]');
-  await page.waitForURL('**/commandes/#devis-envoye');
+  await page.locator('#devis-envoye').waitFor({ state: 'visible' });
   verifier('/commandes/ : retour sur sa page, mail prioritaire comme en production', envois[0]?.subject === 'Demande commandes — Priorité A — Négoce Test — Sara Test', envois[0]?.subject);
   verifier('/commandes/ : qualification complète dans le mail', ['Activité : Distribution ou vente en gros', 'Ville : Rabat-Salé-Témara', 'Utilisateurs prévus : 4 à 10', 'Budget envisagé : 25 000 à 50 000 MAD'].every(l => envois[0]?.text.includes(l)), envois[0]?.text);
   verifier('/commandes/ : la variante de publicité arrive dans le mail', envois[0]?.text.includes('Source de la visite (UTM) : meta / paid / pack-commandes / a-video') && envois[0]?.text.includes('Consentement au traitement : oui'), envois[0]?.text);
@@ -312,14 +313,14 @@ const visible = (page, s) => page.locator(s).isVisible();
   verifier('comparaison : glisser à la souris', Math.abs(await p() - 20) < 2, String(await p()));
   verifier('comparaison : valeur lisible par un lecteur d\'écran', (await page.getAttribute('.comparaison[data-comparaison="gestion"] input[type="range"]', 'aria-valuetext')).includes('version après'));
   verifier('comparaison : « Gestion » affichée au départ', await visible(page, '[data-comparaison="gestion"]') && !(await visible(page, '[data-comparaison="site"]')));
-  await page.check('#comparer-site', { force: true });
+  await page.check('#comparer-site');
   verifier('comparaison : changement de situation', await visible(page, '[data-comparaison="site"]') && !(await visible(page, '[data-comparaison="gestion"]')));
   verifier('à l\'ordinateur : pas de barre de contact sans WhatsApp', !(await visible(page, '.contact-rapide')));
   await page.goto(ORIGINE + '/realisations/');
   verifier('réalisations : sept cartes', await page.locator('.projet').count() === 7);
-  await page.check('#f-interne', { force: true });
+  await page.check('#f-interne');
   verifier('filtre produits internes', await page.locator('.projet:visible').count() === 3);
-  await page.check('#f-site', { force: true });
+  await page.check('#f-site');
   verifier('filtre sites web', await page.locator('.projet:visible').count() === 2);
   // Les démonstrations ont leurs propres tests (outils/test_demo_*.mjs, parcours_distribution_os.mjs) : ici, le bandeau et aucun envoi au chargement.
   for (const nom of ['restaurant', 'services', 'reservation']) {
@@ -345,12 +346,39 @@ const visible = (page, s) => page.locator(s).isVisible();
   await q.goto(ORIGINE + '/estimer-mon-projet/');
   verifier('simulateur : première question dans le premier écran', (await q.locator('[data-etape="1"] h2').boundingBox()).y < 500);
   verifier('simulateur : pas de barre de contact par-dessus les boutons', await q.locator('.contact-rapide').count() === 0);
-  await q.check('input[name="type"][value="vitrine"]', { force: true }); await q.tap('[data-suite]'); await q.tap('[data-suite]');
+  await q.check('input[name="type"][value="vitrine"]'); await q.tap('[data-suite]'); await q.tap('[data-suite]');
   await q.waitForTimeout(100);
-  await q.check('input[name="delai"][value="vite"]', { force: true }); await q.tap('[data-suite]'); await q.waitForTimeout(100);
+  await q.check('input[name="delai"][value="vite"]'); await q.tap('[data-suite]'); await q.waitForTimeout(100);
   const pos = await q.locator('.assistant-progression').boundingBox();
   verifier('simulateur au téléphone : la progression reste sous la barre fixe', pos.y >= 84, String(pos.y));
   await tel.close();
+}
+
+// ── Arrivée à froid sur une ancre, animations actives : le contenu visé finit visible ─────
+// (écran blanc signalé sur /en/#devis-titre dans Safari iOS simulé : c'était le démarrage de Safari, mais l'apparition au défilement
+// ne doit jamais laisser la cible transparente). Attente de la fin réelle du défilement : position stable sur 20 images, pas de délai fixe.
+for (const [url, cible] of [['/en/#devis-titre', '#devis-titre'], ['/en/', 'h1'], ['/#devis', '#devis'], ['/en/#services', '#services']]) {
+  const ctx = await contexte({ viewport: { width: 390, height: 844 }, hasTouch: true, reducedMotion: 'no-preference' }); const page = await ctx.newPage();
+  const erreurs = []; page.on('pageerror', e => erreurs.push(e.message)); page.on('console', m => m.type() === 'error' && erreurs.push(m.text()));
+  page.on('requestfailed', r => erreurs.push('échec ' + r.url())); page.on('response', r => r.status() >= 400 && erreurs.push(r.status() + ' ' + r.url()));
+  await page.goto(ORIGINE + url, { waitUntil: 'load' });
+  await page.evaluate(() => new Promise((fin, echec) => {
+    let y = -1, stable = 0, n = 0;
+    const f = () => { if (++n > 900) return echec(new Error('défilement jamais stabilisé')); if (scrollY === y && document.readyState === 'complete') stable++; else { stable = 0; y = scrollY; } if (stable >= 20) fin(); else requestAnimationFrame(f); };
+    requestAnimationFrame(f);
+  }));
+  // puis la fin des animations d'entrée réglées sur le temps (mots du titre…), hors animations infinies et liées au défilement
+  await page.evaluate(() => Promise.all(document.getAnimations().filter(a => a.timeline === document.timeline && a.effect.getComputedTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))));
+  const vu = await page.evaluate((sel) => {
+    const opacite = (e) => { let o = 1; for (let n = e; n && n.nodeType === 1; n = n.parentElement) o *= Number(getComputedStyle(n).opacity); return o; };
+    const c = document.querySelector(sel), b = c.getBoundingClientRect(), barre = document.querySelector('header.barre');
+    const y = Math.min(Math.max(b.top + 8, 0), innerHeight - 1), x = Math.min(b.left + 12, innerWidth - 1), sous = document.elementFromPoint(x, y);
+    return { dansLaVue: b.bottom > 0 && b.top < innerHeight, cible: opacite(c), point: sous ? opacite(sous) : 0, barre: barre ? opacite(barre) : 0, haut: Math.round(b.top), basBarre: barre ? Math.round(barre.getBoundingClientRect().bottom) : 0 };
+  }, cible);
+  verifier(`arrivée à froid sur ${url} : ${cible} à l'écran, opaque, barre visible`, vu.dansLaVue && vu.cible > 0.99 && vu.point > 0.99 && vu.barre > 0.99, JSON.stringify(vu));
+  if (url.includes('#')) verifier(`arrivée à froid sur ${url} : la cible commence sous la barre fixe`, vu.haut >= vu.basBarre, JSON.stringify(vu));
+  verifier(`arrivée à froid sur ${url} : aucune erreur ni ressource en échec`, erreurs.length === 0, erreurs.join(' | '));
+  await ctx.close();
 }
 
 verifier('aucun hôte tiers contacté', tiers.size === 0, [...tiers].join(', '));

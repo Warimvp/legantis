@@ -10,8 +10,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
-let chromium;
-try { ({ chromium } = require('playwright')); } catch { ({ chromium } = require('/Users/user/Projects/RydeX/node_modules/playwright')); }
+let pw;
+try { pw = require('playwright'); } catch { pw = require('/Users/user/Projects/RydeX/node_modules/playwright'); }
+const chromium = pw[process.env.NAVIGATEUR || 'chromium'];   // NAVIGATEUR=webkit|firefox, NAVIGATEUR_CHEMIN=exécutable
 const RACINE = process.env.SITE_ROOT || path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'site');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };
 const serveur = http.createServer(async (req, res) => {
@@ -26,7 +27,7 @@ const JOUR = '2026-11-02';
 
 let ok = 0, ko = 0;
 const verifier = (nom, condition, detail = '') => { if (condition) { ok++; console.log('✓', nom); } else { ko++; console.log('✗', nom, detail); } };
-const navigateur = await chromium.launch();
+const navigateur = await chromium.launch({ executablePath: process.env.NAVIGATEUR_CHEMIN || undefined });
 const tiers = new Set(), requetes = [];
 async function contexte(options = {}) {
   const ctx = await navigateur.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce', acceptDownloads: true, ...options });
@@ -224,7 +225,7 @@ const texteNum = t => Number(t.replace(/[^\d,−-]/g, '').replace(',', '.').repl
 // ── Scénario guidé, fait à la main ─────────────────────────────────────────────────────────────────────────────────────────────────────
 {
   const ctx = await contexte(); const page = await ouvrir(ctx, '?scenario=1&utm_source=meta&utm_campaign=demo-test');
-  verifier('?scenario=1 lance le guide à l\'étape 1', await titreGuide(page, 'Découvrez le tableau de bord') && (await page.locator('.guide .surtitre').textContent()).includes('étape 1 sur 6'));
+  verifier('?scenario=1 lance le guide à l\'étape 1', await titreGuide(page, 'Découvrez le tableau de bord') && (await page.locator('.guide .surtitre').textContent()).includes('étape 1 sur 8'));
   const k0 = await etat(page, () => ({ ...DOSApp.k }));
   await page.click('.haut-nouvelle');
   verifier('étape 2 après ouverture de la saisie', await titreGuide(page, 'Créez une commande fictive'));
@@ -242,19 +243,34 @@ const texteNum = t => Number(t.replace(/[^\d,−-]/g, '').replace(',', '.').repl
   await page.click('.guide-cible[data-vers="prete"]');
   verifier('étape 5 : « Prête » reconnu, reste l\'expédition', (await page.locator('.guide-ok').innerText()).includes('Prête'));
   await page.click('.guide-cible[data-vers="expediee"]');
-  verifier('étape 6 : observer les indicateurs', await titreGuide(page, 'Observez l\'impact sur les indicateurs'));
+  verifier('étape 6 : confirmer la livraison', await titreGuide(page, 'Confirmez la livraison'));
+  const idGuide = await etat(page, () => DOSApp.guideEtat.id);
+  await page.click('.guide [data-action="guide-aller"]');
+  await page.waitForSelector('#tiroir-titre');
+  await page.click(`.tiroir [data-action="statut"][data-vers="livree"]`);
+  verifier('étape 7 : encaisser le règlement', await titreGuide(page, 'Encaissez le règlement'));
+  await page.click('.tiroir [data-action="facture"]');
+  const facture = await page.locator('#modale .facture').innerText();
+  const reste0 = await etat(page, (i) => DOS.reste(DOSApp.d, DOS.commande(DOSApp.etat, i)), idGuide);
+  verifier('facture simulée : numéro, client, mention sans valeur, reste dû = TTC', facture.includes('FA-' + idGuide.replace('CMD-', '')) && facture.includes('Supérette Les Orangers') && facture.includes('sans valeur comptable') && reste0 === (await etat(page, (i) => DOS.montants(DOS.commande(DOSApp.etat, i)).ttc, idGuide)));
+  verifier('facture : ni le guide ni une notification ne recouvrent le reste dû', await page.locator('[data-facture-reste]').evaluate(async e => { e.scrollIntoView({ block: 'center' }); await new Promise(f => requestAnimationFrame(() => requestAnimationFrame(f))); const r = e.getBoundingClientRect(), x = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return e === x || e.contains(x); }));
+  await page.click('#modale .facture-actions [data-action="paiement"]');
+  await page.click('#modale button[type="submit"]');
+  verifier('règlement : reste dû à zéro, commande soldée', (await etat(page, (i) => DOS.reste(DOSApp.d, DOS.commande(DOSApp.etat, i)), idGuide)) === 0 && (await etat(page, (i) => DOS.etatPaiement(DOSApp.etat, DOS.commande(DOSApp.etat, i)), idGuide)) === 'payee');
+  verifier('étape 8 : observer les indicateurs', await titreGuide(page, 'Observez l\'impact sur les indicateurs'));
   await page.click('.guide [data-action="guide-aller"]');
   await page.waitForFunction(() => DOSApp.route.module === 'tableau');
-  verifier('étape 6 : tuiles modifiées signalées sur le tableau de bord', await page.locator('.kpi--change').count() >= 1);
+  verifier('étape 8 : tuiles modifiées signalées sur le tableau de bord', await page.locator('.kpi--change').count() >= 1);
   const tableau = await page.locator('.guide-table').innerText();
-  verifier('étape 6 : avant / après chiffrés (encours, stock)', tableau.includes('Encours clients TTC') && tableau.includes('Stock physique'));
+  verifier('étape 8 : avant / après chiffrés (encours, stock, encaissé)', tableau.includes('Encours clients TTC') && tableau.includes('Stock physique') && tableau.includes('Encaissé sur cette commande'));
   await page.click('[data-action="guide-passer"]');
   verifier('résumé final affiché', (await page.locator('#modale-titre').innerText()) === 'Scénario terminé');
   const lien = await page.getAttribute('#modale .resume-cta a', 'href');
   verifier('résumé : « Discuter de mon projet » vers le formulaire, campagne conservée', lien.startsWith('../../../commandes/?') && lien.includes('utm_source=meta') && lien.includes('utm_campaign=demo-test') && lien.endsWith('#demande'), lien);
   verifier('résumé : aucun chiffre présenté comme un résultat client', (await page.locator('#modale').innerText()).includes('ce ne sont pas des résultats obtenus chez un client'));
-  verifier('effet réel : stock réservé puis sorti, commande expédiée', (await etat(page, () => DOS.verifierCoherence(DOSApp.etat).length === 0 && DOSApp.etat.commandes.some(c => c.session && c.statut === 'expediee'))));
-  verifier('effet réel : encours +TTC de la commande', (await etat(page, () => { const c = DOSApp.etat.commandes.find(x => x.session); return DOSApp.k.encours - DOS.montants(c).ttc; })) === k0.encours);
+  verifier('effet réel : stock réservé puis sorti, commande livrée', (await etat(page, () => DOS.verifierCoherence(DOSApp.etat).length === 0 && DOSApp.etat.commandes.some(c => c.session && c.statut === 'livree'))));
+  verifier('effet réel : encours revenu au niveau de départ une fois la commande réglée', (await etat(page, () => DOSApp.k.encours)) === k0.encours, String(await etat(page, () => DOSApp.k.encours)) + ' / ' + k0.encours);
+  verifier('effet réel : chiffre d\'affaires augmenté du HT de la commande', (await etat(page, (i) => DOSApp.k.ca30 - DOS.montants(DOS.commande(DOSApp.etat, i)).ht, idGuide)) === k0.ca30);
   await page.click('#modale .modale-pied [data-action="fermer-modale"]');
   verifier('le visiteur peut continuer à explorer (guide fermé)', await page.locator('#guide').isHidden() && !(await page.locator('#modale').isVisible()));
   verifier('aucune erreur JavaScript pendant le scénario', page.erreurs.length === 0, page.erreurs.join(' | '));
@@ -265,8 +281,8 @@ const texteNum = t => Number(t.replace(/[^\d,−-]/g, '').replace(',', '.').repl
 {
   const ctx = await contexte(); const page = await ouvrir(ctx);
   await page.click('.accueil [data-action="guide"]');
-  for (let i = 0; i < 5; i++) await page.click('[data-action="guide-passer"]');
-  verifier('passer les étapes : la commande est réellement expédiée', await etat(page, () => DOSApp.etat.commandes.some(c => c.session && c.statut === 'expediee')));
+  for (let i = 0; i < 7; i++) await page.click('[data-action="guide-passer"]');
+  verifier('passer les étapes : commande livrée et soldée', await etat(page, () => DOSApp.etat.commandes.some(c => c.session && c.statut === 'livree' && DOS.etatPaiement(DOSApp.etat, c) === 'payee')));
   await page.click('[data-action="guide-passer"]');
   verifier('passer la dernière étape : résumé', (await page.locator('#modale-titre').innerText()) === 'Scénario terminé');
   await page.click('#modale [data-action="guide-recommencer"]');
@@ -279,7 +295,7 @@ const texteNum = t => Number(t.replace(/[^\d,−-]/g, '').replace(',', '.').repl
 // ── Clavier ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 {
   const ctx = await contexte(); const page = await ouvrir(ctx);
-  await page.keyboard.press('Tab');
+  await page.keyboard.press(process.env.TOUCHE_TAB || 'Tab');
   verifier('clavier : premier arrêt = lien d\'évitement', await etat(page, () => document.activeElement.classList.contains('lien-evitement')));
   await page.keyboard.press('Control+k');
   verifier('Ctrl+K ouvre la palette de recherche', await page.locator('#palette-q').isVisible() && await etat(page, () => document.activeElement.id === 'palette-q'));
@@ -287,13 +303,13 @@ const texteNum = t => Number(t.replace(/[^\d,−-]/g, '').replace(',', '.').repl
   await page.keyboard.type(id.slice(4));
   await page.keyboard.press('Enter');
   verifier('palette : Entrée ouvre la commande trouvée', (await page.locator('#tiroir-titre').innerText()) === id);
-  for (let i = 0; i < 40; i++) await page.keyboard.press('Tab');
+  for (let i = 0; i < 40; i++) await page.keyboard.press(process.env.TOUCHE_TAB || 'Tab');
   verifier('fiche : le focus reste dans la fiche (Tab)', await etat(page, () => document.querySelector('#tiroir').contains(document.activeElement)));
   await page.keyboard.press('Escape');
   verifier('Échap ferme la fiche', await page.waitForFunction(() => !document.querySelector('#tiroir .tiroir'), null, { timeout: 2000 }).then(() => true, () => false));
   await page.keyboard.press('n');
   verifier('raccourci « n » : nouvelle commande', await page.locator('#modale .modale').isVisible());
-  for (let i = 0; i < 30; i++) await page.keyboard.press('Shift+Tab');
+  for (let i = 0; i < 30; i++) await page.keyboard.press((process.env.TOUCHE_TAB ? process.env.TOUCHE_TAB + '+' : '') + 'Shift+Tab');
   verifier('fenêtre : le focus reste dedans (Maj+Tab)', await etat(page, () => document.querySelector('#modale').contains(document.activeElement)));
   await page.keyboard.press('Escape');
   verifier('Échap ferme la fenêtre et rend le focus', !(await page.locator('#modale .modale').count()));
@@ -304,6 +320,49 @@ const texteNum = t => Number(t.replace(/[^\d,−-]/g, '').replace(',', '.').repl
   verifier('menu contextuel : flèches', await etat(page, () => document.activeElement === document.querySelectorAll('.menu-ctx:not([hidden]) [role="menuitem"]')[1]));
   await page.keyboard.press('Escape');
   verifier('menu contextuel : Échap le ferme et rend le focus au bouton', await page.locator('.menu-ctx:not([hidden])').count() === 0 && await etat(page, () => document.activeElement.getAttribute('data-action') === 'menu'));
+  await ctx.close();
+}
+
+// ── Écran tactile : jamais de sélecteur natif ouvert d'office (iOS ouvre la liste au focus) ─────
+{
+  const ctx = await contexte({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }); const page = await ouvrir(ctx);
+  await page.tap('.haut-nouvelle'); await page.waitForSelector('#nc-client');
+  verifier('tactile : la saisie s\'ouvre sans donner le focus à la liste des clients', await etat(page, () => document.activeElement?.tagName) !== 'SELECT');
+  verifier('tactile : le focus est dans la saisie, sur « Fermer »', await etat(page, () => document.querySelector('#modale .modale-tete').contains(document.activeElement) && document.activeElement.getAttribute('data-action') === 'fermer-modale'));
+  verifier('tactile : aucun autofocus HTML (WebKit l\'applique à l\'insertion, hors de notre règle)', await etat(page, () => document.querySelectorAll('#modale [autofocus]').length) === 0);
+  await page.selectOption('#nc-client', 'C05'); await page.waitForTimeout(0);
+  verifier('tactile : après le choix du client, la liste ne reprend pas le focus', await etat(page, () => document.activeElement?.id) !== 'nc-client');
+  await ctx.close();
+}
+
+// ── Téléphone : le guide ne recouvre ni la saisie, ni la fiche commande, ni ses notifications ─────
+{
+  const ctx = await contexte({ viewport: { width: 375, height: 667 }, isMobile: true, hasTouch: true }); const page = await ouvrir(ctx, '?scenario=1');
+  const boites = (sel) => page.evaluate(async (sel) => {
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const b = s => { const e = document.querySelector(s); if (!e || !e.getClientRects().length) return null; const r = e.getBoundingClientRect(); return { haut: r.top, bas: r.bottom }; };
+    return { guide: b('#guide'), cible: b(sel), toast: b('.toasts .toast') };
+  }, sel);
+  const separes = (a, b) => !a || !b || a.bas <= b.haut + 0.5 || b.bas <= a.haut + 0.5;
+  await page.tap('.haut-nouvelle'); await titreGuide(page, 'Créez une commande fictive');
+  let m = await boites('#modale .modale-tete');
+  verifier('téléphone, guide : l\'en-tête de la saisie reste visible sous le guide', m.guide && m.cible && separes(m.guide, m.cible), JSON.stringify(m));
+  await page.tap('[data-action="guide-remplir"]'); await page.tap('[data-focus="nc-creer"]'); await page.waitForURL(/#\/commandes\/CMD-/);
+  await titreGuide(page, 'Vérifiez et réservez le stock');
+  m = await boites('.tiroir-tete');
+  verifier('téléphone, guide : l\'en-tête de la fiche commande (numéro, statut, Fermer) reste visible', m.guide && m.cible && separes(m.guide, m.cible), JSON.stringify(m));
+  verifier('téléphone, guide : la notification ne recouvre pas le guide', m.toast && separes(m.guide, m.toast), JSON.stringify(m));
+  const bouton = await boites('.guide-cible[data-vers="confirmee"]');
+  verifier('téléphone, guide : le bouton désigné est visible, hors du guide', bouton.cible && separes(bouton.guide, bouton.cible) && bouton.cible.bas <= 667, JSON.stringify(bouton));
+  await page.tap('.tiroir [data-action="statut"][data-vers="confirmee"]');
+  verifier('téléphone, guide : l\'étape suivante s\'enchaîne', await titreGuide(page, 'Préparez la commande'));
+  await ctx.close();
+}
+
+// ── Paramètres d'adresse hostiles (revue V3.1, D3) ─────────────
+{
+  const ctx = await contexte(); const page = await ouvrir(ctx, '?role=constructor');
+  verifier('?role=constructor : la démonstration se charge en vue Direction', (await etat(page, () => DOSApp.role)) === 'direction' && await page.locator('.kpis').first().isVisible());
   await ctx.close();
 }
 

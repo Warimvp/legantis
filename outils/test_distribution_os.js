@@ -31,6 +31,45 @@ test('génération : déterministe, cohérente, plausible', () => {
   assert.equal(D.iso(D.generer('2026-11-01').jour), '2026-10-31', 'dimanche : la démonstration se place au samedi');
 });
 
+test('parcours complet : commande, stock, livraison, facture, règlement, indicateurs', () => {
+  const s = neuf(), p = produitDispo(s, 10), kAvant = D.kpis(s, D.derive(s));
+  const stockAvant = p.stock;
+  const id = ok(D.executer(s, { type: 'creer_commande', client: s.clients[0].id, lignes: [{ produit: p.id, qte: 10 }], canal: 'WhatsApp' }, ctx(s))).id;
+  const cmd = D.commande(s, id);
+  assert.equal(D.factureDe(s, cmd), null, 'pas de facture avant l\'expédition');
+  ok(D.executer(s, { type: 'changer_statut', id, vers: 'confirmee' }, ctx(s)));
+  assert.equal(D.produit(s, p.id).stock, stockAvant, 'la confirmation réserve sans sortir');
+  ok(D.executer(s, { type: 'changer_statut', id, vers: 'en_preparation' }, ctx(s)));
+  ok(D.executer(s, { type: 'changer_statut', id, vers: 'prete' }, ctx(s)));
+  ok(D.executer(s, { type: 'changer_statut', id, vers: 'expediee' }, ctx(s)));
+  assert.equal(D.produit(s, p.id).stock, stockAvant - 10, 'l\'expédition sort le stock');
+  ok(D.executer(s, { type: 'changer_statut', id, vers: 'livree' }, ctx(s)));
+  const f = D.factureDe(s, cmd), mt = D.montants(cmd);
+  assert.equal(f.numero, 'FA-' + id.replace('CMD-', ''));
+  assert.equal(f.lignes.length, 1); assert.equal(f.lignes[0].total, 10 * cmd.lignes[0].prix);
+  assert.equal(f.reste, mt.ttc); assert.equal(f.paye, 0);
+  const kExp = D.kpis(s, D.derive(s));
+  assert.equal(kExp.encours, kAvant.encours + mt.ttc, 'l\'encours monte du TTC');
+  refuse(D.executer(s, { type: 'enregistrer_paiement', commande: id, montant: mt.ttc + 1, mode: D.MODES_PAIEMENT[0] }, ctx(s)));
+  ok(D.executer(s, { type: 'enregistrer_paiement', commande: id, montant: mt.ttc, mode: D.MODES_PAIEMENT[0] }, ctx(s)));
+  const f2 = D.factureDe(s, cmd), k2 = D.kpis(s, D.derive(s));
+  assert.equal(f2.reste, 0); assert.equal(f2.paye, mt.ttc);
+  assert.equal(k2.encours, kAvant.encours, 'le règlement ramène l\'encours');
+  assert.deepEqual(D.verifierCoherence(s), []);
+});
+
+test('modification de commande : même borne de 90 jours qu\'à la création (revue V3.1, D1)', () => {
+  const s = neuf(), p = produitDispo(s, 2);
+  const id = ok(D.executer(s, { type: 'creer_commande', client: s.clients[0].id, lignes: [{ produit: p.id, qte: 1 }] }, ctx(s))).id;
+  refuse(D.executer(s, { type: 'modifier_commande', id, lignes: [{ produit: p.id, qte: 1 }], livraisonPrevue: s.jour + 91 }, ctx(s)));
+  ok(D.executer(s, { type: 'modifier_commande', id, lignes: [{ produit: p.id, qte: 1 }], livraisonPrevue: s.jour + 90 }, ctx(s)));
+});
+
+test('quantités : 1e3 ou 12.7 sont refusées, jamais tronquées (revue V3.1, D2)', () => {
+  const s = neuf(), p = s.produits[0];
+  for (const q of [Number('1e3') + 0.5, 12.7, NaN]) refuse(D.executer(s, { type: 'receptionner', lignes: [{ produit: p.id, qte: q }] }, ctx(s)));
+});
+
 test('création de commande : prix, remise, TVA et TTC cohérents', () => {
   const s = neuf();
   const cl = s.clients.find(c => c.remise === 7);

@@ -34,7 +34,8 @@
   var CHAMPS_UTM = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
   var parametres = new URLSearchParams(location.search);
 
-  /* Source marketing : sans stockage. Recopiée dans les formulaires de la page et transmise aux liens vers les autres formulaires et vers la démonstration Distribution OS (qui la rend au retour). */
+  /* Source marketing : sans stockage. Recopiée dans les formulaires de la page et transmise aux liens vers les autres formulaires et vers les
+     démonstrations, qui la rendent au retour (Distribution OS : app.js ; les autres : realisations/demos/source.js). */
   function reporterSource() {
     var utm = CHAMPS_UTM.filter(function (c) { return parametres.get(c); });
     if (!utm.length) return;
@@ -45,18 +46,32 @@
         form.appendChild(champ);
       });
     });
-    document.querySelectorAll('a[href*="estimer-mon-projet/"], a[href*="audit-gratuit/"], a[href*="offre-lancement/"], a[href*="commandes/"], a[href*="demos/distribution-os/"]').forEach(function (a) {
+    document.querySelectorAll('a[href*="estimer-mon-projet/"], a[href*="audit-gratuit/"], a[href*="offre-lancement/"], a[href*="commandes/"], a[href*="demos/"]').forEach(function (a) {
       var url = new URL(a.href);
       utm.forEach(function (c) { url.searchParams.set(c, parametres.get(c).slice(0, 80)); });
       a.href = url.href;
     });
   }
 
-  var MESSAGES = {
-    nom: 'Indiquez votre nom.', email: 'Indiquez une adresse e-mail valide.', entreprise: 'Indiquez votre entreprise ou votre activité.',
-    telephone: 'Indiquez un numéro de téléphone valide, par exemple 06 12 34 56 78.', projet: 'Décrivez votre besoin en quelques mots (10 caractères au moins).',
-    type: 'Choisissez un type de projet.', budget: 'Choisissez une tranche de budget.', delai: 'Choisissez un délai.',
-    consentement: 'Cochez la case pour que nous puissions traiter votre demande.', url_site: 'Indiquez l\'adresse publique de votre site, par exemple votresite.ma.',
+  /* Textes de l'envoi selon la langue de la page (<html lang="en"> pour /en/). */
+  var TEXTES = document.documentElement.lang === 'en' ? {
+    champs: {
+      nom: 'Please enter your name.', email: 'Please enter a valid email address.', entreprise: 'Please enter your company or business.',
+      telephone: 'Please enter a valid phone number, for example +212 6 12 34 56 78.', projet: 'Describe your project in a few words (at least 10 characters).',
+      type: 'Please choose a type of project.', budget: 'Please choose a budget range.', delai: 'Please choose a timeline.',
+      consentement: 'Please tick the box so that we can process your request.', url_site: 'Please enter the public address of your website, for example yoursite.ma.',
+    },
+    defaut: 'Please check this field.', envoi: 'Sending…',
+    limite: 'Too many requests in a short time. Please try again in a minute, or write to us at ', reessayer: 'Please try again in a moment, or write to us at ',
+  } : {
+    champs: {
+      nom: 'Indiquez votre nom.', email: 'Indiquez une adresse e-mail valide.', entreprise: 'Indiquez votre entreprise ou votre activité.',
+      telephone: 'Indiquez un numéro de téléphone valide, par exemple 06 12 34 56 78.', projet: 'Décrivez votre besoin en quelques mots (10 caractères au moins).',
+      type: 'Choisissez un type de projet.', budget: 'Choisissez une tranche de budget.', delai: 'Choisissez un délai.',
+      consentement: 'Cochez la case pour que nous puissions traiter votre demande.', url_site: 'Indiquez l\'adresse publique de votre site, par exemple votresite.ma.',
+    },
+    defaut: 'Vérifiez ce champ.', envoi: 'Envoi en cours…',
+    limite: 'Trop d\'envois en peu de temps. Réessayez dans une minute, ou écrivez-nous à ', reessayer: 'Réessayez dans un instant, ou écrivez-nous à ',
   };
 
   /* Envoi : même POST que sans script, avec Accept: application/json. La réponse du Worker dit quoi afficher ; en cas d'échec, rien de ce qui a été saisi n'est perdu. */
@@ -78,7 +93,7 @@
         if (!champ) return;
         var conteneur = champ.closest('.champ, fieldset') || champ.parentElement;
         var message = document.createElement('p');
-        message.className = 'champ-erreur'; message.id = 'erreur-' + code; message.textContent = MESSAGES[code] || 'Vérifiez ce champ.';
+        message.className = 'champ-erreur'; message.id = 'erreur-' + code; message.textContent = TEXTES.champs[code] || TEXTES.defaut;
         conteneur.appendChild(message);
         champ.setAttribute('aria-invalid', 'true'); champ.setAttribute('aria-describedby', message.id);
         premier = premier || champ;
@@ -89,7 +104,7 @@
     function afficherEchec(code) {
       if (!echec) return;
       var detail = echec.querySelector('[data-detail]');
-      if (detail) detail.textContent = code === 'limite' ? 'Trop d\'envois en peu de temps. Réessayez dans une minute, ou écrivez-nous à ' : 'Réessayez dans un instant, ou écrivez-nous à ';
+      if (detail) detail.textContent = code === 'limite' ? TEXTES.limite : TEXTES.reessayer;
       echec.classList.add('visible');
       echec.focus();
     }
@@ -107,7 +122,7 @@
       effacer();
       var libelle = bouton.innerHTML;
       bouton.setAttribute('aria-disabled', 'true');
-      bouton.textContent = 'Envoi en cours…';
+      bouton.textContent = TEXTES.envoi;
       fetch(form.action, { method: 'POST', headers: { Accept: 'application/json' }, body: new URLSearchParams(new FormData(form)) })
         .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
         .then(function (rep) {

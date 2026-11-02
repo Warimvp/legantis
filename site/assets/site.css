@@ -428,7 +428,7 @@ h1 .mot { display: inline-block; transform-origin: bottom center; animation: mot
 @supports (animation-timeline: view()) {
   .reveler { animation: reveler linear both; animation-timeline: view(); animation-range: entry 0% entry 38%; }
   /* Une cible de lien (#web, #mobile…) ne doit pas glisser : le navigateur calculerait sa position décalée de 48 px et la cacherait sous la barre fixe */
-  .reveler[id] { animation-name: reveler-fondu; }
+  .reveler[id], .reveler:has(:target) { animation-name: reveler-fondu; }   /* :has(:target) : cible placée dans le bloc (#devis-titre de /en/), 48 px sous la barre sinon */
   .ouverture-corps { animation: sortir linear both; animation-timeline: scroll(); animation-range: 0 90vh; }
   .ouverture-corps:has(:focus-visible) { animation: none; }   /* un lien atteint au clavier ne doit pas être à demi effacé */
   .progression { animation: progresser linear both; animation-timeline: scroll(); }
@@ -768,9 +768,6 @@ html[dir="rtl"] .couverture .ecran { rotate: -4deg; }
 /* La société : un court texte de confiance, sans données administratives. L'identité légale est dans .pied-legal et les mentions légales. */
 #societe { overflow-x: clip; }
 .societe-texte { position: relative; padding-top: 24px; }
-.numero-fantome { position: absolute; z-index: 0; top: -70px; left: -20px; font-weight: 800; font-size: clamp(9rem, 18vw, 16rem); line-height: 1; font-stretch: 118%; letter-spacing: -0.07em; color: color-mix(in srgb, var(--encre) 4%, transparent); pointer-events: none; user-select: none; }
-.numero-fantome::before { content: attr(data-n); }   /* décor : hors du texte de la page, donc hors des contrôles de contraste */
-.societe-texte > :not(.numero-fantome) { position: relative; z-index: 1; }
 .societe-texte h2 { margin: 18px 0 28px; }
 .societe-texte p { color: var(--gris); font-size: clamp(1.05rem, 1.35vw, 1.2rem); max-width: 50ch; }
 .societe-texte .actions { margin-top: 30px; animation: none; }
@@ -942,12 +939,13 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
 .devis-note { margin: 0; max-width: 64ch; font-size: 0.86rem; line-height: 1.55; color: var(--gris); }
 .devis-ecrire { grid-column: 1 / -1; margin: -6px 0 0; font-size: 0.94rem; color: var(--gris); }
 .devis-statut { display: none; grid-column: 1 / -1; align-items: flex-start; gap: 14px; margin: 0; padding: 18px 22px; border: 1px solid var(--tampon); border-radius: 6px; background: var(--tampon-pale); }
-.devis-statut:target { display: flex; }
+.devis-statut:is(:target, .visible) { display: flex; }
+.devis-form[hidden] { display: none; }   /* .devis-form { display: grid } l'emportait sur [hidden] */
 .devis-statut:focus { outline: 0; }   /* le navigateur y pose le focus à l'arrivée sur l'ancre (lecteurs d'écran) ; rien à manipuler, donc pas d'anneau */
 .devis-statut svg { flex: none; width: 22px; height: 22px; margin-top: 2px; fill: none; stroke: var(--tampon); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .devis-statut--echec { border-color: var(--alerte); background: color-mix(in srgb, var(--alerte) 9%, var(--carte)); }
 .devis-statut--echec svg { stroke: var(--alerte); }
-.offre:has(#devis-envoye:target) :is(.devis-form, .devis-ecrire) { display: none; }
+.offre:has(#devis-envoye:is(:target, .visible)) :is(.devis-form, .devis-ecrire) { display: none; }
 @media (max-width: 700px) {
   .devis-form { grid-template-columns: minmax(0, 1fr); }
 }
@@ -1054,7 +1052,7 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
 /* Impression / PDF : sans cela, les apparitions au défilement (.reveler) restent invisibles (6 pages blanches sur 12), les chiffres s'impriment à 0 et le texte blanc des chiffres disparaît (fond non imprimé) */
 @media print {
   *, *::before, *::after { animation: none !important; transition: none !important; }
-  .barre, .progression, .lien-evitement, .menu-plein, .halo, .capteurs, .curseur, .forme, .rond-tournant, .descendre, .numero-fantome, .grain::after, .filtres, .devis-form, .devis-ecrire, .devis-statut, .contact-rapide, .filtres-projets, .comparer-choix, .assistant-nav { display: none !important; }
+  .barre, .progression, .lien-evitement, .menu-plein, .halo, .capteurs, .curseur, .forme, .rond-tournant, .descendre, .grain::after, .filtres, .devis-form, .devis-ecrire, .devis-statut, .contact-rapide, .filtres-projets, .comparer-choix, .assistant-nav { display: none !important; }
   .ouverture, .appel { min-height: 0; overflow: visible; }
   .ouverture { padding-top: 24px; } .document, .appel { padding-top: 24px; }
   .chiffres { background: none; color: var(--encre); box-shadow: none; border-top: 1px solid var(--filet); border-bottom: 1px solid var(--filet); }
@@ -1247,7 +1245,7 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
 .formulaire-carte .devis-form { border: 0; padding-top: 0; }
 .formulaire-carte .devis-statut { margin-bottom: 20px; }
 .devis-statut.visible { display: flex; }
-[data-formulaire]:has(#devis-envoye:target) form { display: none; }
+[data-formulaire]:has(#devis-envoye:is(:target, .visible)) form { display: none; }
 .consentement { grid-column: 1 / -1; }
 .devis-form .consentement label { display: grid; grid-template-columns: 1.25rem minmax(0, 1fr); gap: 12px; align-items: start; font: 400 0.92rem/1.5 var(--f-texte); letter-spacing: 0; text-transform: none; color: var(--encre); cursor: pointer; }
 .devis-form .consentement input { width: 1.25rem; height: 1.25rem; margin: 2px 0 0; accent-color: var(--tampon); }
@@ -1337,6 +1335,8 @@ button.bouton[aria-disabled="true"] { opacity: .7; cursor: progress; }
 .projet-image img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
 .projet-icone { display: grid; place-items: center; width: 100%; height: 100%; }
 .projet-icone img { width: 88px; height: 88px; border-radius: 20px; object-fit: contain; box-shadow: 0 16px 32px -14px rgb(0 0 0 / .45); }
+.projet-icone:has(.projet-capture) { grid-template-columns: auto auto; justify-content: center; gap: clamp(20px, 3vw, 34px); padding-block-start: 22px; overflow: hidden; }
+.projet-icone img.projet-capture { width: clamp(120px, 34%, 168px); height: auto; align-self: start; border: 4px solid #16172E; border-block-end: 0; border-radius: 18px 18px 0 0; background: #16172E; object-fit: initial; box-shadow: 0 18px 34px -16px rgb(0 0 0 / .5); }
 .projet--atlasya .projet-icone { background: var(--atlasya); }
 .projet--rihla .projet-icone, .projet--ostad .projet-icone { background: var(--rihla); }
 .projet-corps { display: grid; gap: 10px; align-content: start; padding: 20px 22px 22px; }
@@ -1437,7 +1437,7 @@ body.page-offre:has(.contact-rapide) .pied--court { padding-bottom: 96px; }
   .acq-appel { position: fixed; inset-inline: 0; inset-block-end: 0; z-index: 40; display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 8px; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); background: var(--chaux); border-block-start: 1px solid var(--filet); }
   .acq-appel:not(:has(> .bouton + .bouton)) { grid-template-columns: minmax(0, 1fr); }   /* sans WhatsApp, l'action prend toute la largeur */
   .acq-appel .bouton { justify-content: center; padding: 12px 10px; font-size: 0.95rem; }
-  .acquisition:has(#devis-envoye:target) .acq-appel { display: none; }
+  .acquisition:has(#devis-envoye:is(:target, .visible)) .acq-appel { display: none; }
 }
 @media print { .acq-appel { display: none; } }
 
@@ -1553,3 +1553,9 @@ html[dir="rtl"] .pied-marque { padding-right: 0; border-right: 0; padding-left: 
   body:has(#demonstrations) .couverture { aspect-ratio: 16 / 10; }
 }
 .service-tete .nature { margin-block: 10px 14px; }
+
+/* Safari mesure ces deux textes un pixel plus large que Chromium : marge rendue aux plus petits écrans. */
+@media (max-width: 370px) {
+  html[dir="rtl"] .marque small { letter-spacing: 0.04em; }
+  .document h1 { font-size: clamp(1.9rem, 9.4vw, 2.2rem); }
+}

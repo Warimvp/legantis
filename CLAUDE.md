@@ -61,6 +61,16 @@ node outils/test_demo_services.mjs
 node outils/test_cls_assistant.mjs
 ```
 
+```bash
+node outils/test_utm_demos.mjs
+```
+
+```bash
+node outils/test_formulaires.mjs
+```
+
+Sur le moteur de Safari : préfixer par `NAVIGATEUR=webkit TOUCHE_TAB=Alt+Tab`.
+
 Depuis `worker/` :
 
 ```bash

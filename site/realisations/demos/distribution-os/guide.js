@@ -1,5 +1,5 @@
 /* Distribution OS — scénario guidé « Tester un scénario en 3 minutes ».
-   Six étapes réellement interactives : le guide observe l'état de la session (pas des clics) et avance quand l'étape est faite, quel que soit le chemin pris.
+   Huit étapes réellement interactives : le guide observe l'état de la session (pas des clics) et avance quand l'étape est faite, quel que soit le chemin pris.
    « Passer l'étape » la réalise pour le visiteur avec les mêmes règles métier, pour que la suite reste cohérente. Le visiteur peut quitter, reprendre,
    réinitialiser, ou explorer librement pendant le guide : le panneau ne bloque rien. Lien d'accès direct : ?scenario=1 (et &jour=AAAA-MM-JJ pour une vidéo reproductible). */
 (function () {
@@ -14,9 +14,12 @@
     { cle: 'reserver', titre: 'Vérifiez et réservez le stock', texte: 'La fiche de la commande compare chaque ligne au stock disponible. Cliquez sur <b>Confirmer et réserver le stock</b> : les quantités ne seront plus proposées aux autres commandes.', cible: '[data-action="statut"][data-vers="confirmee"]', passer: 'Réserver pour moi' },
     { cle: 'preparer', titre: 'Préparez la commande', texte: 'Dans <b>Préparation et livraison</b>, votre commande attend dans la colonne « Confirmée ». Cliquez sur <b>Lancer la préparation</b> ou glissez sa carte dans la colonne suivante.', cible: '[data-action="statut"][data-vers="en_preparation"], .nav-lien[href="#/preparation"]', allerA: '#/preparation', passer: 'Lancer pour moi' },
     { cle: 'statut', titre: 'Faites avancer son statut', texte: 'Marquez-la <b>prête</b>, puis <b>expédiez-la</b> : le stock réservé sort du stock physique et l\'échéance de paiement est calculée selon les conditions du client.', cible: '[data-action="statut"][data-vers="prete"], [data-action="statut"][data-vers="expediee"]', allerA: '#/preparation', passer: 'Expédier pour moi' },
+    { cle: 'livrer', titre: 'Confirmez la livraison', texte: 'La commande a quitté l\'entrepôt. Confirmez qu\'elle est <b>livrée</b> : la livraison est tracée dans l\'historique, et la facture simulée reste consultable depuis la fiche.', cible: '[data-action="statut"][data-vers="livree"]', passer: 'Livrer pour moi' },
+    { cle: 'regler', titre: 'Encaissez le règlement', texte: 'Ouvrez la <b>facture simulée</b> depuis la fiche, puis enregistrez le règlement. Aucun paiement réel : le reste dû et l\'encours client baissent aussitôt.', cible: '[data-action="facture"], [data-action="paiement"]', passer: 'Régler pour moi' },
     { cle: 'kpi', titre: 'Observez l\'impact sur les indicateurs', texte: 'De retour au tableau de bord, les tuiles modifiées par votre commande sont soulignées : chiffre d\'affaires, encours client, activité récente, stock.', cible: '.kpi--change, .activite li:first-child', allerA: '#/tableau', passer: 'Voir le résumé' }
   ];
 
+  var IDX_KPI = ETAPES.length - 1;
   function g() { return A.guideEtat; }
   function sauver() { A.ecrireSession(); }
   function cmd() { return g() && g().id ? D.commande(A.etat, g().id) : null; }
@@ -27,7 +30,9 @@
     var x = g(), c = cmd(), r = rang(c);
     if (!x) return 0;
     if (x.fini) return ETAPES.length;
-    if (x.vuKpi) return 6;
+    if (x.vuKpi) return ETAPES.length;
+    if (r >= 5 && D.totalPaye(A.etat, c.id) > 0) return IDX_KPI;
+    if (r >= 5) return 6;
     if (r >= 4) return 5;
     if (r >= 2) return 4;
     if (r >= 1) return 3;
@@ -77,8 +82,10 @@
     var lignes = [
       ['Chiffre d\'affaires HT · 30 j', D.formaterCompact(av.ca30), D.formaterCompact(k.ca30)],
       ['Commandes en cours', av.enCours, k.enCours],
-      ['Encours clients TTC', D.formaterCompact(av.encours), D.formaterCompact(k.encours)]
+      ['Encours clients TTC', D.formaterMAD(av.encours), D.formaterMAD(k.encours)]
     ];
+    if (c && x.encoursExpedition !== undefined) lignes.push(['Encours juste après l\'expédition', '—', D.formaterMAD(x.encoursExpedition)]);
+    if (c) lignes.push(['Encaissé sur cette commande', D.formaterMAD(0), D.formaterMAD(D.totalPaye(A.etat, c.id))]);
     if (c) c.lignes.forEach(function (l) { var p = D.produit(A.etat, l.produit), s0 = x.stock[l.produit]; if (s0) lignes.push(['Stock physique · ' + p.nom, s0.stock, p.stock]); });
     return lignes;
   }
@@ -99,6 +106,7 @@
     h += '</div><div class="guide-actions">';
     if (et.aide && A.modaleActive && A.form) h += A.bouton({ action: 'guide-remplir', texte: et.aide, icone: 'baguette', classe: 'btn--petit' });
     if (et.allerA && A.route.module !== et.allerA.slice(2) && !(et.cle === 'statut' && A.route.module === 'commandes')) h += A.bouton({ action: 'guide-aller', data: { lien: et.allerA }, texte: 'Y aller', icone: 'droite', classe: 'btn--petit btn--plein' });
+    if ((et.cle === 'livrer' || et.cle === 'regler') && c && !(A.route.module === 'commandes' && A.route.id === c.id) && !A.modaleActive) h += A.bouton({ action: 'guide-aller', data: { lien: '#/commandes/' + c.id }, texte: 'Ouvrir la commande', icone: 'droite', classe: 'btn--petit btn--plein' });
     if (et.cle === 'reserver' && c && !(A.route.module === 'commandes' && A.route.id === c.id)) h += A.bouton({ action: 'guide-aller', data: { lien: '#/commandes/' + c.id }, texte: 'Ouvrir la commande', icone: 'droite', classe: 'btn--petit btn--plein' });
     h += A.bouton({ action: 'guide-passer', texte: et.passer, classe: 'btn--petit btn--discret', titre: 'Réalise l\'étape avec les mêmes règles que l\'interface' }) + '</div>' +
       '<footer class="guide-pied"><button type="button" class="lien-bouton" data-action="guide-reinitialiser">' + ic('recharger') + 'Réinitialiser</button><button type="button" class="lien-bouton" data-action="guide-quitter">Quitter le guide</button></footer></section>';
@@ -134,8 +142,15 @@
     }
     if (n === 2) { var r = A.changerStatut(c.id, 'confirmee'); if (r.ok) A.aller('#/commandes/' + c.id); return; }
     if (n === 3) { A.aller('#/preparation'); A.changerStatut(c.id, 'en_preparation'); return; }
-    if (n === 4) { if (c.statut === 'en_preparation') A.changerStatut(c.id, 'prete'); if (cmd().statut === 'prete') A.changerStatut(c.id, 'expediee'); A.aller('#/tableau'); return; }
-    if (n === 5) { g().vuKpi = true; terminer(); }
+    if (n === 4) { if (c.statut === 'en_preparation') A.changerStatut(c.id, 'prete'); if (cmd().statut === 'prete') A.changerStatut(c.id, 'expediee'); A.aller('#/commandes/' + c.id); return; }
+    if (n === 5) { A.changerStatut(c.id, 'livree'); A.aller('#/commandes/' + c.id); return; }
+    if (n === 6) {
+      if (A.modaleActive) A.fermerModale();
+      var reste = D.reste(A.d, c), rp = A.agir({ type: 'enregistrer_paiement', commande: c.id, montant: reste, mode: D.MODES_PAIEMENT[0] }, { silencieux: true });
+      if (rp.ok) { A.notifier('Règlement de ' + D.formaterMAD(reste) + ' enregistré sur ' + c.id + ' : commande soldée.', 'ok'); A.aller('#/tableau'); } else A.notifier(rp.erreur.message, 'erreur');
+      return;
+    }
+    if (n === IDX_KPI) { g().vuKpi = true; terminer(); }
   };
 
   function terminer() {
@@ -146,7 +161,7 @@
     var duree = Math.max(1, Math.round((Date.now() - x.debut) / 60000));
     A.ouvrirModale({ titre: 'Scénario terminé', large: false, contenu: function () {
       return '<div class="resume"><p class="resume-intro">En ' + pluriel(duree, 'minute') + ', vous avez fait vivre une commande de bout en bout, avec les mêmes règles qu\'un vrai logiciel de distribution.</p>' +
-        (c ? '<ol class="resume-liste"><li>' + ic('commandes') + '<div><b>Commande ' + e(c.id) + '</b> pour ' + e(cl.nom) + ' : ' + A.mad(mt.ttc) + ' TTC, remise client de ' + c.remise + ' % appliquée.</div></li><li>' + ic('stock') + '<div><b>Stock vérifié puis réservé</b> à la confirmation, sans double réservation possible.</div></li><li>' + ic('camion') + '<div><b>Préparée puis expédiée</b> : le stock physique a baissé, l\'échéance de paiement est fixée au ' + e(D.dateCourte(c.echeance || A.etat.jour)) + '.</div></li><li>' + ic('grille') + '<div><b>Indicateurs à jour</b> : chiffre d\'affaires, encours et activité récente ont suivi.</div></li></ol>' : '') +
+        (c ? '<ol class="resume-liste"><li>' + ic('commandes') + '<div><b>Commande ' + e(c.id) + '</b> pour ' + e(cl.nom) + ' : ' + A.mad(mt.ttc) + ' TTC, remise client de ' + c.remise + ' % appliquée.</div></li><li>' + ic('stock') + '<div><b>Stock vérifié puis réservé</b> à la confirmation, sans double réservation possible.</div></li><li>' + ic('camion') + '<div><b>Préparée puis expédiée</b> : le stock physique a baissé, l\'échéance de paiement est fixée au ' + e(D.dateCourte(c.echeance || A.etat.jour)) + '.</div></li><li>' + ic('grille') + '<div><b>Indicateurs à jour</b> : chiffre d\'affaires, encours et activité récente ont suivi.</div></li><li>' + ic('paiement') + '<div><b>Livrée, facturée, réglée</b> : facture simulée ' + e('FA-' + c.id.replace(/^CMD-/, '')) + ', ' + A.mad(D.totalPaye(A.etat, c.id)) + ' encaissés (paiement simulé), reste dû ' + A.mad(D.reste(A.d, c)) + '.</div></li></ol>' : '') +
         '<table class="table table--compacte"><caption class="visuellement-cache">Avant et après</caption><thead><tr><th scope="col">Indicateur</th><th scope="col" class="num">Avant</th><th scope="col" class="num">Après</th></tr></thead><tbody>' + resumeChangements().map(function (l) { return '<tr><th scope="row">' + e(l[0]) + '</th><td class="num">' + e(l[1]) + '</td><td class="num"><b>' + e(l[2]) + '</b></td></tr>'; }).join('') + '</tbody></table>' +
         '<p class="discret">Entreprise, opérations et chiffres fictifs, créés pour la démonstration : ce ne sont pas des résultats obtenus chez un client.</p>' +
         '<div class="resume-cta"><h3>Vous aimeriez un outil adapté à votre entreprise ?</h3><p>Nous partons de votre façon de vendre : vos clients, vos produits, vos règles.</p><a class="btn btn--plein btn--grand" data-lien-legantis="#demande" href="' + e(A.lienLegantis()) + '">Discuter de mon projet avec Legantis' + ic('droite') + '</a></div>' +
@@ -163,16 +178,25 @@
   A.sur('action', function (x) {
     if (!A.guideActif || !g()) return;
     if (x.action.type === 'creer_commande' && !g().id) { g().id = x.resultat.id; sauver(); }
+    var cc = cmd(); if (cc && x.action.type === 'changer_statut' && x.action.vers === 'expediee' && x.action.id === cc.id) { g().encoursExpedition = A.k.encours; sauver(); }
     var c = cmd();
     if (c && c.statut === 'annulee') { A.notifier('La commande du scénario a été annulée : le guide repart de la création.', 'info'); g().id = null; g().formulaireOuvert = false; sauver(); }
     setTimeout(function () { afficher(true); }, 0);
   });
   A.sur('route', function (r) {
     if (!A.guideActif || !g()) return;
-    if (etapeAtteinte() === 5 && r.module === 'tableau' && !r.id) { setTimeout(function () { afficher(true); }, 0); }
+    if (etapeAtteinte() === IDX_KPI && r.module === 'tableau' && !r.id) { setTimeout(function () { afficher(true); }, 0); }
   });
   A.sur('rendu', function () { if (A.guideActif) { afficher(); } });
   A.sur('reinitialisation', function () { if (!A.guideActif) { $('#guide').hidden = true; } });
+  // Téléphone : une fiche ouverte commence sous le guide (dos.css lit html.guide-ouvert et --guide-h) au lieu d'avoir son en-tête recouvert.
+  function mesurerGuide() {
+    var b = $('#guide'), r = document.documentElement;
+    r.classList.toggle('guide-ouvert', !b.hidden);
+    r.style.setProperty('--guide-h', (b.hidden ? 0 : b.offsetHeight) + 'px');
+  }
+  if (window.ResizeObserver) new ResizeObserver(mesurerGuide).observe($('#guide'));
+  A.sur('rendu', mesurerGuide);
   A.sur('pret', function () {
     var x = g();
     if (x && x.actif && !x.fini) { A.guideActif = true; afficher(); }

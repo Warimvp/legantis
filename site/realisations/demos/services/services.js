@@ -23,28 +23,6 @@
     nav.addEventListener('click', function (e) { if (e.target.closest('a')) fermer(false); });
   }
 
-  /* ---------- filtres des réalisations ---------- */
-  var filtres = document.querySelectorAll('.filtre');
-  if (filtres.length) {
-    var items = document.querySelectorAll('.reals > li');
-    var compte = document.getElementById('compte');
-    var vide = document.getElementById('vide');
-    var appliquer = function (type) {
-      var n = 0;
-      items.forEach(function (li) {
-        var ok = type === 'tous' || li.getAttribute('data-type') === type;
-        li.hidden = !ok;
-        if (ok) n++;
-      });
-      filtres.forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-filtre') === type ? 'true' : 'false'); });
-      compte.textContent = n === 0 ? 'Aucun exemple pour ce type.' : n + (n > 1 ? ' exemples fictifs affichés' : ' exemple fictif affiché') + (type === 'tous' ? '.' : ' pour ce type.');
-      if (vide) vide.hidden = n !== 0;
-    };
-    filtres.forEach(function (b) { b.addEventListener('click', function () { appliquer(b.getAttribute('data-filtre')); }); });
-    var q = /[?&]type=(climatisation|electricite|maintenance)/.exec(location.search);
-    appliquer(q ? q[1] : 'tous');
-  }
-
   var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   var emailOk = function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@.]{2,}$/.test(v); };
   var telOk = function (v) { var d = v.replace(/[\s.\-()]/g, ''); return /^\+?\d{8,14}$/.test(d); };
@@ -63,6 +41,8 @@
     var NOMS = ['besoin', 'local', 'surface', 'urgence', 'description', 'coordonnees', 'recap'];
     var TITRES = ['Votre besoin', 'Votre local', 'Surface', 'Délai', 'Description', 'Vos coordonnées', 'Récapitulatif'];
 
+    window.MIZAN_DEVIS = { SERVICES: SERVICES, NATURES: NATURES, LOCAUX: LOCAUX, URGENCES: URGENCES };
+    var dansEspace = !!document.getElementById('espace-app');
     var etat = { etape: 0, d: {}, err: {}, retourRecap: false, termine: false, numero: '' };
     var zone = document.getElementById('devis-etape');
     var fiche = document.getElementById('devis-fiche');
@@ -184,12 +164,18 @@
       var i = etat.etape;
       if (etat.termine) {
         var e = estimer();
-        zone.innerHTML = '<div class="etape"><h2 id="devis-titre" tabindex="-1">Demande simulée enregistrée</h2><p>Merci ' + esc(etat.d.nom) + '. Voici le numéro de la simulation :</p>' +
-          '<div class="conf-num" id="devis-numero">' + esc(etat.numero) + '</div>' +
-          '<p><strong>Rien n\'a été envoyé.</strong> Cette confirmation est une simulation : aucune équipe ne vous rappellera et aucune donnée n\'a quitté cette page.</p>' +
+        var qp = ['service', 'nature', 'local', 'surface', 'urgence', 'description', 'nom', 'societe', 'email', 'tel'].map(function (k) { return k + '=' + encodeURIComponent(etat.d[k] || ''); }).join('&');
+        var suite = dansEspace
+          ? '<p><strong>La demande ' + esc(etat.numero) + ' est créée dans cette démonstration.</strong> Elle est visible dans l\'espace client et dans la gestion, où chaque action se répercute des deux côtés. Rien n\'est envoyé : l\'état reste en mémoire et disparaît au rechargement.</p>'
+          : '<p><strong>Rien n\'a été envoyé.</strong> Cette confirmation est une simulation : aucune équipe ne vous rappellera et aucune donnée n\'a quitté cette page. Pour voir la suite d\'une demande (qualification, devis, planning, compte rendu), ouvrez-la dans l\'espace client : elle y sera recréée en mémoire.</p>';
+        var liens = dansEspace
+          ? '<button type="button" class="btn fl" data-vue="client">Suivre dans l\'espace client</button><button type="button" class="btn btn--ligne" data-vue="gestion">Voir côté gestion</button><button type="button" class="btn btn--ligne" id="devis-recommencer">Faire une autre demande</button>'
+          : '<a class="btn fl" href="' + BASE + 'espace/?import=1&amp;' + qp.replace(/&/g, '&amp;') + '">Suivre cette demande dans l\'espace client</a><button type="button" class="btn btn--ligne" id="devis-recommencer">Nouvelle simulation</button><a class="btn btn--ligne" href="' + BASE + '">Retour à l\'accueil</a>';
+        zone.innerHTML = '<div class="etape"><h2 id="devis-titre" tabindex="-1">' + (dansEspace ? 'Demande enregistrée' : 'Demande simulée enregistrée') + '</h2><p>Merci ' + esc(etat.d.nom) + '. Voici le numéro ' + (dansEspace ? 'de la demande' : 'de la simulation') + ' :</p>' +
+          '<div class="conf-num" id="devis-numero">' + esc(etat.numero) + '</div>' + suite +
           (e ? '<p>Fourchette indicative, exemple fictif : <strong>' + texteFourchette(e) + '</strong>.</p>' : '') +
-          '<div class="nav-etape"><button type="button" class="btn" id="devis-recommencer">Nouvelle simulation</button><a class="btn btn--ligne" href="' + BASE + '">Retour à l\'accueil</a></div></div>';
-        annonce.textContent = 'Simulation confirmée. Numéro ' + etat.numero + '. Rien n\'a été envoyé.';
+          '<div class="nav-etape">' + liens + '</div></div>';
+        annonce.textContent = (dansEspace ? 'Demande créée. Numéro ' : 'Simulation confirmée. Numéro ') + etat.numero + '.';
         var t = document.getElementById('devis-titre'); if (t) t.focus();
         return;
       }
@@ -227,7 +213,9 @@
       if (Object.keys(etat.err).length) { rendre('erreurs'); return; }
       if (i === 6) {
         etat.termine = true; etat.err = {};
-        etat.numero = 'MZ-SIM-' + (100000 + Math.floor(Math.random() * 900000));
+        var det = { d: JSON.parse(JSON.stringify(etat.d)), numero: 'MZ-SIM-' + (100000 + Math.floor(Math.random() * 900000)) };
+        document.dispatchEvent(new CustomEvent('mizan:demande', { detail: det }));
+        etat.numero = det.numero;
         rendre(); return;
       }
       etat.etape = etat.retourRecap ? 6 : i + 1;
@@ -274,38 +262,4 @@
     rendre();
   }
 
-  /* ---------- formulaire de contact simulé ---------- */
-  var cont = document.getElementById('contact-app');
-  if (cont) {
-    var tpl = document.getElementById('tpl-contact');
-    cont.appendChild(tpl.content.cloneNode(true));
-    var form = cont.querySelector('form');
-    var retour = cont.querySelector('.retour');
-    var msgs = cont.querySelector('.msgs');
-    var vider = function () { cont.querySelectorAll('.err').forEach(function (n) { n.remove(); }); cont.querySelectorAll('[aria-invalid]').forEach(function (n) { n.removeAttribute('aria-invalid'); n.removeAttribute('aria-describedby'); }); msgs.innerHTML = ''; };
-    form.addEventListener('submit', function (ev) {
-      ev.preventDefault(); vider();
-      var f = form.elements, bad = [];
-      var verifie = function (el, ok, texte) {
-        if (ok) return;
-        el.setAttribute('aria-invalid', 'true'); el.setAttribute('aria-describedby', 'e-' + el.id);
-        var p = document.createElement('p'); p.className = 'err'; p.id = 'e-' + el.id; p.textContent = texte;
-        el.parentNode.appendChild(p); bad.push({ el: el, texte: texte });
-      };
-      verifie(f.nom, f.nom.value.trim().length >= 2, 'Indiquez un nom d\'au moins 2 caractères.');
-      verifie(f.email, emailOk(f.email.value.trim()), f.email.value.trim() ? 'Cette adresse n\'est pas valide : elle doit ressembler à nom@exemple.invalid.' : 'Indiquez une adresse e-mail.');
-      verifie(f.sujet, !!f.sujet.value, 'Choisissez un sujet.');
-      verifie(f.message, f.message.value.trim().length >= 15, 'Écrivez un message d\'au moins 15 caractères.');
-      if (bad.length) {
-        msgs.innerHTML = '<div class="resume-err" role="alert"><p>' + (bad.length > 1 ? bad.length + ' points à corriger' : '1 point à corriger') + '.</p></div>';
-        bad[0].el.focus(); return;
-      }
-      form.hidden = true; retour.hidden = false;
-      retour.querySelector('.ref').textContent = 'MZ-MSG-' + (100000 + Math.floor(Math.random() * 900000));
-      retour.setAttribute('tabindex', '-1'); retour.focus();
-    });
-    cont.querySelector('#contact-nouveau').addEventListener('click', function () { form.reset(); vider(); form.hidden = false; retour.hidden = true; f0(); });
-    var f0 = function () { form.elements.nom.focus(); };
-    var nojs = document.getElementById('contact-sansjs'); if (nojs) nojs.hidden = true;
-  }
 })();

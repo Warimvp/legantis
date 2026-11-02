@@ -1,426 +1,356 @@
 // Test de bout en bout de la démonstration Maison Tilal (site/realisations/demos/restaurant/).
 // Lancer : node outils/test_demo_restaurant.mjs   (code 1 en cas d'échec)
+// NAVIGATEUR=webkit|firefox pour un autre moteur, NAVIGATEUR_CHEMIN=exécutable.
 import { createRequire } from 'node:module';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const { chromium } = createRequire(import.meta.url)('/Users/user/Projects/RydeX/node_modules/playwright');
+const chromium = createRequire(import.meta.url)('/Users/user/Projects/RydeX/node_modules/playwright')[process.env.NAVIGATEUR || 'chromium'];
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'site');
+const DEMO = path.join(ROOT, 'realisations/demos/restaurant');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };
-
 const srv = http.createServer((q, r) => {
   let p = decodeURIComponent(q.url.split('?')[0]); if (p.endsWith('/')) p += 'index.html';
   const f = path.join(ROOT, p);
   if (!f.startsWith(ROOT) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end('introuvable'); }
-  r.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream' });
-  r.end(fs.readFileSync(f));
+  r.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream' }); r.end(fs.readFileSync(f));
 });
 await new Promise(ok => srv.listen(0, '127.0.0.1', ok));
-const PORT = srv.address().port;
-const URL_PAGE = `http://127.0.0.1:${PORT}/realisations/demos/restaurant/`;
+const URL_PAGE = `http://127.0.0.1:${srv.address().port}/realisations/demos/restaurant/`;
 
 let echecs = 0, ok = 0;
-function verifie(cond, msg) { if (cond) { ok++; } else { echecs++; console.log('  ECHEC :', msg); } }
-function section(t) { console.log('\n' + t); }
+const verifie = (cond, msg) => { if (cond) ok++; else { echecs++; console.log('  ECHEC :', msg); } };
+const section = t => console.log('\n' + t);
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({ executablePath: process.env.NAVIGATEUR_CHEMIN || undefined });
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR' });
 const page = await ctx.newPage();
 const erreursConsole = [], hotes = new Set(), posts = [];
 page.on('console', m => { if (m.type() === 'error' || m.type() === 'warning') erreursConsole.push(m.text()); });
 page.on('pageerror', e => erreursConsole.push('pageerror: ' + e.message));
-page.on('request', r => {
-  const u = new URL(r.url()); hotes.add(u.host);
-  if (r.method() !== 'GET') posts.push(r.method() + ' ' + r.url());
-});
+page.on('request', r => { hotes.add(new URL(r.url()).host); if (r.method() !== 'GET') posts.push(r.method() + ' ' + r.url()); });
 
 const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const today = new Date(); today.setHours(0, 0, 0, 0);
-const jours = Array.from({ length: 30 }, (_, i) => { const d = new Date(today); d.setDate(d.getDate() + i); return d; });
-const ouverts = jours.filter(d => d.getDay() !== 1);
+const ouverts = Array.from({ length: 30 }, (_, i) => { const d = new Date(today); d.setDate(d.getDate() + i); return d; }).filter(d => d.getDay() !== 1).map(iso);
+const txt = async sel => (await page.locator(sel).first().innerText()).replace(/\s+/g, ' ').trim();
+const num = async sel => parseInt(await txt(sel), 10);
 
 async function charger(p = page) { await p.goto(URL_PAGE); await p.waitForSelector('#etape h3'); }
-async function etapeTitre() { return (await page.locator('#etape-titre').innerText()).trim(); }
-async function suivant() { await page.locator('#etape [data-act=suivant]').click(); }
-async function choisirDate(d) { await page.locator(`.cal-j[data-d="${iso(d)}"]`).click(); }
-async function versService(d) { await choisirDate(d); await suivant(); }
-async function reglerService(service, covers) {
-  await page.locator(`#etape input[name=service][value=${service}]`).check({ force: true });
-  await page.locator(`#etape input[name=covers][value="${covers}"]`).check({ force: true });
+const suivant = () => page.locator('#etape [data-act=suivant]').click();
+const kpi = k => num(`.kpi[data-kpi=${k}] .kpi-val`);
+async function ctxResto(date, sv) { await page.selectOption('#cs-jour', date); await page.locator(`#cs-service input[value=${sv}]`).check(); }
+const onglet = t => page.locator(`#cs-onglets [data-tab=${t}]`).click();
+const ligne = (sel, num_) => page.locator(`#cs-panneau ${sel}`).filter({ hasText: num_ });
+/* Va jusqu'à l'étape « Table » ; renvoie false si aucun créneau libre. */
+async function versTable(date, sv, covers) {
+  await page.locator(`.cal-j[data-d="${date}"]`).click(); await suivant();
+  await page.locator(`#etape input[name=service][value=${sv}]`).check();
+  await page.locator(`#etape input[name=covers][value="${covers}"]`).check(); await suivant();
+  const slot = page.locator('#etape input[name=slot]:not(:disabled)').first();
+  if (!await slot.count()) return false;
+  await slot.check(); await suivant();
+  return (await txt('#etape-titre')).startsWith('Choisissez votre table');
 }
-async function lireCreneaux() {
-  return page.$$eval('#etape input[name=slot]', els => els.map(e => ({ t: e.value, off: e.disabled, motif: e.nextElementSibling.querySelector('small').textContent })));
-}
-async function ouvrirResto() { if (await page.locator('#vue-resto').isHidden()) await page.locator('#bascule-vue').click(); }
-async function fermerResto() { if (await page.locator('#vue-resto').isVisible()) await page.locator('#bascule-vue').click(); }
-async function restoLigne(dateIso, t) {
-  await ouvrirResto();
-  await page.selectOption('#resto-date', dateIso);
-  const l = page.locator(`#resto-creneaux .cr[data-slot="${t}"]`);
-  return { restantes: Number(await l.getAttribute('data-restantes')), cap: Number(await l.getAttribute('data-capacite')), ferme: (await l.getAttribute('data-ferme')) === 'true', l };
-}
-
-/* ------------------------------------------------------------------ 1. Contrat de la page */
-section('1. Contrat de la page');
-await charger();
-verifie(await page.evaluate(() => document.documentElement.lang) === 'fr', 'lang="fr"');
-verifie(await page.locator('meta[name=robots][content="noindex, follow"]').count() === 1, 'meta noindex, follow');
-verifie(await page.locator('h1').count() === 1, 'un seul h1');
-verifie(await page.locator('link[rel=icon][href="/assets/favicon.svg"]').count() === 1, 'favicon /assets/favicon.svg');
-const bandeau = await page.evaluate(() => { const b = document.body.firstElementChild; return b ? b.outerHTML : ''; });
-verifie(bandeau === '<p class="demo-bandeau"><span>Démonstration créée par Legantis · entreprise et données fictives</span> <a href="/realisations/">Retour aux réalisations</a></p>', 'bandeau exact en première ligne du body : ' + bandeau.slice(0, 80));
-verifie(await page.locator('form, [action], a[href^="mailto:"], a[href^="tel:"]').count() === 0, 'aucun form, action, mailto ni tel');
-verifie(await page.locator('nav a[href="#reserver"]').count() === 1, 'navigation par ancres');
-for (const id of ['lieu', 'carte', 'chef', 'reserver', 'infos']) verifie(await page.locator('#' + id).count() === 1, 'ancre #' + id);
-const poids = ['index.html', 'restaurant.css', 'restaurant.js'].reduce((n, f) => n + fs.statSync(path.join(ROOT, 'realisations/demos/restaurant', f)).size, 0);
-verifie(poids < 120 * 1024, `poids HTML+CSS+JS < 120 Ko (${(poids / 1024).toFixed(1)} Ko)`);
-const polices = fs.readdirSync(path.join(ROOT, 'realisations/demos/restaurant/fonts')).filter(f => f.endsWith('.woff2')).reduce((n, f) => n + fs.statSync(path.join(ROOT, 'realisations/demos/restaurant/fonts', f)).size, 0);
-verifie(polices < 150 * 1024, `polices < 150 Ko (${(polices / 1024).toFixed(1)} Ko)`);
-
-/* ------------------------------------------------------------------ 2. Carte */
-section('2. Carte : onglets, filtres, panneau');
-const onglets = await page.locator('#onglets [role=tab]').allInnerTexts();
-verifie(onglets.length === 5 && onglets[0].startsWith('Entrées') && onglets[4].startsWith('Menu dégustation'), 'cinq onglets : ' + onglets.join(' | '));
-verifie(await page.locator('#tab-entrees').getAttribute('aria-selected') === 'true', 'premier onglet sélectionné');
-await page.locator('#tab-plats').click();
-verifie(await page.locator('#cat-plats').isVisible() && await page.locator('#cat-entrees').isHidden(), 'clic sur Plats : seul le panneau Plats est visible');
-await page.locator('#tab-plats').focus();
-await page.keyboard.press('ArrowRight');
-verifie(await page.evaluate(() => document.activeElement.id) === 'tab-desserts' && await page.locator('#cat-desserts').isVisible(), 'flèche droite : onglet Desserts');
-await page.keyboard.press('End');
-verifie(await page.evaluate(() => document.activeElement.id) === 'tab-degustation', 'Fin : dernier onglet');
-await page.keyboard.press('Home');
-verifie(await page.evaluate(() => document.activeElement.id) === 'tab-entrees', 'Début : premier onglet');
-await page.locator('#tab-plats').click();
-const avant = await page.locator('#cat-plats .plat:visible').count();
-await page.locator('.puce:has-text("Végétarien")').click();
-const veg = await page.$$eval('#cat-plats .plat:not([hidden])', l => l.map(e => e.dataset.veg));
-verifie(veg.length > 0 && veg.length < avant && veg.every(v => v === '1'), `filtre végétarien : ${avant} -> ${veg.length}, tous végétariens`);
-await page.locator('.puce:has-text("Sans alcool")').click();
-await page.locator('.puce:has-text("Sans gluten")').click();
-verifie(await page.locator('#carte-vide').isVisible(), 'filtres cumulés sur les plats : état vide affiché');
-verifie((await page.locator('#carte-etat').innerText()).includes('Aucun'), 'annonce « Aucun plat » dans la zone live');
-await page.locator('#carte-raz').click();
-verifie(await page.locator('#cat-plats .plat:visible').count() === avant && await page.locator('#carte-vide').isHidden(), 'retrait des filtres : liste complète');
-verifie(await page.locator('input[name=filtre]:checked').count() === 0, 'cases décochées');
-await page.locator('.puce:has-text("Sans alcool")').click();
-await page.locator('#tab-boissons').click();
-const nb = await page.$$eval('#cat-boissons .plat:not([hidden])', l => l.map(e => e.dataset.na));
-verifie(nb.length === 4 && nb.every(v => v === '1'), `Boissons sans alcool : ${nb.length} boissons`);
-await page.locator('.puce:has-text("Sans alcool")').click();
-await page.locator('#tab-plats').click();
-const prem = page.locator('#cat-plats .plat-ouvrir').first();
-const nomPlat = (await prem.innerText()).trim();
-await prem.click();
-verifie(await page.locator('#panneau[open]').count() === 1, 'panneau ouvert');
-verifie((await page.locator('#pn-titre').innerText()).trim() === nomPlat, 'panneau : titre = plat');
-verifie(/\d+ MAD/.test(await page.locator('.pn-prix').innerText()), 'panneau : prix en MAD');
-verifie(await page.evaluate(() => document.querySelector('#panneau').contains(document.activeElement)), 'focus dans le panneau');
-await page.keyboard.press('Escape');
-verifie(await page.locator('#panneau[open]').count() === 0, 'Échap ferme le panneau');
-verifie(await page.evaluate(() => document.activeElement.classList.contains('plat-ouvrir')), 'focus rendu au plat');
-await prem.click(); await page.locator('.pn-bas [data-reserver]').click();
-verifie(await page.locator('#panneau[open]').count() === 0, 'bouton Réserver du panneau le ferme');
-
-/* ------------------------------------------------------------------ 3. Calendrier */
-section('3. Calendrier des 30 prochains jours');
-await charger();
-verifie(await page.locator('.cal-j').count() === 30, '30 jours affichés');
-const lundis = await page.$$eval('.cal-j', bs => bs.filter(b => /lundi/.test(b.getAttribute('aria-label'))).map(b => b.disabled));
-verifie(lundis.length >= 4 && lundis.every(Boolean), `tous les lundis (${lundis.length}) sont désactivés`);
-const autres = await page.$$eval('.cal-j', bs => bs.filter(b => !/lundi/.test(b.getAttribute('aria-label'))).map(b => b.disabled));
-verifie(autres.every(d => !d), 'les autres jours sont actifs');
-verifie(await page.locator(`.cal-j[data-d="${iso(today)}"]`).count() === 1 && await page.locator(`.cal-j[data-d="${iso(jours[29])}"]`).count() === 1, "premier jour = aujourd'hui, dernier = J+29");
-await suivant();
-verifie(await page.locator('#err-date.vu').count() === 1 && (await etapeTitre()).startsWith('Choisissez une date'), 'continuer sans date : erreur, on reste à l\'étape 1');
-
-/* ------------------------------------------------------------------ 4. Disponibilité variable */
-section('4. Disponibilité selon date et couverts');
-const motifs = new Map();
-let jourTrouve = null, slotTrouve = null;
-const candidats = ouverts.filter(d => iso(d) !== iso(today)).slice(0, 14);
-for (const d of candidats) {
-  await charger();
-  await versService(d);
-  await reglerService('soir', 1);
-  await suivant();
-  const a = await lireCreneaux();
-  await page.locator('#etape [data-act=retour]').click();
-  await reglerService('soir', 8);
-  await suivant();
-  const b = await lireCreneaux();
-  motifs.set(iso(d), a.map(x => x.off ? 'x' : 'o').join('') + '/' + b.map(x => x.off ? 'x' : 'o').join(''));
-  if (!jourTrouve) {
-    const i = a.findIndex((x, k) => !x.off && b[k].off);
-    if (i >= 0) { jourTrouve = d; slotTrouve = a[i].t; }
-  }
-}
-verifie(jourTrouve !== null, `au moins un créneau libre pour 1 couvert et complet pour 8 (${jourTrouve ? iso(jourTrouve) + ' ' + slotTrouve : 'aucun'})`);
-verifie(new Set([...motifs.values()]).size > 2, 'les disponibilités diffèrent d\'un jour à l\'autre : ' + [...motifs.values()].slice(0, 6).join(' ; '));
-{ // déterminisme : même date, même résultat après rechargement
-  await charger(); await versService(candidats[0]); await reglerService('soir', 1); await suivant();
-  const a1 = (await lireCreneaux()).map(x => x.off).join();
-  await charger(); await versService(candidats[0]); await reglerService('soir', 1); await suivant();
-  verifie((await lireCreneaux()).map(x => x.off).join() === a1, 'capacité fictive déterministe (même date, même résultat)');
-}
-
-/* ------------------------------------------------------------------ 5. Parcours de réservation complet */
-section('5. Réservation complète, capacité, annulation');
-const COUV = 2;
-await charger();
-// trouver un créneau avec au moins COUV places, sur un jour ouvert, et relever sa capacité restante
-const jour = jourTrouve || candidats[0];
-let t = slotTrouve;
-await ouvrirResto();
-await page.selectOption('#resto-date', iso(jour));
-if (!t) t = await page.locator('#resto-creneaux .cr').evaluateAll((l, c) => (l.find(e => Number(e.dataset.restantes) >= c) || {}).dataset?.slot, COUV);
-const avantRes = await restoLigne(iso(jour), t);
-verifie(avantRes.restantes >= COUV, `créneau ${t} du ${iso(jour)} : ${avantRes.restantes} places restantes avant`);
-await fermerResto();
-await charger(); // état propre
-await versService(jour);
-verifie((await etapeTitre()).startsWith('Service'), 'étape 2 : service et couverts');
-await reglerService(t < '15:00' ? 'midi' : 'soir', COUV);
-await suivant();
-verifie((await etapeTitre()).startsWith('Choisissez un créneau'), 'étape 3 : créneaux');
-await suivant();
-verifie(await page.locator('#err-slot.vu').count() === 1, 'continuer sans créneau : erreur');
-await page.locator(`#etape input[name=slot][value="${t}"]`).check({ force: true });
-await suivant();
-verifie((await etapeTitre()).startsWith('Préférences'), 'étape 4 : préférences');
-await page.selectOption('#f-occ', 'Anniversaire');
-await page.locator('#etape label:has-text("Végétarien")').click();
-await page.fill('#f-note', 'Table calme <b>fictive</b>');
-await suivant();
-verifie((await etapeTitre()).startsWith('Vos coordonnées'), 'étape 5 : coordonnées');
-await suivant();
-verifie(await page.locator('#etape .erreur.vu').count() === 4 && await page.locator('#etape [aria-invalid=true]').count() === 4, 'coordonnées vides : 4 erreurs, 4 champs invalides');
-verifie(await page.evaluate(() => document.activeElement.id) === 'f-nom', 'focus sur le premier champ invalide');
-await page.fill('#f-nom', 'Table Test'); await page.fill('#f-tel', '12345'); await page.fill('#f-mail', 'pas-un-mail');
-await suivant();
-verifie((await page.locator('#err-tel').innerText()).includes('10 chiffres') && (await page.locator('#err-mail').innerText()).includes('e-mail'), 'téléphone et e-mail invalides refusés');
-verifie(await page.locator('#err-nom.vu').count() === 0, 'nom valide : pas d\'erreur');
-await page.fill('#f-tel', '05 00 00 00 00'); await page.fill('#f-mail', 'test@exemple.test');
-await suivant();
-verifie(await page.locator('#err-ok.vu').count() === 1 && (await etapeTitre()).startsWith('Vos coordonnées'), 'case de compréhension obligatoire');
-await page.locator('#f-ok').check();
-await suivant();
-verifie((await etapeTitre()) === 'Récapitulatif', 'étape 6 : récapitulatif');
-const recap = await page.locator('.recap').innerText();
-verifie(recap.includes('Table Test') && recap.includes('05 00 00 00 00') && recap.includes('Anniversaire') && recap.includes('Végétarien') && recap.includes(t.replace(':', ' h ')), 'récapitulatif : toutes les saisies');
-verifie(recap.includes('<b>fictive</b>') && await page.locator('.recap b').count() === 0, 'saisie échappée (pas de HTML injecté)');
-await page.locator('.recap [data-act=aller][data-s="2"]').click();
-verifie((await etapeTitre()).startsWith('Service'), 'Modifier : retour à l\'étape voulue');
-await suivant(); await suivant(); await suivant(); await suivant();
-verifie((await etapeTitre()) === 'Récapitulatif', 'les saisies sont conservées en revenant au récapitulatif');
-await page.locator('[data-act=confirmer]').click();
-verifie((await etapeTitre()).startsWith('Table réservée'), 'confirmation affichée');
-const num = (await page.locator('.conf-num').innerText()).trim();
-verifie(/^MT-\d{6}-\d{4}$/.test(num), 'numéro simulé : ' + num);
-verifie((await page.locator('#resa-msg').innerText()).includes(num), 'annonce live de la confirmation');
-verifie(await page.locator('#mr-liste .mr').count() === 1 && (await page.locator('#mr-liste').innerText()).includes(num), 'apparaît dans « Mes réservations »');
-verifie((await page.locator('#mr-liste').innerText()).toLowerCase().includes('confirmée'), 'statut confirmée');
-const apresRes = await restoLigne(iso(jour), t);
-verifie(apresRes.restantes === avantRes.restantes - COUV, `capacité du créneau réduite de ${COUV} : ${avantRes.restantes} -> ${apresRes.restantes}`);
-verifie((await page.locator('#resto-liste').innerText()).includes(num), 'visible côté restaurant');
-await fermerResto();
-// Annulation : refus puis confirmation
-await page.locator('#mr-liste [data-act=annuler]').click();
-await page.locator('#mr-liste [data-act=non]').click();
-verifie((await page.locator('#mr-liste').innerText()).toLowerCase().includes('confirmée'), 'annulation refusée : la réservation reste');
-await page.locator('#mr-liste [data-act=annuler]').click();
-await page.locator('#mr-liste [data-act=oui]').click();
-verifie((await page.locator('#mr-liste').innerText()).toLowerCase().includes('annulée') && await page.locator('#mr-liste .mr.annulee').count() === 1, 'annulation : statut Annulée');
-const retour = await restoLigne(iso(jour), t);
-verifie(retour.restantes === avantRes.restantes, `annulation : places rendues (${retour.restantes})`);
-await fermerResto();
-
-/* ------------------------------------------------------------------ 6. Côté restaurant */
-section('6. Côté restaurant : fermer, ajuster, effet immédiat');
-await charger();
-const j2 = ouverts.filter(d => iso(d) !== iso(today))[2];
-await versService(j2);
-await reglerService('soir', 2); await suivant();
-const avantFerme = await lireCreneaux();
-const cible = avantFerme.find(x => !x.off);
-verifie(!!cible, 'un créneau du soir libre pour 2 le ' + iso(j2));
-// Côté client : choisir ce créneau, puis le restaurant le ferme
-await page.locator(`#etape input[name=slot][value="${cible.t}"]`).check({ force: true });
-await ouvrirResto();
-verifie(await page.locator('#vue-client').isHidden(), 'vue restaurant exclusive de la vue client');
-await page.selectOption('#resto-date', iso(j2));
-const ligne = page.locator(`#resto-creneaux .cr[data-slot="${cible.t}"]`);
-await ligne.locator('[data-act=bascule]').click();
-verifie(await page.locator(`#resto-creneaux .cr[data-slot="${cible.t}"]`).getAttribute('data-ferme') === 'true', 'créneau fermé côté restaurant');
-verifie((await page.locator('#resto-msg').innerText()).includes('fermé'), 'annonce live côté restaurant');
-await page.locator('#bascule-vue').click();
-verifie((await etapeTitre()).startsWith('Choisissez un créneau') && await page.locator('#err-slot, .erreur[role=alert]').count() >= 1, 'créneau choisi puis fermé : le parcours le détecte');
-const apresFerme = await lireCreneaux();
-const c2 = apresFerme.find(x => x.t === cible.t);
-verifie(c2.off && c2.motif === 'Fermé', 'côté client : le créneau est désactivé « Fermé »');
-// rouvrir
-await ouvrirResto(); await page.selectOption('#resto-date', iso(j2));
-await page.locator(`#resto-creneaux .cr[data-slot="${cible.t}"] [data-act=bascule]`).click();
-await page.locator('#bascule-vue').click();
-verifie((await lireCreneaux()).find(x => x.t === cible.t).off === false, 'créneau rouvert : de nouveau réservable');
-// capacité : descendre au minimum => complet
-await ouvrirResto(); await page.selectOption('#resto-date', iso(j2));
-const l2 = page.locator(`#resto-creneaux .cr[data-slot="${cible.t}"]`);
-const cap0 = Number(await l2.getAttribute('data-capacite'));
-await l2.locator('[data-d="2"]').click();
-verifie(Number(await page.locator(`#resto-creneaux .cr[data-slot="${cible.t}"]`).getAttribute('data-capacite')) === cap0 + 2, 'capacité +2');
-await page.locator(`#resto-creneaux .cr[data-slot="${cible.t}"] [data-d="-2"]`).click({ force: true });
-for (let i = 0; i < 40; i++) await page.locator(`#resto-creneaux .cr[data-slot="${cible.t}"] [data-d="-2"]`).click({ force: true });
-const l3 = page.locator(`#resto-creneaux .cr[data-slot="${cible.t}"]`);
-const restMin = Number(await l3.getAttribute('data-restantes'));
-verifie(restMin <= 1, `capacité réduite au minimum : ${restMin} place(s) restante(s) (le plancher est le nombre de couverts déjà pris)`);
-verifie((await page.locator('#resto-msg').innerText()).includes('minimale'), 'message de capacité minimale');
-await page.locator('#bascule-vue').click();
-const c3 = (await lireCreneaux()).find(x => x.t === cible.t);
-verifie(c3.off && c3.motif.startsWith('Complet'), `côté client : créneau « ${c3.motif} » après baisse de capacité`);
-// capacité augmentée => redevient disponible
-await ouvrirResto(); await page.selectOption('#resto-date', iso(j2));
-for (let i = 0; i < 6; i++) await page.locator(`#resto-creneaux .cr[data-slot="${cible.t}"] [data-d="2"]`).click();
-await page.locator('#bascule-vue').click();
-verifie((await lireCreneaux()).find(x => x.t === cible.t).off === false, 'capacité relevée : créneau de nouveau disponible');
-// le jour affiché par défaut côté restaurant est un jour ouvert
-await ouvrirResto();
-verifie(ouverts.map(iso).includes(await page.inputValue('#resto-date')), 'jour restaurant par défaut : jour ouvert');
-await fermerResto();
-
-/* ------------------------------------------------------------------ 7. Clavier seul */
-section('7. Parcours complet au clavier');
-await charger();
-async function tabVers(sel, max = 120) {
-  for (let i = 0; i < max; i++) {
-    if (await page.evaluate(s => document.activeElement && document.activeElement.matches(s), sel)) return true;
-    await page.keyboard.press('Tab');
-  }
+const etatsPlan = (id = '#plan-client') => page.$$eval(`${id} .tbl`, l => Object.fromEntries(l.map(g => [g.dataset.t, g.getAttribute('class').replace('tbl ', '').replace(' vue', '')])));
+const TAB = process.env.NAVIGATEUR === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab';   // Safari/WebKit macOS : Tab ne s'arrête pas sur les boutons sans Option
+async function tabVers(sel, max = 150) {
+  for (let i = 0; i < max; i++) { if (await page.evaluate(s => document.activeElement && document.activeElement.matches(s), sel)) return true; await page.keyboard.press(TAB); }
   return false;
 }
-const jk = ouverts.filter(d => iso(d) !== iso(today))[4];
-await page.locator(`.cal-j[data-d="${iso(jk)}"]`).focus();
-verifie(await page.evaluate(() => { const s = getComputedStyle(document.activeElement); return s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) >= 2; }), 'focus visible (contour ≥ 2 px) sur un jour du calendrier');
+
+/* ================================================================== 1 */
+section('1. Contrat de la page');
+await charger();
+const src = { html: fs.readFileSync(path.join(DEMO, 'index.html'), 'utf8'), css: fs.readFileSync(path.join(DEMO, 'restaurant.css'), 'utf8'), js: fs.readFileSync(path.join(DEMO, 'restaurant.js'), 'utf8') };
+verifie(await page.evaluate(() => document.documentElement.lang) === 'fr', 'lang="fr"');
+verifie(await page.locator('meta[name=robots][content="noindex, follow"]').count() === 1, 'meta noindex, follow');
+verifie(await page.locator('meta[http-equiv="Content-Security-Policy"]').count() === 1, 'balise CSP conservée');
+verifie(await page.locator('h1').count() === 1, 'un seul h1');
+verifie(await page.locator('link[rel=icon][href="/assets/favicon.svg"]').count() === 1, 'favicon');
+verifie(await page.evaluate(() => document.body.firstElementChild.outerHTML) === '<p class="demo-bandeau"><span>Démonstration créée par Legantis · entreprise et données fictives</span> <a href="/realisations/">Retour aux réalisations</a></p>', 'bandeau exact en première ligne du body');
+verifie(await page.locator('form, [action], a[href^="mailto:"], a[href^="tel:"], img').count() === 0, 'aucun form, action, mailto, tel ni image');
+verifie(!/<script(?![^>]*\bsrc=)/i.test(src.html) && !/\son[a-z]+\s*=/i.test(src.html) && !/\son(click|change|input|keydown)\s*=/i.test(src.js), 'aucun script ni gestionnaire en ligne');
+for (const id of ['lieu', 'carte', 'degustation', 'chef', 'reserver', 'emporter', 'restaurant', 'infos']) verifie(await page.locator('#' + id).count() === 1, 'ancre #' + id);
+const poids = ['index.html', 'restaurant.css', 'restaurant.js'].reduce((n, f) => n + fs.statSync(path.join(DEMO, f)).size, 0);
+verifie(poids < 200 * 1024, `poids HTML+CSS+JS < 200 Ko, code lisible (${(poids / 1024).toFixed(1)} Ko)`);
+const polices = fs.readdirSync(path.join(DEMO, 'fonts')).filter(f => f.endsWith('.woff2')).reduce((n, f) => n + fs.statSync(path.join(DEMO, 'fonts', f)).size, 0);
+verifie(polices < 150 * 1024, `polices < 150 Ko (${(polices / 1024).toFixed(1)} Ko)`);
+verifie(!/\p{Extended_Pictographic}/u.test(src.html + src.js), 'aucun emoji');
+verifie((src.css.match(/\{/g) || []).length === (src.css.match(/\}/g) || []).length, 'CSS : accolades équilibrées');
+verifie(await page.locator('svg:not([width="0"]) use, svg.gravure').count() >= 8, 'illustrations SVG au trait présentes');
+verifie(await page.locator('#degustation .carte-menu').count() === 1 && /690/.test(await txt('#degustation')) && !await page.locator('#onglets [role=tab]:has-text("dégustation")').count(), 'menu dégustation : pièce à part, hors des onglets de la carte');
+
+/* ================================================================== 2 */
+section('2. Plan de salle : tables, clavier, états selon date et service');
+const d1 = ouverts[1], d2 = ouverts[3];
+let cartes = {}, tableOk = false;
+for (const [d, sv] of [[d1, 'midi'], [d1, 'soir'], [d2, 'midi'], [d2, 'soir']]) {
+  await charger(); const r = await versTable(d, sv, 2); tableOk = tableOk || r;
+  cartes[d + sv] = r ? JSON.stringify(await etatsPlan()) : 'aucun créneau';
+}
+verifie(Object.values(cartes).every(c => c !== 'aucun créneau'), 'un créneau libre existe pour 2 couverts sur les 4 combinaisons testées');
+verifie(new Set(Object.values(cartes)).size >= 3, `l'état des tables varie selon la date et le service (${new Set(Object.values(cartes)).size} plans différents sur 4)`);
+await charger(); await versTable(d1, 'midi', 2);
+const plan0 = await etatsPlan();
+verifie(Object.keys(plan0).length === 12, '12 tables sur le plan');
+verifie(Object.values(plan0).every(c => ['libre', 'reservee', 'bloquee', 'petite', 'choisie'].includes(c)), 'états : ' + [...new Set(Object.values(plan0))].join(', '));
+verifie(Object.values(plan0).includes('libre') && Object.values(plan0).includes('reservee'), 'au moins une table libre et une réservée');
+verifie(await page.$$eval('#plan-client .tbl', l => l.every(g => g.getAttribute('role') === 'button' && g.tabIndex === 0 && g.getAttribute('aria-label').length > 12 && /places/.test(g.getAttribute('aria-label')))), 'chaque table : role=button, tabindex 0, nom accessible avec places et état');
+verifie(await page.locator('svg.plan[role=group][aria-label]').count() === 1, 'plan : groupe nommé');
+const libre1 = Object.keys(plan0).find(k => plan0[k] === 'libre'), resv1 = Object.keys(plan0).find(k => plan0[k] === 'reservee');
+await page.locator(`#plan-client .tbl[data-t=${resv1}]`).click({ force: true });
+verifie(await page.locator(`#plan-client .tbl[data-t=${resv1}]`).getAttribute('aria-pressed') === 'false' && /réservée/.test(await txt('#resa-msg')), 'table réservée : non sélectionnable, message annoncé');
+await page.locator(`#plan-client .tbl[data-t=${libre1}]`).focus();
+await page.keyboard.press('Enter');
+verifie(await page.locator(`#plan-client .tbl[data-t=${libre1}]`).getAttribute('aria-pressed') === 'true' && (await txt('#table-choix')).includes(libre1), `clavier : Entrée choisit la table ${libre1}`);
+verifie(await page.evaluate(() => document.activeElement.classList.contains('tbl')), 'le focus reste sur la table après le choix');
 await page.keyboard.press('Space');
-verifie(await page.locator(`.cal-j[data-d="${iso(jk)}"]`).getAttribute('aria-pressed') === 'true', 'Espace sélectionne la date');
+verifie(await page.locator(`#plan-client .tbl[data-t=${libre1}]`).getAttribute('aria-pressed') === 'false', 'clavier : Espace désélectionne');
+await page.keyboard.press('ArrowRight');
+verifie(await page.evaluate(() => document.activeElement.dataset.t) !== libre1, 'flèche droite : table suivante');
+verifie(await page.evaluate(() => { const g = document.querySelector('#plan-client .tbl.libre'); g.focus(); return getComputedStyle(g.querySelector('.anneau')).stroke !== 'none'; }), 'focus visible : anneau autour de la table');
+await suivant();
+verifie(await page.locator('#err-table.vu').count() === 1, 'continuer sans table : erreur affichée');
+await page.locator('[data-act=auto]').click();
+verifie(await page.locator('[data-act=auto]').getAttribute('aria-pressed') === 'true' && /maison choisira/.test(await txt('#table-choix')), '« Laisser la maison choisir » : état annoncé');
+await page.locator('[data-act=auto]').click();
+let gros = {};
+for (const d of ouverts) { await charger(); if (await versTable(d, 'midi', 4)) { gros = await etatsPlan(); break; } }
+const deux = ['S1', 'S4', 'S7', 'C1'];
+verifie(deux.some(k => gros[k] === 'petite') && deux.every(k => ['petite', 'reservee', 'bloquee'].includes(gros[k])) && Object.keys(gros).filter(k => !deux.includes(k)).every(k => gros[k] !== 'petite'), '4 couverts : les tables de 2 places sont « trop petites », les autres non');
+
+/* ================================================================== 3 */
+section('3. Réservation complète : le client agit, le restaurant voit');
+await charger();
+await ctxResto(d1, 'soir');
+const avant = { att: await kpi('att'), ins: await kpi('ins'), occ: await kpi('occ') };
+const rowsAvant = await page.locator('#cs-panneau li[data-resa]').count();
+await page.locator('#degustation [data-menu=m1]').click();
+verifie(/Menu Tilal/.test(await txt('#resa-msg')), 'bouton du menu dégustation : annoncé dans le parcours');
+const okT = await versTable(d1, 'soir', 2); verifie(okT, 'étape Table atteinte (soir, 2 couverts)');
+const planS = await etatsPlan(); const T = Object.keys(planS).find(k => planS[k] === 'libre' && ['S1', 'S4', 'S7', 'C1'].includes(k)) || Object.keys(planS).find(k => planS[k] === 'libre');
+await page.locator(`#plan-client .tbl[data-t=${T}]`).click();
+verifie((await txt('#table-choix')).includes(T), `table ${T} choisie sur le plan`);
+await suivant();
+verifie(await page.locator('input[name=degust][value=m1]').isChecked(), 'le menu dégustation choisi plus haut est coché dans les préférences');
+await suivant();
+await suivant(); verifie(await page.locator('#err-nom.vu').count() === 1 && await page.locator('#err-ok.vu').count() === 1, 'coordonnées vides : erreurs');
+await page.fill('#f-nom', 'Table Test'); await page.fill('#f-tel', '05 00 00 00 00'); await page.fill('#f-mail', 'nom@exemple.test'); await page.check('#f-ok');
+await suivant();
+const recap = await txt('.recap');
+verifie(recap.includes(T) && /Menu Tilal/.test(recap), 'récapitulatif : table et menu');
+await page.locator('[data-act=confirmer]').click();
+const numResa = await txt('.conf-num');
+verifie(/^MT-\d{6}-\d{4}$/.test(numResa), 'numéro de réservation simulé : ' + numResa);
+verifie((await txt('#mr-liste')).includes(numResa) && (await txt('#mr-liste')).includes('table ' + T), 'Mes réservations : numéro et table');
+verifie(await page.locator('#cs-jour').inputValue() === d1 && await page.locator('#cs-service input[value=soir]').isChecked(), 'côté restaurant : le jour et le service de la réservation sont affichés');
+const rl = ligne('li[data-resa]', numResa);
+verifie(await rl.count() === 1 && (await rl.innerText()).includes('Table Test') && await rl.getAttribute('data-statut') === 'attendue', 'restaurant : la réservation apparaît, statut « attendue »');
+verifie(await kpi('att') === avant.att + 2, `indicateur couverts attendus : ${avant.att} -> ${await kpi('att')}`);
+await onglet('plan');
+verifie((await etatsPlan('#plan-resto'))[T] === 'attendue', `plan restaurant : la table ${T} est « attendue »`);
+
+section('4. Statuts de réservation côté restaurant, effet côté client');
+await onglet('resas');
+const statClient = () => page.locator('#mr-liste .mr-etat').first().getAttribute('data-statut');
+await ligne('li[data-resa]', numResa).getByRole('button', { name: /Installer/ }).click();
+verifie(await ligne('li[data-resa]', numResa).getAttribute('data-statut') === 'installée' && await statClient() === 'installée' && /installé/i.test(await txt('#mr-liste')), 'installée : visible côté restaurant et côté client');
+verifie(await kpi('ins') === avant.ins + 2 && await kpi('att') === avant.att && await kpi('occ') === avant.occ + 1, 'indicateurs recalculés : installés +2, attendus -2, tables occupées +1');
+await ligne('li[data-resa]', numResa).getByRole('button', { name: /Terminer/ }).click();
+verifie(await statClient() === 'terminée' && await ligne('li[data-resa]', numResa).getAttribute('data-statut') === 'terminée', 'terminée');
+await ligne('li[data-resa]', numResa).getByRole('button', { name: /Rouvrir/ }).click();
+await ligne('li[data-resa]', numResa).getByRole('button', { name: /Remettre en attente/ }).click();
+verifie(await statClient() === 'attendue', 'remise en attente');
+await ligne('li[data-resa]', numResa).getByRole('button', { name: /Absente/ }).click();
+verifie(await statClient() === 'absente' && /absente/i.test(await txt('#mr-liste')), 'absente : visible côté client');
+verifie(await kpi('att') === avant.att, 'une réservation absente ne compte plus dans les couverts attendus');
+await page.locator('[data-act=nouvelle]').click();
+verifie(await versTable(d1, 'soir', 2) && (await etatsPlan())[T] === 'libre', `la table ${T} d'une réservation absente est de nouveau libre côté client`);
+// Revue V3.1 (T1) : pendant que la réservation est absente, sa table peut être reprise ou bloquée ; la remettre en attente ne doit pas la doubler.
+await onglet('plan'); await page.locator(`#plan-resto .tbl[data-t=${T}]`).click(); await page.locator('[data-bl="1"]').click();
+await onglet('resas');
+await page.locator('#cs-panneau').scrollIntoViewIfNeeded();
+await ligne('li[data-resa]', numResa).getByRole('button', { name: /Remettre en attente/ }).click();
+verifie(await statClient() === 'absente' && /Impossible : la table/.test(await page.locator('#cs-msg').innerText()), 'table bloquée entre-temps : remise en attente refusée, pas de double affectation');
+await onglet('plan'); await page.locator(`#plan-resto .tbl[data-t=${T}]`).click(); await page.locator('[data-bl="0"]').click();
+await onglet('resas');
+await page.locator('#cs-panneau').scrollIntoViewIfNeeded();
+await ligne('li[data-resa]', numResa).getByRole('button', { name: /Remettre en attente/ }).click();
+verifie((await etatsPlan())[T] === 'reservee', `remise en attente : la table ${T} redevient réservée sur le plan du client, sans rechargement`);
+await ligne('li[data-resa]', numResa).getByRole('button', { name: /Annuler/ }).click();
+verifie(await statClient() === 'annulée par la maison' && /Annulée par la maison/i.test(await txt('#mr-liste')), 'annulation par la maison : visible côté client');
+verifie((await etatsPlan())[T] === 'libre', 'table libérée côté client');
+
+section('5. Blocage d\'une table et créneaux');
+await onglet('plan');
+const planR = await etatsPlan('#plan-resto'); const X = Object.keys(planR).find(k => planR[k] === 'libre' && k !== T);
+await page.locator(`#plan-resto .tbl[data-t=${X}]`).click();
+verifie(/Bloquer la table/.test(await txt('#fiche')), 'fiche de table : bouton Bloquer');
+await page.locator('[data-bl="1"]').click();
+verifie((await etatsPlan('#plan-resto'))[X] === 'bloquee' && (await etatsPlan())[X] === 'bloquee', `table ${X} bloquée : bloquée aussi sur le plan du client`);
+verifie(await page.locator(`#plan-client .tbl[data-t=${X}]`).getAttribute('aria-disabled') === 'true', 'table bloquée : aria-disabled côté client');
+const Y = Object.keys(await etatsPlan()).find(k => k !== X && k !== T && ['S1', 'S4', 'S7', 'C1'].includes(k));
+const etY = (await etatsPlan())[Y];
+if (etY === 'libre') {
+  await page.locator(`#plan-client .tbl[data-t=${Y}]`).click();
+  verifie((await txt('#table-choix')).includes(Y), 'table Y choisie par le client');
+  await page.locator(`#plan-resto .tbl[data-t=${Y}]`).click(); await page.locator('[data-bl="1"]').click();
+  verifie(/Aucune table choisie/.test(await txt('#table-choix')) && (await etatsPlan())[Y] === 'bloquee' && await page.locator('#etape [role=alert]').count() === 1, 'le restaurant bloque la table choisie : le client la perd, avec une alerte');
+  await page.locator(`#plan-resto .tbl[data-t=${Y}]`).click(); await page.locator('[data-bl="0"]').click();
+  verifie((await etatsPlan())[Y] === 'libre', 'déblocage : la table redevient libre côté client');
+} else verifie(true, `table Y ${etY} (non libre, scénario de perte non rejoué)`);
+await page.locator(`#plan-resto .tbl[data-t=${X}]`).click(); await page.locator('[data-bl="0"]').click();
+verifie((await etatsPlan())[X] === 'libre', `table ${X} débloquée`);
+const occ = Object.keys(planR).find(k => planR[k] === 'attendue');
+if (occ) { await page.locator(`#plan-resto .tbl[data-t=${occ}]`).click(); verifie(await page.locator('[data-bl]').count() === 0 && /annulez d'abord/.test(await txt('#fiche')), 'une table réservée ne peut pas être bloquée'); }
+await page.locator('#etape [data-act=retour]').click();
+await onglet('creneaux');
+const s0 = await page.locator('#cs-panneau .cr').first().getAttribute('data-slot');
+const cap0 = Number(await page.locator(`#cs-panneau .cr[data-slot="${s0}"]`).getAttribute('data-capacite'));
+await page.locator(`#etape input[name=slot][value="${s0}"]`).check();
+await page.locator(`#cs-panneau [data-fe="${s0}"]`).click();
+verifie(await page.locator(`#etape input[name=slot][value="${s0}"]`).isDisabled() && /Fermé/.test(await txt('#etape .rec--creneaux')), `créneau ${s0} fermé côté restaurant : désactivé côté client`);
+verifie(await page.locator('#etape [role=alert]').count() === 1, 'le créneau choisi puis fermé : le client est prévenu');
+await page.locator(`#cs-panneau [data-fe="${s0}"]`).click();
+verifie(await page.locator(`#etape input[name=slot][value="${s0}"]`).isEnabled(), 'créneau rouvert : de nouveau disponible');
+await page.locator(`#cs-panneau [data-cap="2"][data-t="${s0}"]`).click();
+verifie(Number(await page.locator(`#cs-panneau .cr[data-slot="${s0}"]`).getAttribute('data-capacite')) === cap0 + 2, 'capacité du créneau +2 couverts');
+await page.locator(`#cs-panneau [data-cap="-2"][data-t="${s0}"]`).click();
+
+/* ================================================================== 6 */
+section('6. Commande à emporter : de la carte au retrait');
+await charger();
+const emp0 = await (async () => { await ctxResto(ouverts[0], 'soir'); return kpi('emp'); })();
+await page.locator('[data-ajout=e1]').click(); await page.locator('[data-ajout=e1]').click();
+verifie(await txt('#pastille-panier') === '2' && /Zaalouk fumé.*2.*190 MAD/.test(await txt('#panier')) && (await txt('#tk-total')) === '190 MAD', 'ajout depuis la carte : 2 × 95 = 190 MAD, pastille 2');
+await page.locator('#tab-plats').click(); await page.locator('[data-ajout=p3]').click();
+verifie(await txt('#tk-total') === '480 MAD' && await txt('#pastille-panier') === '3', 'second plat : total 480 MAD');
+await page.locator('#panier [data-pa=plus]').first().click();
+verifie(await txt('#tk-total') === '575 MAD', 'quantité + : 575 MAD');
+await page.locator('#panier [data-pa=moins]').last().click();
+verifie(await page.locator('#panier .tk-lignes li').count() === 1 && await txt('#tk-total') === '285 MAD', 'quantité − jusqu\'à zéro : la ligne disparaît, total 285 MAD');
+verifie(/Paiement sur place/.test(await txt('#panier')), 'paiement sur place annoncé dans le panier');
+await page.locator('[data-pa=commander]').click();
+verifie(await page.locator('#err-ph.vu').count() === 1 && await page.locator('#err-pn.vu').count() === 1, 'commande sans heure ni nom : erreurs');
+await page.fill('#p-nom', 'Table Menthe');
+const heures = await page.$$eval('#p-heure option', o => o.map(x => x.value).filter(Boolean));
+verifie(heures.length >= 8 && heures.every(h => /^\d\d:(00|15|30|45)$/.test(h)), `heures de retrait par quart d'heure (${heures.length})`);
+const hr = heures.find(h => h >= '19:30') || heures[0];
+await page.selectOption('#p-heure', hr);
+await page.locator('[data-pa=commander]').click();
+const numCmd = await txt('.tk-num');
+verifie(/^EM-\d{4}-\d+$/.test(numCmd) && /Paiement sur place/.test(await txt('#panier')) && /Rien n'a été payé/.test(await txt('#panier')), 'numéro de commande simulé et paiement sur place : ' + numCmd);
+verifie(await page.locator('#pastille-panier').isHidden() && await page.locator('[data-ajout=p3]').getAttribute('class').then(c => !c.includes('dans')), 'panier vidé, boutons de la carte remis à zéro');
+verifie(/Reçue/i.test(await txt('#mc-liste')) && (await txt('#mc-liste')).includes(numCmd), 'Mes commandes : reçue');
+const svCmd = hr < '16:00' ? 'midi' : 'soir';
+verifie(await page.locator('#cs-service input:checked').getAttribute('value') === svCmd, 'côté restaurant : service de la commande affiché');
+await onglet('emporter');
+const rc = ligne('li[data-cmd]', numCmd);
+verifie(await rc.count() === 1 && await rc.getAttribute('data-statut') === 'reçue' && (await rc.innerText()).includes('Table Menthe'), 'restaurant : la commande apparaît, statut « reçue »');
+verifie(await kpi('emp') === emp0 + 1 || svCmd !== 'soir', `indicateur emporter en cours : ${emp0} -> ${await kpi('emp')}`);
+const cmdStat = () => page.locator('#mc-liste .mr-etat').first().getAttribute('data-statut');
+await rc.getByRole('button', { name: /Passer en cuisine/ }).click(); verifie(await cmdStat() === 'en cuisine', 'en cuisine : visible côté client');
+await rc.getByRole('button', { name: /Marquer prête/ }).click(); verifie(await cmdStat() === 'prête' && /Prête/i.test(await txt('#mc-liste')), 'prête : visible côté client');
+const enc0 = await kpi('enc');
+await rc.getByRole('button', { name: /Marquer retirée/ }).click(); verifie(await cmdStat() === 'retirée', 'retirée : visible côté client');
+verifie(await kpi('enc') === enc0 + 285, `encaissé sur place : ${enc0} -> ${await kpi('enc')} MAD`);
+await page.locator('[data-ajout=p3]').click(); await page.fill('#p-nom', 'Table Thym'); await page.selectOption('#p-heure', hr); await page.locator('[data-pa=commander]').click();
+const numCmd2 = await txt('.tk-num');
+await ligne('li[data-cmd]', numCmd2).getByRole('button', { name: /Annuler/ }).click();
+verifie(await cmdStat() === 'annulée', 'annulation par la cuisine : visible côté client');
+
+section('7. Disponibilité de la carte, effet immédiat sur la carte et le panier');
+await page.locator('#tab-plats').click(); await page.locator('[data-ajout=p1]').click();
+await onglet('carte');
+const sw = page.locator('#cs-panneau [data-di=p1]');
+verifie(await sw.getAttribute('aria-checked') === 'true', 'plat disponible : interrupteur actif');
+await sw.click();
+verifie(await sw.getAttribute('aria-checked') === 'false', 'interrupteur : indisponible');
+verifie(await page.locator('.plat[data-id=p1]').evaluate(e => e.classList.contains('indispo')) && await page.locator('[data-ajout=p1]').count() === 0 && /Indisponible/.test(await txt('.plat[data-id=p1]')), 'carte client : plat indisponible, plus de bouton d\'ajout');
+verifie(/Plus disponible/.test(await txt('#panier')) && await page.locator('[data-pa=commander]').getAttribute('aria-disabled') === 'true', 'panier : ligne signalée, commande bloquée');
+const nCmd = await page.locator('#mc-liste li').count();
+await page.fill('#p-nom', 'Table Test'); await page.locator('[data-pa=commander]').click({ force: true });
+verifie(await page.locator('#mc-liste li').count() === nCmd, 'aucune commande créée avec un plat indisponible');
+await page.locator('.plat[data-id=p1] .plat-ouvrir').click();
+verifie(await page.locator('#pn-corps [data-ajout]').count() === 0, 'fiche du plat : pas d\'ajout possible');
+await page.keyboard.press('Escape');
+await page.locator('#panier [data-pa=moins]').first().click();
+await sw.click();
+verifie(await page.locator('[data-ajout=p1]').count() === 1 && !await page.locator('.plat[data-id=p1]').evaluate(e => e.classList.contains('indispo')), 'plat de nouveau disponible : bouton revenu');
+await page.locator('#tab-boissons').click();
+verifie(/Sur place uniquement/.test(await txt('.plat[data-id=b5]')) && await page.locator('[data-ajout=b5]').count() === 0, 'boisson alcoolisée : non vendue à emporter');
+await page.locator('#tab-entrees').click(); await page.locator('[data-ajout=e1]').click();
+await onglet('creneaux'); await page.locator('#cs-panneau [data-emp]').click();
+verifie(/ne prend plus de commandes/.test(await txt('#panier')) && await page.locator('[data-pa=commander]').getAttribute('aria-disabled') === 'true', 'commandes en pause côté restaurant : le client est prévenu, commande bloquée');
+await page.locator('#cs-panneau [data-emp]').click();
+verifie(await page.locator('[data-pa=commander]').getAttribute('aria-disabled') === null, 'commandes rouvertes');
+
+section('8. Console : onglets au clavier');
+await page.locator('#cs-onglets [data-tab=resas]').focus();
+await page.keyboard.press('ArrowRight');
+verifie(await page.locator('#cs-onglets [data-tab=plan]').getAttribute('aria-selected') === 'true' && await page.locator('#plan-resto').isVisible(), 'flèche droite : onglet Plan de salle');
+await page.keyboard.press('End');
+verifie(await page.locator('#cs-onglets [data-tab=carte]').getAttribute('aria-selected') === 'true', 'Fin : dernier onglet');
+verifie(await page.locator('#cs-onglets [role=tab]').count() === 5 && await page.locator('#cs-panneau[role=tabpanel][aria-labelledby]').count() === 1, 'cinq onglets, panneau relié');
+
+section('9. Parcours complet au clavier');
+await charger();
+await page.locator(`.cal-j[data-d="${ouverts[2]}"]`).focus(); await page.keyboard.press('Space');
 verifie(await tabVers('[data-act=suivant]'), 'Tab atteint Continuer'); await page.keyboard.press('Enter');
-verifie((await etapeTitre()).startsWith('Service'), 'clavier : étape 2');
-await tabVers('input[name=covers]'); await page.keyboard.press('ArrowRight'); // 1 -> 2 ou 3...
+verifie((await txt('#etape-titre')).startsWith('Service'), 'clavier : étape Service');
 await tabVers('[data-act=suivant]'); await page.keyboard.press('Enter');
-verifie((await etapeTitre()).startsWith('Choisissez un créneau'), 'clavier : étape 3');
-let sk = await tabVers('input[name=slot]:not(:disabled)');
-if (!sk) { // jour complet pour ces couverts : on revient prendre 1 couvert
-  await page.locator('[data-act=retour]').click(); await reglerService('soir', 1); await suivant(); sk = await tabVers('input[name=slot]:not(:disabled)');
-}
-verifie(sk, 'un créneau atteignable au clavier');
-await page.keyboard.press('Space');
+await tabVers('input[name=slot]:not(:disabled)'); await page.keyboard.press('Space');
 await tabVers('[data-act=suivant]'); await page.keyboard.press('Enter');
-verifie((await etapeTitre()).startsWith('Préférences'), 'clavier : étape 4');
-await tabVers('[data-act=suivant]'); await page.keyboard.press('Enter');
-await tabVers('#f-nom'); await page.keyboard.type('Table Clavier');
-await page.keyboard.press('Tab'); await page.keyboard.type('0500000000');
-await page.keyboard.press('Tab'); await page.keyboard.type('clavier@exemple.test');
-await page.keyboard.press('Tab'); await page.keyboard.press('Space');
-await tabVers('[data-act=suivant]'); await page.keyboard.press('Enter');
-verifie((await etapeTitre()) === 'Récapitulatif', 'clavier : récapitulatif');
-await tabVers('[data-act=confirmer]'); await page.keyboard.press('Enter');
-verifie(/^MT-\d{6}-\d{4}$/.test((await page.locator('.conf-num').innerText()).trim()), 'clavier : confirmation avec numéro');
-await tabVers('#mr-liste [data-act=annuler]'); await page.keyboard.press('Enter');
-await page.keyboard.press('Enter'); // focus sur « Oui, annuler »
-verifie((await page.locator('#mr-liste').innerText()).toLowerCase().includes('annulée'), 'clavier : annulation');
+verifie((await txt('#etape-titre')).startsWith('Choisissez votre table'), 'clavier : étape Table');
+verifie(await tabVers('#plan-client .tbl.libre'), 'Tab atteint une table libre'); await page.keyboard.press('Enter');
+verifie(await page.locator('#plan-client .tbl[aria-pressed=true]').count() === 1, 'clavier : table choisie');
+verifie(await page.evaluate(() => { const a = document.activeElement.querySelector && document.activeElement.querySelector('.anneau'); if (!a) return false; const s = getComputedStyle(a); return s.stroke !== 'none' && parseFloat(s.strokeWidth) >= 2; }), 'focus visible sur la table (contour ≥ 2 px)');
 
-/* ------------------------------------------------------------------ 8. Mobile : barre fixe */
-section('8. Barre mobile et cibles tactiles');
-const mob = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: 'fr-FR', hasTouch: true });
-const pm = await mob.newPage();
-pm.on('console', m => { if (m.type() === 'error' || m.type() === 'warning') erreursConsole.push('mobile: ' + m.text()); });
-pm.on('pageerror', e => erreursConsole.push('mobile pageerror: ' + e.message));
-pm.on('request', r => { hotes.add(new URL(r.url()).host); if (r.method() !== 'GET') posts.push(r.method()); });
-await charger(pm);
-const barre = pm.locator('.barre-resa');
-verifie(await barre.isVisible(), 'barre « Réserver » visible sur téléphone');
-verifie(await barre.evaluate(e => getComputedStyle(e).position) === 'fixed', 'barre en position fixe');
-await pm.evaluate(() => scrollTo(0, 900));
-await pm.waitForTimeout(150);
-const bb = await barre.boundingBox();
-verifie(bb && Math.abs(bb.y + bb.height - 844) < 2, 'barre toujours collée en bas après défilement');
-await barre.locator('a').click();
-await pm.waitForTimeout(700);
-verifie((await pm.evaluate(() => location.hash)) === '#reserver', 'la barre mène à #reserver');
-verifie(await barre.isHidden(), 'barre masquée pendant la réservation : elle doublerait les boutons du parcours');
-verifie(await page.locator('.barre-resa').isHidden(), 'barre masquée sur grand écran');
-const petits = await pm.evaluate(() => {
-  const sel = '.onglet, .puce span, .cal-j:not(:disabled), .rec span, .btn, .entete-cta, .menu-bouton, .plat-ouvrir';
-  return [...document.querySelectorAll(sel)].filter(e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.height < 43.5; }).map(e => e.className + ' ' + Math.round(e.getBoundingClientRect().height));
-});
-verifie(petits.length === 0, 'cibles tactiles ≥ 44 px de haut : ' + (petits.slice(0, 5).join(', ') || 'toutes'));
-await pm.locator('.menu-bouton').click();
-verifie(await pm.locator('#nav-principale').isVisible() && await pm.locator('.menu-bouton').getAttribute('aria-expanded') === 'true', 'menu mobile ouvert');
-await pm.locator('#nav-principale a[href="#carte"]').click();
-verifie(await pm.locator('#nav-principale').isHidden(), 'menu refermé après navigation');
-await mob.close();
-
-/* ------------------------------------------------------------------ 9. Débordement horizontal */
-section('9. Aucun défilement horizontal (320, 390, 768, 1024, 1440)');
-for (const w of [320, 390, 768, 1024, 1440]) {
-  const c = await browser.newContext({ viewport: { width: w, height: 900 }, locale: 'fr-FR' });
-  const p = await c.newPage();
-  await charger(p);
-  const mesure = async (etat) => {
-    const r = await p.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth, bw: document.body.scrollWidth }));
-    verifie(r.sw <= r.cw && r.bw <= r.cw, `${w} px, ${etat} : pas de débordement (scrollWidth ${r.sw} / ${r.cw})`);
-  };
-  await mesure('accueil');
-  await p.locator('#tab-boissons').click(); await mesure('carte, boissons');
-  await p.locator('#tab-degustation').click(); await mesure('carte, dégustation');
-  const d = ouverts.filter(x => iso(x) !== iso(today))[3];
-  await p.locator(`.cal-j[data-d="${iso(d)}"]`).click(); await mesure('calendrier');
-  await p.locator('[data-act=suivant]').click(); await mesure('service');
-  await p.locator('[data-act=suivant]').click(); await mesure('créneaux');
-  await p.locator('#bascule-vue').click(); await mesure('côté restaurant');
-  await p.locator('.cr').first().scrollIntoViewIfNeeded();
-  const horsEcran = await p.evaluate(() => [...document.querySelectorAll('#vue-resto .cr, #vue-resto .cr *')].filter(e => e.getBoundingClientRect().right > document.documentElement.clientWidth + 1).length);
-  verifie(horsEcran === 0, `${w} px : lignes de créneaux dans l'écran`);
-  if (w === 320) {
-    await p.locator('#bascule-vue').click();
-    await p.locator('[data-act=retour]').click(); await p.locator('[data-act=retour]').click();
-    const cw = await p.evaluate(() => { const b = document.querySelector('.cal-j:not(:disabled)'); return Math.round(b.getBoundingClientRect().width * 10) / 10; });
-    verifie(cw >= 43, `320 px : jour du calendrier de ${cw} px de large`);
-  }
-  await c.close();
-}
-
-/* ------------------------------------------------------------------ 10. Sans JavaScript, mouvement réduit */
-section('10. Sans JavaScript et mouvement réduit');
-const nojs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1280, height: 800 } });
-const pn = await nojs.newPage();
-await pn.goto(URL_PAGE);
-const texte = await pn.locator('main').innerText();
-verifie(texte.includes('Maison Tilal') && texte.includes('Zaalouk') && texte.includes('Menu Tilal'), 'sans JS : contenu et carte entière présents');
-verifie(texte.includes('demande JavaScript'), 'sans JS : message indiquant que l\'interaction demande JavaScript');
-verifie(await pn.locator('#resa-zone').isHidden(), 'sans JS : pas de faux assistant de réservation');
-await nojs.close();
-const rm = await browser.newContext({ reducedMotion: 'reduce', viewport: { width: 1280, height: 800 } });
-const pr = await rm.newPage(); await pr.goto(URL_PAGE);
-const opaque = await pr.$$eval('.rang, .pieces li, .citation', l => l.every(e => getComputedStyle(e).opacity === '1'));
-verifie(opaque, 'mouvement réduit : tout est visible sans animation');
-verifie(await pr.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior) === 'auto', 'mouvement réduit : défilement sans animation');
-await rm.close();
-
-/* ------------------------------------------------------------------ 11. Contrat réseau et stockage */
-section('11. Réseau, stockage, console');
+section('10. Hiérarchie des titres, stockage, réseau, console');
+const niveaux = await page.$$eval('h1,h2,h3,h4,h5,h6', l => l.filter(h => h.offsetParent !== null || h.closest('[hidden]') === null).map(h => +h.tagName[1]));
+verifie(niveaux.every((n, i) => i === 0 ? n === 1 : n <= niveaux[i - 1] + 1), 'aucun saut dans la hiérarchie des titres');
 const cookies = await ctx.cookies();
 const stock = await page.evaluate(() => ({ c: document.cookie, l: localStorage.length, s: sessionStorage.length }));
 verifie(cookies.length === 0 && stock.c === '' && stock.l === 0 && stock.s === 0, 'aucun cookie, localStorage ni sessionStorage');
 verifie([...hotes].every(h => h.startsWith('127.0.0.1')), 'aucun hôte tiers : ' + [...hotes].join(', '));
 verifie(posts.length === 0, 'aucune requête autre que GET : ' + posts.join(', '));
 verifie(erreursConsole.length === 0, 'aucune erreur ni avertissement de console' + (erreursConsole.length ? ' : ' + erreursConsole.slice(0, 3).join(' / ') : ''));
-const src = fs.readFileSync(path.join(ROOT, 'realisations/demos/restaurant/restaurant.js'), 'utf8');
-verifie(!/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket|localStorage|sessionStorage|document\.cookie|indexedDB)\b/.test(src.replace(/\/\*[\s\S]*?\*\//g, '')), 'le code ne contient aucun appel réseau ni stockage');
-const html = fs.readFileSync(path.join(ROOT, 'realisations/demos/restaurant/index.html'), 'utf8') + fs.readFileSync(path.join(ROOT, 'realisations/demos/restaurant/restaurant.css'), 'utf8');
-verifie(!/(https?:)?\/\/(?!www\.w3\.org)[a-z0-9.-]+\.[a-z]{2,}/i.test(html.replace(/https?:\/\/www\.w3\.org\/\d+\/svg/g, '').replace(/<meta http-equiv="Content-Security-Policy"[^>]*>/, '')), 'HTML et CSS : aucune URL externe');
+verifie(!/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket|localStorage|sessionStorage|document\.cookie|indexedDB)\b/.test(src.js.replace(/\/\*[\s\S]*?\*\//g, '')), 'le code ne contient aucun appel réseau ni stockage');
+verifie(!/(https?:)?\/\/(?!www\.w3\.org)[a-z0-9.-]+\.[a-z]{2,}/i.test((src.html + src.css).replace(/<meta http-equiv="Content-Security-Policy"[^>]*>/, '').replace(/https?:\/\/www\.w3\.org\/\d+\/svg/g, '')), 'HTML et CSS : aucune adresse externe');
+
+section('11. Largeurs : aucun défilement horizontal, cibles tactiles');
+for (const w of [320, 390, 768, 1024, 1440]) {
+  const c2 = await browser.newContext({ viewport: { width: w, height: 800 }, locale: 'fr-FR' }); const p = await c2.newPage();
+  await charger(p);
+  const dep = async () => p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  verifie(await dep() <= 0, `${w} px : page à l'accueil`);
+  const cols = s => p.$eval(s, e => getComputedStyle(e).gridTemplateColumns.split(' ').length), att = w > 960 ? 2 : 1;
+  verifie(await cols('.cat:not([hidden]) .plats') === att && await cols('.lieu-grille') === att && await cols('.resa-client') === att, `${w} px : carte, maison et réservation sur ${att} colonne(s)`);
+  const marges = await p.evaluate(() => { const t = document.querySelector('#etape-titre').getBoundingClientRect(); return [...document.querySelectorAll('.cal-mois h4, .cal')].map(e => e.getBoundingClientRect()).map(b => [b.left - t.left, t.right - b.right, b.left]); });
+  verifie(marges.every(([g, d, bord]) => g >= -0.5 && d >= -0.5 && bord >= 12), `${w} px : calendrier et noms des mois alignés sur le texte, à distance du bord ${JSON.stringify(marges[0])}`);
+  if (w <= 390) verifie(await p.$$eval('.cal-j', l => l.every(e => { const b = e.getBoundingClientRect(); return b.width >= 40 && b.height >= 44; })), `${w} px : chaque jour du calendrier reste une cible d'au moins 40 × 44 px`);
+  await p.locator(`.cal-j[data-d="${ouverts[2]}"]`).click(); await p.locator('#etape [data-act=suivant]').click(); await p.locator('#etape [data-act=suivant]').click();
+  await p.locator('#etape input[name=slot]:not(:disabled)').first().check(); await p.locator('#etape [data-act=suivant]').click();
+  verifie(await dep() <= 0, `${w} px : plan de salle côté client`);
+  if (w <= 390) verifie(await p.$$eval('#plan-client .tbl .corps', l => l.every(e => { const b = e.getBoundingClientRect(); return Math.min(b.width, b.height) >= 44; })), `${w} px : chaque table mesure au moins 44 px`);
+  for (const t of ['resas', 'plan', 'emporter', 'creneaux', 'carte']) { await p.locator(`[data-tab=${t}]`).click(); verifie(await dep() <= 0, `${w} px : console, onglet ${t}`); }
+  await p.locator('[data-ajout=e1]').click(); verifie(await dep() <= 0, `${w} px : panier`);
+  await c2.close();
+}
+
+section('12. Sans JavaScript, mouvement réduit');
+const nj = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1280, height: 800 } }); const pn = await nj.newPage(); await pn.goto(URL_PAGE);
+verifie(await pn.locator('h1').isVisible() && await pn.locator('#cat-plats .plat').first().isVisible() && await pn.locator('#cat-boissons').isVisible(), 'sans JS : titre et carte complète visibles');
+verifie(await pn.locator('#degustation').isVisible() && /690/.test(await pn.locator('#degustation').innerText()), 'sans JS : menu dégustation visible');
+verifie(/JavaScript/.test(await pn.locator('#reserver').innerText()) && /JavaScript/.test(await pn.locator('#emporter').innerText()) && /JavaScript/.test(await pn.locator('#restaurant').innerText()), 'sans JS : la page dit que l\'interaction demande JavaScript');
+verifie(await pn.locator('#resa-zone').isHidden() && await pn.locator('#console').isHidden() && await pn.locator('#emp-zone').isHidden(), 'sans JS : pas de faux outils');
+await nj.close();
+const rm = await browser.newContext({ reducedMotion: 'reduce', viewport: { width: 1280, height: 800 } }); const pr = await rm.newPage(); await pr.goto(URL_PAGE);
+verifie(await pr.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior) === 'auto', 'mouvement réduit : défilement sans animation');
+await rm.close();
 
 await browser.close(); srv.close();
 console.log(`\n${ok} vérifications réussies, ${echecs} échec(s).`);

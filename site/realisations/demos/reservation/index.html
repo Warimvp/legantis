@@ -2,37 +2,101 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://legantis-devis.rihla-serveur.workers.dev; form-action 'self' https://legantis-devis.rihla-serveur.workers.dev; base-uri 'self'; object-src 'none'">
+<meta name="format-detection" content="telephone=no">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'self'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Institut Naïa : réservation en ligne, démonstration Legantis</title>
-<meta name="description" content="Démonstration créée par Legantis : plateforme de réservation d’un institut de soins fictif, avec parcours client et planning de gestion. Entreprise et données fictives.">
+<title>Institut Naïa : soins du visage et du corps, démonstration Legantis</title>
+<meta name="description" content="Démonstration créée par Legantis : page d’accueil d’un institut de soins fictif, avec ses soins, ses praticiennes et sa réservation en ligne. Entreprise et données fictives.">
 <meta name="robots" content="noindex, follow">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#F4EDE0">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="fonts/fraunces-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="reservation.css">
-<script src="moteur.js" defer></script>
-<script src="reservation.js" defer></script>
+<link rel="stylesheet" href="accueil.css">
 </head>
 <body class="naia">
 <p class="demo-bandeau"><span>Démonstration créée par Legantis · entreprise et données fictives</span> <a href="/realisations/">Retour aux réalisations</a></p>
 
 <svg class="sprite" width="0" height="0" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
   <defs>
+    <g id="fa"><path class="feuille" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path class="h" d="M8 .6l5 4M15 .6l5 4M22 .6l5 4"/></g>
+    <g id="fb"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g>
     <symbol id="branche" viewBox="0 0 250 340">
-      <g class="gravure"><path class="tige" d="M70 330C60 220 120 110 170 24"/><g transform="translate(69.3 290.4) rotate(-145.1) scale(1.21)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(69.3 290.4) rotate(-29.1) scale(1.21)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(71.9 262.9) rotate(-138.5) scale(1.15)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(71.9 262.9) rotate(-25.5) scale(1.15)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(76.9 235.5) rotate(-132.6) scale(1.09)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(76.9 235.5) rotate(-22.6) scale(1.09)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(83.8 208.5) rotate(-127.3) scale(1.04)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(83.8 208.5) rotate(-20.3) scale(1.04)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(92.4 181.8) rotate(-122.5) scale(0.98)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(92.4 181.8) rotate(-18.5) scale(0.98)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(102.4 155.6) rotate(-118.2) scale(0.92)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(102.4 155.6) rotate(-17.2) scale(0.92)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(113.6 129.9) rotate(-114.3) scale(0.86)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(113.6 129.9) rotate(-16.3) scale(0.86)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(125.6 104.9) rotate(-110.9) scale(0.81)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(125.6 104.9) rotate(-15.9) scale(0.81)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(138.2 80.6) rotate(-107.9) scale(0.75)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(138.2 80.6) rotate(-15.9) scale(0.75)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(151.1 57.1) rotate(-105.3) scale(0.69)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(151.1 57.1) rotate(-16.3) scale(0.69)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(164.0 34.4) rotate(-103.0) scale(0.63)"><path class="feuille f" d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/><path d="M8 0.6l5 4"/><path d="M15 0.6l5 4"/><path d="M22 0.6l5 4"/></g><g transform="translate(164.0 34.4) rotate(-17.0) scale(0.63)"><path class="feuille " d="M0 0C10-9 28-9 40 0C28 9 10 9 0 0Z"/><path class="nervure" d="M3 0H34"/></g><g transform="translate(170.0 24.0) rotate(-59.8)"><path class="feuille f" d="M0 0C8-7 20-7 30 0C20 7 8 7 0 0Z"/><path class="nervure" d="M2 0H26"/></g></g>
+      <path class="tige" d="M70 330C60 220 120 110 170 24"/>
+      <use href="#fa" transform="translate(69.3 290.4) rotate(-145.1) scale(1.21)"/><use href="#fb" transform="translate(69.3 290.4) rotate(-29.1) scale(1.21)"/>
+      <use href="#fb" transform="translate(71.9 262.9) rotate(-138.5) scale(1.15)"/><use href="#fa" transform="translate(71.9 262.9) rotate(-25.5) scale(1.15)"/>
+      <use href="#fa" transform="translate(76.9 235.5) rotate(-132.6) scale(1.09)"/><use href="#fb" transform="translate(76.9 235.5) rotate(-22.6) scale(1.09)"/>
+      <use href="#fb" transform="translate(83.8 208.5) rotate(-127.3) scale(1.04)"/><use href="#fa" transform="translate(83.8 208.5) rotate(-20.3) scale(1.04)"/>
+      <use href="#fa" transform="translate(92.4 181.8) rotate(-122.5) scale(.98)"/><use href="#fb" transform="translate(92.4 181.8) rotate(-18.5) scale(.98)"/>
+      <use href="#fb" transform="translate(102.4 155.6) rotate(-118.2) scale(.92)"/><use href="#fa" transform="translate(102.4 155.6) rotate(-17.2) scale(.92)"/>
+      <use href="#fa" transform="translate(113.6 129.9) rotate(-114.3) scale(.86)"/><use href="#fb" transform="translate(113.6 129.9) rotate(-16.3) scale(.86)"/>
+      <use href="#fb" transform="translate(125.6 104.9) rotate(-110.9) scale(.81)"/><use href="#fa" transform="translate(125.6 104.9) rotate(-15.9) scale(.81)"/>
+      <use href="#fa" transform="translate(138.2 80.6) rotate(-107.9) scale(.75)"/><use href="#fb" transform="translate(138.2 80.6) rotate(-15.9) scale(.75)"/>
+      <use href="#fb" transform="translate(151.1 57.1) rotate(-105.3) scale(.69)"/><use href="#fa" transform="translate(151.1 57.1) rotate(-16.3) scale(.69)"/>
+      <use href="#fa" transform="translate(164 34.4) rotate(-103) scale(.63)"/><use href="#fb" transform="translate(164 34.4) rotate(-17) scale(.63)"/>
+      <use href="#fb" transform="translate(170 24) rotate(-59.8) scale(.75)"/>
     </symbol>
-    <symbol id="g-visage" viewBox="0 0 48 48"><ellipse cx="22" cy="25" rx="11" ry="14"/><path d="M14 20c5 1 10-2 12-7M17 33c3 2 7 2 10 0M31 9c4-4 10-4 12 0-4 4-9 4-12 0zM33 9c3 0 6 1 8 1"/></symbol>
-    <symbol id="g-corps" viewBox="0 0 48 48"><ellipse cx="24" cy="36" rx="15" ry="6"/><ellipse cx="24" cy="26" rx="11" ry="5"/><ellipse cx="24" cy="17" rx="7" ry="4"/><path d="M9 36v-3M13 26v-2"/></symbol>
-    <symbol id="g-mains" viewBox="0 0 48 48"><path d="M24 40c-8-4-12-11-12-18 6 0 10 3 12 8 2-5 6-8 12-8 0 7-4 14-12 18zM24 30c-3-6-3-13 0-20 3 7 3 14 0 20zM12 22c-3-3-4-7-3-11 4 1 7 4 8 8"/></symbol>
-    <symbol id="g-rituels" viewBox="0 0 48 48"><path d="M8 32h32M12 32a12 12 0 0 1 24 0M24 12v4M12 17l3 3M36 17l-3 3M5 38h38M11 43h26"/></symbol>
-    <symbol id="i-fleche" viewBox="0 0 24 24"><path d="M14 6l-6 6 6 6"/></symbol>
-    <symbol id="i-suiv" viewBox="0 0 24 24"><path d="M10 6l6 6-6 6"/></symbol>
-    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
-    <symbol id="i-bloc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M6.5 6.5l11 11"/></symbol>
-    <symbol id="i-coche" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="etoile" viewBox="0 0 48 48"><path d="M24 2l4.2 11.8 11.4-5.4-5.4 11.4L46 24l-11.8 4.2 5.4 11.4-11.4-5.4L24 46l-4.2-11.8-11.4 5.4 5.4-11.4L2 24l11.8-4.2-5.4-11.4 11.4 5.4z"/><circle cx="24" cy="24" r="4"/></symbol>
+
+    <symbol id="v-visage" viewBox="0 0 160 120">
+      <path class="il-s" d="M118 20c10-10 24-8 30-2-8 12-22 14-30 2zM118 20c8-2 16-1 24 0"/><path class="il-s" d="M122 56c-4-18 4-30 12-34"/>
+      <circle class="il-s il-sa" cx="56" cy="54" r="38"/><circle class="il-s" cx="56" cy="54" r="31"/>
+      <path class="il-s il-p" d="M40 70c8 8 24 8 32 0M42 48c6-6 12-6 16 0M56 30v-6"/><path class="il-s" d="M72 38l5-5M76 48h6M34 36l-4-4"/>
+      <path class="il-s il-p" d="M72 90l12 24c1 3 6 3 7 0l-6-24z"/>
+      <path class="il-s il-t" d="M98 80h50c0 18-12 30-25 30s-25-12-25-30z"/><path class="il-s" d="M98 80c8 4 42 4 50 0M108 96c6 4 24 4 30 0"/>
+      <path class="il-s" d="M124 80l18-34M138 44c4-6 10-6 12-2-4 4-8 6-12 2z"/>
+    </symbol>
+    <symbol id="v-corps" viewBox="0 0 160 120">
+      <path class="il-s il-sa2" d="M42 104c-12-2-14-14-4-18 14-6 70-6 84 0 10 4 8 16-4 18z"/><path class="il-h2" d="M52 100c10 3 40 3 56 0M46 92c20-3 48-3 70 0"/>
+      <path class="il-s il-p" d="M52 82c-6-2-6-14 2-16 14-4 40-4 54 0 8 2 8 14 2 16z"/><path class="il-h2" d="M62 76c8 2 28 2 38 0"/>
+      <path class="il-s il-sa" d="M66 62c-5-1-5-11 2-12 8-3 24-3 30 0 6 1 6 11 1 12z"/><path class="il-h2" d="M74 58c6 1 14 1 18 0"/>
+      <path class="il-s il-t" d="M120 12c8 14 12 20 0 30-12-10-8-16 0-30z"/><path class="il-h2" d="M120 30c-2 4-1 6 0 8"/>
+      <path class="il-w" d="M78 40c-5-6 5-9 0-16M92 42c-5-6 5-9 0-16"/>
+      <use href="#fb" transform="translate(24 40) rotate(-30)"/><use href="#fa" transform="translate(24 40) rotate(-80) scale(.8)"/>
+    </symbol>
+    <symbol id="v-mains" viewBox="0 0 160 120">
+      <path class="il-s il-t" d="M30 54h28v48a6 6 0 0 1-6 6H36a6 6 0 0 1-6-6z"/><path class="il-s il-p" d="M36 54v-12h16v12z"/><path class="il-s" d="M38 28h12v14H38zM40 70h8M40 80h8"/>
+      <path class="il-s il-sa" d="M82 96l36-70c4-8 14-4 11 4l-26 74c-3 8-17 6-21-8z"/><path class="il-h2" d="M96 74l12 4M101 64l12 4M106 54l12 4M111 44l10 4"/>
+      <use href="#fb" transform="translate(120 100) rotate(-70) scale(.9)"/><use href="#fb" transform="translate(120 100) rotate(-20) scale(.8)"/><use href="#fb" transform="translate(120 100) rotate(30) scale(.8)"/><circle class="il-s il-t" cx="120" cy="100" r="4"/>
+    </symbol>
+    <symbol id="v-rituels" viewBox="0 0 160 120">
+      <path class="il-w" d="M52 30c-7-7 7-11 0-20M66 32c-7-7 7-11 0-20"/>
+      <path class="il-s il-p" d="M30 100h64c4-20-2-34-16-40H46c-14 6-20 20-16 40z"/><path class="il-h2" d="M38 90c14 4 38 4 50 0M42 78c10 3 28 3 38 0"/>
+      <path class="il-s il-t" d="M48 60c0-9 5-13 10-15h8c5 2 10 6 10 15z"/><circle class="il-s il-p" cx="62" cy="40" r="4"/>
+      <path class="il-s il-p" d="M94 86c14-6 20-18 30-26l5 5c-8 10-16 26-32 36z"/><path class="il-s" d="M30 72c-14-2-18 20-4 24"/>
+      <path class="il-s il-sa" d="M124 78h22l-2 24c0 3-2 4-5 4h-8c-3 0-5-1-5-4z"/><path class="il-s il-t" d="M124 86h22"/><use href="#fb" transform="translate(135 78) rotate(-100) scale(.6)"/><use href="#fb" transform="translate(135 78) rotate(-60) scale(.5)"/>
+      <path class="il-s" d="M26 108h108"/>
+    </symbol>
+    <symbol id="v-forfaits" viewBox="0 0 160 120">
+      <path class="il-s il-p" d="M36 62h88v46H36z"/><path class="il-h2" d="M44 70v32M52 70v32M60 70v32M100 70v32M108 70v32M116 70v32"/>
+      <path class="il-s il-sa" d="M30 48h100v16H30z"/><path class="il-s il-t" d="M72 48h16v60H72z"/>
+      <path class="il-s il-t" d="M80 48c-6-18-26-20-26-8 0 6 14 10 26 8zM80 48c6-18 26-20 26-8 0 6-14 10-26 8z"/>
+      <use href="#branche" x="116" y="6" width="38" height="52" opacity=".9"/>
+    </symbol>
+
+    <symbol id="p-sa" viewBox="0 0 120 150">
+      <path class="il-s il-sa" d="M8 150c4-30 30-42 52-42s48 12 52 42z"/><path class="il-s il-p" d="M44 108l16 22 16-22"/><path class="il-s il-p" d="M52 92v18l8 8 8-8V92z"/>
+      <circle class="il-s il-h" cx="60" cy="26" r="13"/><path class="il-hl" d="M52 24c4-6 12-6 16 0M54 30c4 3 8 3 12 0"/>
+      <ellipse class="il-s il-p" cx="60" cy="68" rx="23" ry="29"/>
+      <path class="il-s il-h" d="M36 70c-4-34 20-44 24-44s28 10 24 44c-4-14-12-26-24-26S40 56 36 70z"/><path class="il-hl" d="M44 54c4-8 10-12 16-12M52 50c3-4 6-6 9-7M76 52c-2-5-5-8-9-10"/>
+      <path class="il-s" d="M54 84c4 3 8 3 12 0M55 62h3M62 62h3"/><path class="il-s il-t" d="M92 120l12-36M104 84c2-4 6-5 8-3-2 4-5 6-8 3z"/>
+    </symbol>
+    <symbol id="p-in" viewBox="0 0 120 150">
+      <path class="il-s il-h" d="M32 66c-8-44 56-44 56 0 2 22 8 40 6 62H26c-2-22 4-40 6-62z"/><path class="il-hl" d="M34 80c-2 14-6 28-6 44M42 84c-2 14-4 28-4 40M86 80c2 14 6 28 6 44M78 84c2 14 4 28 4 40"/>
+      <path class="il-s il-sa" d="M8 150c4-28 30-38 52-38s48 10 52 38z"/><path class="il-s il-p" d="M52 94v16c0 4 16 4 16 0V94z"/>
+      <path class="il-s il-t" d="M44 112c4 10 28 10 32 0"/><circle class="il-t2" cx="47" cy="117" r="2.2"/><circle class="il-t2" cx="53" cy="121" r="2.2"/><circle class="il-t2" cx="60" cy="123" r="2.2"/><circle class="il-t2" cx="67" cy="121" r="2.2"/><circle class="il-t2" cx="73" cy="117" r="2.2"/>
+      <ellipse class="il-s il-p" cx="60" cy="68" rx="23" ry="29"/>
+      <path class="il-s il-h" d="M37 62c6-20 40-24 46 0-8-8-14-14-24-14s-16 4-22 14z"/><path class="il-s" d="M54 84c4 3 8 3 12 0M55 64h3M62 64h3"/>
+      <ellipse class="il-s il-sa2" cx="96" cy="124" rx="12" ry="8"/><path class="il-hl" d="M89 122c4 2 10 2 14 0"/>
+    </symbol>
+    <symbol id="p-ha" viewBox="0 0 120 150">
+      <path class="il-s il-h" d="M32 72c-8-48 60-48 56 0v26c-6-10-14-16-28-16s-22 6-28 16z"/>
+      <path class="il-s il-sa" d="M8 150c4-30 30-42 52-42s48 12 52 42z"/><path class="il-s il-p" d="M48 108v42M72 108v42"/><path class="il-s il-p" d="M52 94v16c0 4 16 4 16 0V94z"/><path class="il-s" d="M48 130h24"/>
+      <ellipse class="il-s il-p" cx="60" cy="68" rx="23" ry="29"/>
+      <path class="il-s il-h" d="M36 64c4-26 44-26 48 0-6-10-14-18-24-18s-18 8-24 18z"/><path class="il-hl" d="M42 58c6-8 12-10 18-10M60 46c8 0 14 4 20 12"/><path class="il-s il-t" d="M36 54c8-8 40-8 48 0"/>
+      <path class="il-s" d="M54 84c4 3 8 3 12 0M55 64h3M62 64h3"/><path class="il-s il-p" d="M92 126l16-18 4 4-16 18z"/><path class="il-hl" d="M96 122l4 4M99 118l4 4"/>
+    </symbol>
   </defs>
 </svg>
 
@@ -49,51 +113,104 @@
     <svg class="entete-branche" viewBox="0 0 250 340" aria-hidden="true" focusable="false"><circle class="soleil" cx="168" cy="108" r="64"/><use href="#branche"/></svg>
   </div>
   <div class="entete-bas">
-    <div class="onglets" role="tablist" aria-label="Choisir la vue">
-      <button type="button" role="tab" id="onglet-client" aria-controls="vue-client" aria-selected="true" data-vue="client">Espace client</button>
-      <button type="button" role="tab" id="onglet-gestion" aria-controls="vue-gestion" aria-selected="false" tabindex="-1" data-vue="gestion">Gestion de l’institut</button>
-    </div>
-    <p class="entete-note">Démonstration : rien n’est enregistré, tout repart de zéro au rechargement de la page.</p>
+    <nav class="onglets" aria-label="Parties de la démonstration">
+      <a href="./" aria-current="page">Accueil</a>
+      <a href="reserver/">Espace client</a>
+      <a href="reserver/#gestion">Gestion</a>
+    </nav>
+    <p class="entete-note">Démonstration : la réservation et la gestion s’ouvrent dans l’application, rien n’y est enregistré.</p>
   </div>
 </header>
 
-<main class="page" id="contenu">
-  <div class="sans-js" role="note">
-    <h2>Cette démonstration demande JavaScript</h2>
-    <p>Le parcours de réservation et le planning sont interactifs et ne s’affichent pas sans JavaScript. Voici ce que propose l’institut fictif :</p>
-    <ul>
-      <li><b>Visage</b> : soin éclat express (30 min), hydratation profonde (60 min), nettoyage de peau (75 min).</li>
-      <li><b>Corps</b> : massage dos et nuque (30 min), massage relaxant (60 min), gommage et enveloppement (45 min).</li>
-      <li><b>Mains et pieds</b> : pose de vernis, manucure, pédicure.</li>
-      <li><b>Rituels</b> : rituel Naïa (90 min), rituel détente (60 min).</li>
-    </ul>
-    <p>Ouvert du lundi au samedi, fermé le dimanche. Prix fictifs, en dirhams.</p>
-  </div>
-
-  <section id="vue-client" class="vue" role="tabpanel" aria-labelledby="onglet-client" tabindex="-1" hidden>
-    <nav class="sousnav" aria-label="Espace client">
-      <button type="button" data-sous="reserver" aria-current="page">Réserver un soin</button>
-      <button type="button" data-sous="mes">Mes rendez-vous <span class="pastille" id="nb-mes" hidden>0</span></button>
-    </nav>
-    <div id="zone-reserver">
-      <ol class="etapes" id="etapes" aria-label="Étapes de la réservation"></ol>
-      <div class="resa">
-        <div class="resa-etape" id="etape" tabindex="-1"></div>
-        <aside class="recap" id="recap" aria-label="Votre rendez-vous"></aside>
+<main class="page accueil" id="contenu">
+    <div class="hero">
+      <div class="hero-txt">
+        <p class="kicker">Institut fictif · Casablanca</p>
+        <h2 class="hero-titre">Un temps pour soi, à rythme lent.</h2>
+        <p class="hero-p">Trois praticiennes, des huiles tièdes, une salle calme et un thé à la menthe à la fin. Choisissez un soin, ajoutez des options, réservez votre créneau : tout est prêt à votre arrivée.</p>
+        <div class="actions"><a class="btn" href="reserver/">Réserver un soin</a><a class="btn btn-sec" href="#soins">Voir les soins</a></div>
+        <p class="hero-note">Démonstration : l’acompte, les rappels et les messages sont simulés.</p>
       </div>
+      <svg class="hero-ill" viewBox="0 0 440 500" role="img" aria-label="Illustration : une niche en arc dans un mur de tadelakt, une vasque d’eau avec des pétales, une branche d’olivier, un flacon d’huile et une bougie.">
+        <rect class="il-s il-sa2" x="14" y="30" width="412" height="450" rx="26"/>
+        <path class="il-s il-p" d="M106 472V250C106 150 160 92 220 66c60 26 114 84 114 184v222z"/>
+        <path class="il-s il-dots" d="M124 472V254c0-86 46-140 96-166 50 26 96 80 96 166v218"/>
+        <circle class="il-t il-so" cx="220" cy="196" r="54"/><circle class="il-s il-dots" cx="220" cy="196" r="64"/><circle class="il-s il-dots" cx="220" cy="196" r="74"/>
+        <g class="il-et"><use href="#etoile" x="62" y="250" width="30" height="30"/><use href="#etoile" x="62" y="296" width="30" height="30"/><use href="#etoile" x="62" y="342" width="30" height="30"/><use href="#etoile" x="62" y="388" width="30" height="30"/><use href="#etoile" x="62" y="434" width="30" height="30"/>
+          <use href="#etoile" x="348" y="250" width="30" height="30"/><use href="#etoile" x="348" y="296" width="30" height="30"/><use href="#etoile" x="348" y="342" width="30" height="30"/><use href="#etoile" x="348" y="388" width="30" height="30"/><use href="#etoile" x="348" y="434" width="30" height="30"/></g>
+        <use href="#branche" x="214" y="252" width="124" height="169"/>
+        <path class="il-s il-p" d="M154 418c4 38 36 52 60 52s56-14 60-52z"/><path class="il-h2" d="M168 436c8 14 20 22 34 24M180 428c8 18 22 28 42 30M240 438c-6 10-12 16-20 20"/>
+        <ellipse class="il-s il-sa" cx="214" cy="418" rx="60" ry="13"/><ellipse class="il-s" cx="214" cy="418" rx="38" ry="7"/><ellipse class="il-s" cx="214" cy="418" rx="18" ry="3.2"/>
+        <use href="#fb" transform="translate(190 416) rotate(-12) scale(.5)"/><use href="#fb" transform="translate(228 420) rotate(168) scale(.45)"/><use href="#fb" transform="translate(206 424) rotate(30) scale(.4)"/>
+        <rect class="il-s il-t" x="290" y="426" width="26" height="46" rx="9"/><rect class="il-s il-p" x="298" y="406" width="10" height="20"/><rect class="il-s il-t" x="297" y="399" width="12" height="8" rx="2"/><rect class="il-s il-p" x="294" y="440" width="18" height="18" rx="3"/><path class="il-s" d="M298 446h10M298 451h7"/>
+        <rect class="il-s il-p" x="124" y="438" width="22" height="34" rx="3"/><path class="il-h2" d="M130 444v22M138 444v22"/><path class="il-s il-t" d="M135 436c-6-8 0-14 0-22 6 8 6 14 0 22z"/>
+        <path class="il-s" d="M60 472h320"/><path class="il-h2" d="M66 480h44M126 480h70M214 480h30M262 480h84"/>
+      </svg>
     </div>
-    <div id="zone-mes" hidden></div>
-  </section>
+    <div class="frise" aria-hidden="true"></div>
 
-  <section id="vue-gestion" class="vue" role="tabpanel" aria-labelledby="onglet-gestion" tabindex="-1" hidden></section>
+    <section class="bloc-a pres" aria-labelledby="t-pres">
+      <div class="pres-txt">
+        <h2 id="t-pres">L’institut</h2>
+        <p>Institut Naïa est un lieu imaginaire pour cette démonstration : une maison claire où l’on prend le temps. Les soins du visage s’appuient sur l’argile, le rhassoul et des textures simples ; les massages se font à l’huile tiède, sans hâte.</p>
+        <p>Chaque soin peut être complété d’options, et plusieurs soins existent en forfaits. Pour garantir votre créneau, un acompte de 30 % est demandé à la réservation, remboursé si vous annulez au moins 24 h avant. Dans cette démonstration, cet acompte est simulé : aucune carte, aucun débit.</p>
+        <ol class="parcours">
+          <li><b>Choisir</b><span>un soin, ses options, la praticienne.</span></li>
+          <li><b>Réserver</b><span>un jour et une heure, ou la liste d’attente si le jour est complet.</span></li>
+          <li><b>Venir</b><span>ou déplacer, ou annuler selon le délai affiché.</span></li>
+        </ol>
+      </div>
+      <aside class="pratique" aria-labelledby="t-prat">
+        <h3 id="t-prat">Pratique</h3>
+        <dl>
+          <div><dt>Horaires</dt><dd>Lundi au vendredi, 9 h à 19 h<br>Samedi, 9 h à 17 h<br>Pause de 13 h à 14 h 30</dd></div>
+          <div><dt>Fermeture</dt><dd>Dimanche et jours fériés</dd></div>
+          <div><dt>Adresse</dt><dd>Adresse fictive, Casablanca<br>05 00 00 00 00</dd></div>
+          <div><dt>Acompte</dt><dd>30 % simulés · remboursé jusqu’à 24 h avant</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="bloc-a" id="soins" aria-labelledby="t-soins">
+      <h2 id="t-soins">Les soins</h2>
+      <p class="aide">Choisissez un soin pour commencer sa réservation. Durées et prix fictifs, en dirhams marocains.</p>
+      <div id="accueil-soins">
+<article class="cat-bloc" id="soins-visage"><svg class="vignette" viewBox="0 0 160 120" aria-hidden="true" focusable="false"><use href="#v-visage"/></svg><div class="cat-corps"><h3>Visage</h3><ul class="menu"><li><a class="ligne-soin" href="reserver/?soin=v1"><span class="ls-nom">Soin éclat express</span><span class="ls-pts" aria-hidden="true"></span><span class="ls-prix">250 MAD</span><span class="ls-desc">Nettoyage doux, masque à l’argile rose, crème de finition. 30 min</span></a></li><li><a class="ligne-soin" href="reserver/?soin=v2"><span class="ls-nom">Soin hydratation profonde</span><span class="ls-pts" aria-hidden="true"></span><span class="ls-prix">450 MAD</span><span class="ls-desc">Gommage, sérum à l’acide hyaluronique, massage du visage. 1 h</span></a></li><li><a class="ligne-soin" href="reserver/?soin=v3"><span class="ls-nom">Nettoyage de peau complet</span><span class="ls-pts" aria-hidden="true"></span><span class="ls-prix">520 MAD</span><span class="ls-desc">Vapeur, extraction, masque apaisant à la camomille. 1 h 15</span></a></li></ul></div></article>
+<article class="cat-bloc" id="soins-corps"><svg class="vignette" viewBox="0 0 160 120" aria-hidden="true" focusable="false"><use href="#v-corps"/></svg><div class="cat-corps"><h3>Corps</h3><ul class="menu"><li><a class="ligne-soin" href="reserver/?soin=c1"><span class="ls-nom">Massage dos et nuque</span><span class="ls-pts" aria-hidden="true"></span><span class="ls-prix">280 MAD</span><span class="ls-desc">Huile tiède d’argan, pressions lentes sur les trapèzes. 30 min</span></a></li><li><a class="ligne-soin" href="reserver/?soin=c2"><span class="ls-nom">Massage relaxant</span><span class="ls-pts" aria-hidden="true"></span><span class="ls-prix">500 MAD</span><span class="ls-desc">Corps entier, huile de sésame, rythme lent. 1 h</span></a></li><li><a class="ligne-soin" href="reserver/?soin=c3"><span class="ls-nom">Gommage et enveloppement</span><span class="ls-pts" aria-hidden="true"></span><span class="ls-prix">380 MAD</span><span class="ls-desc">Savon noir, gant de crin, enveloppement au rhassoul. 45 min</span></a></li></ul></div></article>
+<article class="cat-bloc" id="soins-mains"><svg class="vignette" viewBox="0 0 160 120" aria-hidden="true" focusable="false"><use href="#v-mains"/></svg><div class="cat-corps"><h3>Mains et pieds</h3><ul class="menu"><li><a class="ligne-soin" href="reserver/?soin=m1"><span class="ls-nom">Pose de vernis</span><span class="ls-pts" aria-hidden="true"></span><span class="ls-prix">120 MAD</span><span class="ls-desc">Mise en forme et vernis au choix. 30 min</span></a></li><li><a class="ligne-soin" href="reserver/?soin=m2"><span class="ls-nom">Manucure soin</span><span class="ls-pts" aria-hidden="true"></span><span class="ls-prix">200 MAD</span><span class="ls-desc">Bain de mains, cuticules, massage, vernis ou finition mate. 45 min</span></a></li><li><a class="ligne-soin" href="reserver/?soin=m3"><span class="ls-nom">Pédicure soin</span><span class="ls-pts" aria-hidden="true"></span><span class="ls-prix">280 MAD</span><span class="ls-desc">Bain de pieds, gommage, limage, massage des voûtes. 1 h</span></a></li></ul></div></article>
+<article class="cat-bloc" id="soins-rituels"><svg class="vignette" viewBox="0 0 160 120" aria-hidden="true" focusable="false"><use href="#v-rituels"/></svg><div class="cat-corps"><h3>Rituels</h3><ul class="menu"><li><a class="ligne-soin" href="reserver/?soin=r1"><span class="ls-nom">Rituel Naïa</span><span class="ls-pts" aria-hidden="true"></span><span class="ls-prix">780 MAD</span><span class="ls-desc">Gommage, massage du corps et soin du visage, thé à la menthe. 1 h 30</span></a></li><li><a class="ligne-soin" href="reserver/?soin=r2"><span class="ls-nom">Rituel détente</span><span class="ls-pts" aria-hidden="true"></span><span class="ls-prix">520 MAD</span><span class="ls-desc">Massage du dos, soin du visage express, infusion. 1 h</span></a></li></ul></div></article>
+<article class="cat-bloc" id="soins-forfaits"><svg class="vignette" viewBox="0 0 160 120" aria-hidden="true" focusable="false"><use href="#v-forfaits"/></svg><div class="cat-corps"><h3>Forfaits</h3><p class="aide">Plusieurs soins enchaînés, à un prix plus doux que séparés.</p><ul class="menu"><li><a class="ligne-soin" href="reserver/?soin=f1"><span class="ls-nom">Forfait Escale</span><span class="ls-pts" aria-hidden="true"></span><span class="ls-prix">680 MAD</span><span class="ls-desc">Hydratation profonde du visage, puis massage du dos et de la nuque. 1 h 30 · au lieu de 730 MAD</span></a></li><li><a class="ligne-soin" href="reserver/?soin=f2"><span class="ls-nom">Forfait mains et pieds</span><span class="ls-pts" aria-hidden="true"></span><span class="ls-prix">440 MAD</span><span class="ls-desc">Manucure soin et pédicure soin à la suite, dans le même fauteuil. 1 h 45 · au lieu de 480 MAD</span></a></li><li><a class="ligne-soin" href="reserver/?soin=f3"><span class="ls-nom">Forfait Naïa complet</span><span class="ls-pts" aria-hidden="true"></span><span class="ls-prix">890 MAD</span><span class="ls-desc">Nettoyage de peau complet, puis massage relaxant et thé à la menthe. 2 h 15 · au lieu de 1 020 MAD</span></a></li></ul></div></article>
+      </div>
+    </section>
+
+    <section class="bloc-a" aria-labelledby="t-pracs">
+      <h2 id="t-pracs">Les praticiennes</h2>
+      <p class="aide">Trois praticiennes fictives. Vous choisissez la vôtre à la réservation, ou nous vous confions à celle qui est disponible.</p>
+      <ul class="portraits">
+        <li class="portrait"><svg class="p-cadre" viewBox="0 0 120 150" aria-hidden="true" focusable="false"><use href="#p-sa"/></svg>
+          <div><h3>Salma</h3><p class="p-titre">Esthéticienne</p><p>Soins du visage, mains et pieds, rituels. Un geste précis, des masques à l’argile qu’elle prépare elle-même.</p><p class="p-jours">Lundi, mardi, jeudi, vendredi, samedi</p>
+          <a class="btn btn-sec" href="reserver/?prac=sa">Réserver avec Salma</a></div></li>
+        <li class="portrait"><svg class="p-cadre" viewBox="0 0 120 150" aria-hidden="true" focusable="false"><use href="#p-in"/></svg>
+          <div><h3>Inès</h3><p class="p-titre">Praticienne de massage</p><p>Massages du corps, gommages, rituels. Huiles tièdes, rythme lent, pierres chaudes en option.</p><p class="p-jours">Mardi, mercredi, jeudi, vendredi, samedi</p>
+          <a class="btn btn-sec" href="reserver/?prac=in">Réserver avec Inès</a></div></li>
+        <li class="portrait"><svg class="p-cadre" viewBox="0 0 120 150" aria-hidden="true" focusable="false"><use href="#p-ha"/></svg>
+          <div><h3>Hanane</h3><p class="p-titre">Esthéticienne</p><p>Visage, corps, mains et pieds, et tous les forfaits qui enchaînent plusieurs soins dans la même séance.</p><p class="p-jours">Lundi, mercredi, jeudi, vendredi, samedi</p>
+          <a class="btn btn-sec" href="reserver/?prac=ha">Réserver avec Hanane</a></div></li>
+      </ul>
+    </section>
+
+    <section class="final" aria-labelledby="t-final">
+      <svg class="final-b" viewBox="0 0 250 340" aria-hidden="true" focusable="false"><use href="#branche"/></svg>
+      <h2 id="t-final">Prête quand vous l’êtes.</h2>
+      <p>Réservez en quelques minutes ; le rendez-vous apparaît ensuite dans « Mes rendez-vous » et, côté institut, dans la Gestion : planning, fiches clientes, rappels simulés et statistiques de la semaine.</p>
+      <div class="actions"><a class="btn" href="reserver/">Réserver un soin</a><a class="btn btn-sec" href="reserver/#gestion">Voir la gestion de l’institut</a></div>
+    </section>
 </main>
 
 <footer class="pied">
-  <p>Page de démonstration : l’Institut Naïa n’existe pas, ce n’est pas un client de Legantis. Prix, praticiennes, clientes et rendez-vous sont fictifs. Aucun SMS ni e-mail n’est envoyé.</p>
+  <p>Page de démonstration : l’Institut Naïa n’existe pas, ce n’est pas un client de Legantis. Prix, praticiennes, clientes et rendez-vous sont fictifs. Aucun SMS ni e-mail n’est envoyé, aucun paiement n’a lieu. Cette page n’utilise aucun script.</p>
   <p><a href="/estimer-mon-projet/">Un projet comparable ? Demander un devis gratuit</a></p>
 </footer>
-
-<dialog id="dlg" class="dlg" aria-labelledby="dlg-titre"></dialog>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="/realisations/demos/source.js" defer></script>
 </body>
 </html>

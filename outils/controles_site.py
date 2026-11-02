@@ -261,7 +261,7 @@ for u, lang in ((BASE, 'fr'), (BASE + 'en/', 'en')):
     for img in re.findall(r'<div class="ecran">(<img [^>]*>)</div>', h):
         if not re.search(r'\bwidth="\d+" height="\d+"', img) or 'loading="lazy"' not in img: echecs.append(f'{u}: capture {img[:60]}… sans width/height ou sans loading="lazy"')
 # ── Conversion (30/10/2026) ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-HORS_SITEMAP = ['offre-lancement/', 'realisations/demos/restaurant/', 'realisations/demos/services/', 'realisations/demos/reservation/', 'realisations/demos/gestion/', 'realisations/demos/distribution-os/', 'realisations/demos/services/services/', 'realisations/demos/services/services/climatisation/', 'realisations/demos/services/services/electricite/', 'realisations/demos/services/services/maintenance/', 'realisations/demos/services/realisations/', 'realisations/demos/services/a-propos/', 'realisations/demos/services/contact/', 'realisations/demos/services/devis/']
+HORS_SITEMAP = ['offre-lancement/', 'realisations/demos/restaurant/', 'realisations/demos/services/', 'realisations/demos/reservation/', 'realisations/demos/gestion/', 'realisations/demos/distribution-os/', 'realisations/demos/services/services/', 'realisations/demos/services/services/climatisation/', 'realisations/demos/services/services/electricite/', 'realisations/demos/services/services/maintenance/', 'realisations/demos/services/realisations/', 'realisations/demos/services/a-propos/', 'realisations/demos/services/contact/', 'realisations/demos/services/devis/', 'realisations/demos/services/espace/', 'realisations/demos/reservation/reserver/']
 for rel in HORS_SITEMAP:
     u = BASE + rel
     if f'<loc>{u}</loc>' in sm: echecs.append(f'{u}: page d\'offre ou démonstration dans le sitemap')
@@ -288,6 +288,29 @@ for f in (os.path.join(d, n) for d, _, fs in os.walk(RACINE) for n in fs if n ==
     niveaux = [int(x) for x in re.findall(r'<h([1-6])\b', open(f, encoding='utf-8').read())]
     for a_, b_ in zip(niveaux, niveaux[1:]):
         if b_ > a_ + 1: echecs.append(f'{os.path.relpath(f, RACINE)}: titre h{b_} juste après h{a_}'); break
+# Numéro de section : affiché une seule fois (plus de chiffre fantôme) et séparé du libellé pour les lecteurs d'écran.
+for f in (os.path.join(d, n) for d, _, fs in os.walk(RACINE) for n in fs if n == 'index.html'):
+    t = open(f, encoding='utf-8').read(); rel = os.path.relpath(f, RACINE)
+    if 'numero-fantome' in t: echecs.append(f'{rel}: numéro de section affiché deux fois')
+    if re.search(r'<span class="no">\d\d</span>\S', t): echecs.append(f'{rel}: numéro de section collé à son libellé')
+# Atlasya : pas de lien vers le site web tant que sa recherche ne propose aucun praticien (02/11/2026) ; la politique de confidentialité reste liée.
+for f in (os.path.join(d, n) for d, _, fs in os.walk(RACINE) for n in fs if n == 'index.html'):
+    for h in re.findall(r'<a[^>]*href="(https://atlasyahealth\.com[^"]*)"', open(f, encoding='utf-8').read()):
+        if not h.endswith('/confidentialite'): echecs.append(f'{os.path.relpath(f, RACINE)}: lien vers {h}')
+# Démonstrations : sur écran tactile, un survol « collé » après un toucher masquait l'état choisi (jour du restaurant sur iOS) ;
+#   toute règle :hover vit dans @media (hover: hover). Et iOS ne doit pas transformer les faux numéros en liens d'appel.
+for f in (os.path.join(d, n) for d, _, fs in os.walk(os.path.join(RACINE, 'realisations', 'demos')) for n in fs):
+    rel = os.path.relpath(f, RACINE)
+    if f.endswith('.css'):
+        css = re.sub(r'/\*.*?\*/', '', open(f, encoding='utf-8').read(), flags=re.S); prof = 0; tete = ''
+        for c in css:
+            if c == '{':
+                if prof == 0 and ':hover' in tete and not tete.strip().startswith('@'): echecs.append(f'{rel}: :hover hors de @media (hover: hover) : {tete.strip()[:60]}')
+                if prof == 0 and tete.strip().startswith('@media') and 'hover' in tete: prof += 100
+                prof += 1; tete = ''
+            elif c == '}': prof = 0 if prof in (1, 101) else prof - 1; tete = ''
+            elif prof == 0: tete += c
+    elif f.endswith('.html') and 'format-detection' not in open(f, encoding='utf-8').read(): echecs.append(f'{rel}: numéros fictifs transformés en liens par iOS (format-detection absent)')
 # Rihla : « hors ligne » sans réserve est faux (le jeu en ligne du web envoie des scores à un serveur).
 for f in (os.path.join(d, n) for d, _, fs in os.walk(RACINE) for n in fs if n == 'index.html'):
     if '/demos/' in f: continue
@@ -319,7 +342,14 @@ if os.path.isdir(DOS):
             src = re.search(r'src="\.\./([^"]+)"', img).group(1)
             if not os.path.exists(os.path.join(RACINE, src)): echecs.append(f'/commandes/: {src} absente')
     cv = open(os.path.join(RACINE, 'assets', 'conversion.js'), encoding='utf-8').read()
-    if 'a[href*="demos/distribution-os/"]' not in cv: echecs.append('conversion.js : la campagne n\'est plus transmise aux liens vers la démonstration')
+    if 'a[href*="demos/"]' not in cv: echecs.append('conversion.js : la campagne n\'est plus transmise aux liens vers les démonstrations')
+    # Maison Tilal, Mizan Technique, Institut Naïa : chaque page charge source.js, qui rend la campagne aux liens (test : outils/test_utm_demos.mjs)
+    for nom_demo in ('restaurant', 'services', 'reservation'):   # Distribution OS : sa source passe par app.js (lienLegantis)
+        for dossier, _, fichiers in os.walk(os.path.join(RACINE, 'realisations', 'demos', nom_demo)):
+            if 'index.html' not in fichiers: continue
+            page = os.path.join(dossier, 'index.html')
+            if '/realisations/demos/source.js' not in open(page, encoding='utf-8').read():
+                echecs.append(f'{os.path.relpath(page, RACINE)} : source.js absent, la campagne serait perdue dans la démonstration')
 # réalisations : chaque carte dit sa nature ; aucune démonstration sans étiquette ; aucun témoignage ni client
 rea = BASE + 'realisations/'
 if rea in pages:

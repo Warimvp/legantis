@@ -1,12 +1,12 @@
 // Largeur : rectangles des éléments ET du texte (un mot peut sortir de sa propre boîte), défilement horizontal réel de <html>, bouton du menu
 // entièrement visible. Pages = sitemap, 7 largeurs de 320 à 1440 px. `node outils/largeurs.js` ; SITE_ROOT=<dossier> pour un autre site.
-const { chromium } = require('/Users/user/Projects/RydeX/node_modules/playwright');
+const chromium = require('/Users/user/Projects/RydeX/node_modules/playwright')[process.env.NAVIGATEUR || 'chromium'];   // NAVIGATEUR=webkit|firefox, NAVIGATEUR_CHEMIN=exécutable
 const fs = require('fs');
 const RACINE = process.env.SITE_ROOT || require('path').join(__dirname, '..', 'site');
 const PAGES = [...fs.readFileSync(RACINE + '/sitemap.xml', 'utf8').matchAll(/<loc>https:\/\/legantis.net\/([^<]*)<\/loc>/g)].map(m => m[1]);
 const LARGEURS = [320, 340, 360, 390, 414, 768, 1440];
 (async () => {
-  const browser = await chromium.launch(); let bad = 0, n = 0;
+  const browser = await chromium.launch({ executablePath: process.env.NAVIGATEUR_CHEMIN || undefined }); let bad = 0, n = 0;
   for (const w of LARGEURS) {
     const ctx = await browser.newContext({ viewport: { width: w, height: 800 }, reducedMotion: 'reduce' });
     const page = await ctx.newPage();
