@@ -227,9 +227,10 @@ if os.path.exists(ACQ):
         ouv, corps = m.group(1), m.group(2)
         if not re.search(r'action="https://[a-z0-9-]+(\.[a-z0-9-]+)*\.workers\.dev/"', ouv) or 'method="post"' not in ouv: echecs.append(f'{u}: méthode ou adresse du formulaire')
         if '<input type="hidden" name="parcours" value="commandes">' not in corps: echecs.append(f'{u}: champ caché parcours absent')
-        for nom in ('activite', 'ville', 'equipe', 'budget'):
+        for nom in ('activite', 'ville', 'equipe', 'budget'):   # activité et budget font la priorité : obligatoires ; ville et équipe facultatives (V3.1)
             sel = re.search(r'<select\b[^>]*name="' + nom + r'"[^>]*>(.*?)</select>', corps, re.S)
-            if not sel or 'required' not in sel.group(0).split('>')[0]: echecs.append(f'{u}: liste {nom} absente ou facultative'); continue
+            if not sel: echecs.append(f'{u}: liste {nom} absente'); continue
+            if nom in ('activite', 'budget') and 'required' not in sel.group(0).split('>')[0]: echecs.append(f'{u}: liste {nom} facultative, la priorité ne peut plus être calculée')
             bloc = re.search(nom + r": \{ libelle: '[^']*', valeurs: \{(.*?)\} \}", src, re.S)
             for v, lib in re.findall(r'<option value="([^"]+)">([^<]*)</option>', sel.group(1)):
                 if bloc and not re.search(r"(?:^|[\s,{])'?" + re.escape(v) + r"'?: '" + re.escape(lib).replace("'", "\\\\?'") + "'", bloc.group(1)): echecs.append(f'{u}: option {nom}={v} ({lib}) inconnue du Worker')

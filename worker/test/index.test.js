@@ -240,7 +240,7 @@ const AVEC_TYPE = { ...VALIDE, type: 'mobile', entreprise: 'Salon Amina' };
 
 test('mesure : un envoi accepté est compté une fois, avec le jour, le type et la langue, rien de personnel', async () => {
   const base = d1();
-  const r = await worker.fetch(post(AVEC_TYPE), { ...ENV, MESURES: base });
+  const r = await worker.fetch(post(AVEC_TYPE), { ...ENV, MESURE_SEL: 'sel-de-test', MESURES: base });
   assert.equal(lieu(r), 'https://legantis.net/#devis-envoye');
   const lignes = base.db.prepare('SELECT * FROM devis_compteur').all();
   assert.equal(lignes.length, 1);
@@ -252,7 +252,7 @@ test('mesure : un envoi accepté est compté une fois, avec le jour, le type et 
 });
 
 test('mesure : la même demande renvoyée (double clic, retour arrière) ne part pas deux fois et n\'est comptée qu\'une fois', async () => {
-  const base = d1(); const env = { ...ENV, MESURES: base };
+  const base = d1(); const env = { ...ENV, MESURE_SEL: 'sel-de-test', MESURES: base };
   const r1 = await worker.fetch(post(AVEC_TYPE), env);
   const r2 = await worker.fetch(post(AVEC_TYPE), env);
   assert.equal(lieu(r1), 'https://legantis.net/#devis-envoye');
@@ -269,7 +269,7 @@ test('mesure : la même demande renvoyée (double clic, retour arrière) ne part
 });
 
 test('mesure : deux envois simultanés de la même demande ne donnent qu\'un mail', async () => {
-  const base = d1(); const env = { ...ENV, MESURES: base };
+  const base = d1(); const env = { ...ENV, MESURE_SEL: 'sel-de-test', MESURES: base };
   const [a, b] = await Promise.all([worker.fetch(post(AVEC_TYPE), env), worker.fetch(post(AVEC_TYPE), env)]);
   assert.equal(lieu(a), 'https://legantis.net/#devis-envoye');
   assert.equal(lieu(b), 'https://legantis.net/#devis-envoye');
@@ -278,7 +278,7 @@ test('mesure : deux envois simultanés de la même demande ne donnent qu\'un mai
 });
 
 test('mesure : après un échec d\'envoi, un nouvel essai part (l\'empreinte est retirée) ; échec et exception comptés', async () => {
-  const base = d1(); const env = { ...ENV, MESURES: base };
+  const base = d1(); const env = { ...ENV, MESURE_SEL: 'sel-de-test', MESURES: base };
   reponseResend = () => new Response('{}', { status: 500 });
   assert.equal(lieu(await worker.fetch(post(AVEC_TYPE), env)), 'https://legantis.net/#devis-echec');
   assert.equal(compte(base, 'echec_envoi'), 1);
@@ -293,7 +293,7 @@ test('mesure : après un échec d\'envoi, un nouvel essai part (l\'empreinte est
 });
 
 test('mesure : une empreinte expirée (plus de 10 min) est purgée, la demande repart', async () => {
-  const base = d1(); const env = { ...ENV, MESURES: base };
+  const base = d1(); const env = { ...ENV, MESURE_SEL: 'sel-de-test', MESURES: base };
   await worker.fetch(post(AVEC_TYPE), env);
   base.db.prepare('UPDATE devis_empreintes SET expire = ?').run(Math.floor(Date.now() / 1000) - 1);
   await worker.fetch(post(AVEC_TYPE), env);
@@ -303,8 +303,8 @@ test('mesure : une empreinte expirée (plus de 10 min) est purgée, la demande r
 
 test('mesure : piège, champs invalides et limite de débit comptés, sans envoi', async () => {
   const base = d1();
-  await worker.fetch(post({ ...AVEC_TYPE, site_web: 'https://spam.example' }), { ...ENV, MESURES: base });
-  await worker.fetch(post({ ...AVEC_TYPE, email: 'pas-un-email' }), { ...ENV, MESURES: base });
+  await worker.fetch(post({ ...AVEC_TYPE, site_web: 'https://spam.example' }), { ...ENV, MESURE_SEL: 'sel-de-test', MESURES: base });
+  await worker.fetch(post({ ...AVEC_TYPE, email: 'pas-un-email' }), { ...ENV, MESURE_SEL: 'sel-de-test', MESURES: base });
   await worker.fetch(post(AVEC_TYPE), { ...ENV, MESURES: base, LIMITE: { limit: async () => ({ success: false }) } });
   assert.equal(envois.length, 0);
   assert.deepEqual([compte(base, 'piege'), compte(base, 'invalide'), compte(base, 'limite'), compte(base, 'envoye')], [1, 1, 1, 0]);
@@ -315,6 +315,27 @@ test('mesure : une base en panne ne bloque jamais un envoi (ni la réponse)', as
   const r = await worker.fetch(post(AVEC_TYPE), { ...ENV, MESURES: panne });
   assert.equal(lieu(r), 'https://legantis.net/#devis-envoye');
   assert.equal(envois.length, 1);
+});
+
+test('mesure : sans sel secret (MESURE_SEL), la base compte mais ne dédoublonne pas : un sel public ne pseudonymiserait rien', async () => {
+  const base = d1(); const env = { ...ENV, MESURES: base };
+  await worker.fetch(post(AVEC_TYPE), env);
+  await worker.fetch(post(AVEC_TYPE), env);
+  assert.equal(envois.length, 2);
+  assert.equal(compte(base, 'envoye'), 2);
+  assert.equal(base.db.prepare('SELECT COUNT(*) AS n FROM devis_empreintes').get().n, 0);
+});
+
+test('mesure : /commandes/ sans description, deux demandes qui ne diffèrent que par le budget ou l\'entreprise partent toutes deux', async () => {
+  const base = d1(); const env = { ...ENV, MESURE_SEL: 'sel-de-test', MESURES: base };
+  const LEGER = { ...COMMANDES, projet: '', ville: '', equipe: '' };
+  await worker.fetch(post(LEGER), env);
+  await worker.fetch(post({ ...LEGER, budget: '100+' }), env);
+  await worker.fetch(post({ ...LEGER, entreprise: 'Distribution Rif' }), env);
+  assert.equal(envois.length, 3);
+  await worker.fetch(post(LEGER), env);   // la même, renvoyée : doublon
+  assert.equal(envois.length, 3);
+  assert.equal(compte(base, 'doublon'), 1);
 });
 
 test('mesure : sans binding MESURES, aucun dédoublonnage (comportement d\'avant la mesure)', async () => {
@@ -469,7 +490,7 @@ test('pack demandé : recopié s\'il est connu seulement', async () => {
 
 test('mesure : parcours, source et campagne comptés, rien de personnel', async () => {
   const base = d1();
-  await worker.fetch(post({ ...SIMULATEUR, utm_source: 'facebook', utm_campaign: 'nov' }), { ...ENV, MESURES: base });
+  await worker.fetch(post({ ...SIMULATEUR, utm_source: 'facebook', utm_campaign: 'nov' }), { ...ENV, MESURE_SEL: 'sel-de-test', MESURES: base });
   const [ligne] = base.db.prepare('SELECT * FROM devis_compteur').all();
   assert.equal(ligne.parcours, 'simulateur');
   assert.equal(ligne.source, 'facebook');
@@ -487,6 +508,26 @@ test('parcours commandes : une demande qualifiée part en priorité A et revient
   for (const morceau of ['Priorité estimée : A', 'Activité : Distribution ou vente en gros', 'Ville : Casablanca-Mohammedia', 'Utilisateurs prévus : 4 à 10', 'Budget envisagé : 50 000 à 100 000 MAD', 'Délai souhaité : Sous 3 mois']) assert.ok(envois[0].corps.text.includes(morceau), morceau);
 });
 
+test('parcours commandes V3.1 : ville, équipe et projet facultatifs, la priorité reste calculée', async () => {
+  const { ville, equipe, projet, ...court } = COMMANDES;
+  const r = await worker.fetch(post(court), ENV);
+  assert.equal(lieu(r), 'https://legantis.net/commandes/#devis-envoye');
+  assert.equal(envois.length, 1);
+  assert.match(envois[0].corps.subject, /^Demande commandes — Priorité A — /);
+  assert.match(envois[0].corps.text, /Ville : non précisé/);
+  assert.match(envois[0].corps.text, /Utilisateurs prévus : non précisé/);
+});
+
+test('parcours commandes V3.1 : activité et budget restent obligatoires, projet trop court refusé', async () => {
+  for (const manque of ['activite', 'budget', 'entreprise', 'telephone', 'delai']) {
+    const { [manque]: _, ...sans } = COMMANDES;
+    await worker.fetch(post(sans), ENV);
+    assert.equal(envois.length, 0, manque + ' devrait rester obligatoire');
+  }
+  await worker.fetch(post({ ...COMMANDES, projet: 'court' }), ENV);
+  assert.equal(envois.length, 0);
+});
+
 test('parcours commandes : budget sous le plancher = priorité C, budget à définir ou hors cible = priorité B', async () => {
   await worker.fetch(post({ ...COMMANDES, budget: 'moins25' }), ENV);
   await worker.fetch(post({ ...COMMANDES, budget: 'definir' }), ENV);
@@ -496,7 +537,7 @@ test('parcours commandes : budget sous le plancher = priorité C, budget à déf
 });
 
 test('parcours commandes : tout champ de qualification manquant ou hors liste refuse la demande, sans envoi', async () => {
-  for (const manque of ['entreprise', 'telephone', 'delai', 'activite', 'ville', 'equipe', 'budget']) {
+  for (const manque of ['entreprise', 'telephone', 'delai', 'activite', 'budget']) {   // ville et équipe facultatives depuis la V3.1
     const { [manque]: _, ...champs } = COMMANDES;
     const r = await worker.fetch(post(champs), ENV);
     assert.equal(lieu(r), 'https://legantis.net/commandes/#devis-echec', manque);
@@ -535,8 +576,8 @@ test('estimation : seules les formes produites par la page passent dans le mail'
 
 test('mesure : source et campagne ne sont comptées que pour un envoi réel', async () => {
   const base = d1();
-  await worker.fetch(post({ ...SIMULATEUR, nom: '', utm_source: 'robot', utm_campaign: 'x' }), { ...ENV, MESURES: base });
-  await worker.fetch(post({ ...SIMULATEUR, site_web: 'robot', utm_source: 'robot2' }), { ...ENV, MESURES: base });
+  await worker.fetch(post({ ...SIMULATEUR, nom: '', utm_source: 'robot', utm_campaign: 'x' }), { ...ENV, MESURE_SEL: 'sel-de-test', MESURES: base });
+  await worker.fetch(post({ ...SIMULATEUR, site_web: 'robot', utm_source: 'robot2' }), { ...ENV, MESURE_SEL: 'sel-de-test', MESURES: base });
   assert.deepEqual(base.db.prepare("SELECT DISTINCT source FROM devis_compteur").all().map(l => l.source), ['']);
 });
 

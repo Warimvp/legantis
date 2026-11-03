@@ -143,6 +143,15 @@ for (const [nom, url] of FORMS) {
     await ctx.close();
   }
 }
+// /commandes/ allégé (V3.1) : sans ville, équipe ni description, la demande part quand même, priorité calculée.
+{
+  envois = [];
+  const ctx = await contexte(); const p = await ctx.newPage(); await p.goto(ORIGINE + '/commandes/'); await p.waitForTimeout(100);
+  await remplir(p); await p.evaluate(() => { const f = document.querySelector('form[action*="workers.dev"]'); f.elements.ville.value = ''; f.elements.equipe.value = ''; f.elements.projet.value = ''; });
+  await envoyer(p); await attendre(p, 1); await p.waitForTimeout(150);
+  verifier('/commandes/ allégé : envoi avec les seuls champs obligatoires', envois.length === 1 && /Priorité/.test(envois[0].subject) && /Ville : non précisé/.test(envois[0].text), JSON.stringify(envois[0] || {}).slice(0, 140));
+  await ctx.close();
+}
 // Accueil anglais : messages du script en anglais.
 {
   envois = []; retard = 250;

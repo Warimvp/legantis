@@ -48,8 +48,12 @@ async function compter(env, issue, d = {}) {
   }
 }
 
+// Empreinte de tout ce que la personne a saisi (pas seulement e-mail et projet : sur /commandes/, le projet est facultatif ; deux demandes
+// qui ne diffèrent que par le budget ou l'entreprise ne sont pas un doublon). Sel secret obligatoire (MESURE_SEL) : un sel écrit dans
+// ce dépôt public ne pseudonymiserait rien ; sans lui, aucun dédoublonnage (voir traiter).
 async function empreinte(d, env) {
-  const octets = new TextEncoder().encode([env.MESURE_SEL || 'legantis-devis', d.email.toLowerCase(), d.projet, d.urlSite].join('\n'));
+  const saisie = [d.nom, d.email.toLowerCase(), d.telephone, d.entreprise, d.type, d.projet, d.supports, d.delai, d.langue, d.parcours, d.budget, d.pagesSite, d.pack, d.fonctions, d.urlSite, d.choix];
+  const octets = new TextEncoder().encode(env.MESURE_SEL + '\n' + JSON.stringify(saisie));
   return [...new Uint8Array(await crypto.subtle.digest('SHA-256', octets))].map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
@@ -80,6 +84,9 @@ const QUALIFICATION = {
   equipe: { libelle: 'Utilisateurs prévus', valeurs: { '1-3': '1 à 3', '4-10': '4 à 10', '11-30': '11 à 30', '31+': 'Plus de 30' } },
   budget: { libelle: 'Budget envisagé', valeurs: { moins25: 'Moins de 25 000 MAD', '25-50': '25 000 à 50 000 MAD', '50-100': '50 000 à 100 000 MAD', '100+': 'Plus de 100 000 MAD', definir: 'À définir ensemble' } },
 };
+// Seules l'activité et le budget servent au calcul de la priorité : ville et taille d'équipe sont facultatives depuis la V3.1.
+// Une page en cache qui les envoie encore reste acceptée.
+const QUALIFICATION_OBLIGATOIRE = ['activite', 'budget'];
 // Chemins de retour fixes : jamais d'adresse fournie par le visiteur (pas de redirection ouverte).
 const RETOUR = { fr: '/', en: '/en/' };
 
@@ -157,12 +164,13 @@ function champsEnErreur(d) {
   const e = [];
   if (!(d.nom.length >= 1)) e.push('nom');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) e.push('email');
-  if (d.parcours !== 'audit' && !(d.projet.length >= 10)) e.push('projet');
-  if (d.parcours === 'commandes') {     // page en production depuis le 30/10/2026 : ses dix champs ; ni format de téléphone ni case de consentement exigés ici, une page en cache d'avant la case doit encore pouvoir envoyer
+  if (d.parcours !== 'audit' && d.parcours !== 'commandes' && !(d.projet.length >= 10)) e.push('projet');
+  if (d.parcours === 'commandes') {
+    if (d.projet && d.projet.length < 10) e.push('projet');   // facultatif depuis la V3.1, mais pas réduit à un mot     // page en production depuis le 30/10/2026 : ses dix champs ; ni format de téléphone ni case de consentement exigés ici, une page en cache d'avant la case doit encore pouvoir envoyer
     if (!d.entreprise) e.push('entreprise');
     if (!d.telephone) e.push('telephone');
     if (!d.delai) e.push('delai');
-    for (const champ of Object.keys(QUALIFICATION)) if (!d.choix[champ]) e.push(champ);
+    for (const champ of QUALIFICATION_OBLIGATOIRE) if (!d.choix[champ]) e.push(champ);
     return e;
   }
   if (d.parcours) {
@@ -237,7 +245,7 @@ function ligneSuivi(d) {
 
 function lignesParcours(d) {
   if (!d.parcours) return [];
-  if (d.parcours === 'commandes') return ['Priorité estimée : ' + priorite(d), ...Object.entries(QUALIFICATION).map(([champ, { libelle, valeurs }]) => libelle + ' : ' + valeurs[d.choix[champ]]), 'Consentement au traitement : ' + (d.consentement ? 'oui' : 'non')];
+  if (d.parcours === 'commandes') return ['Priorité estimée : ' + priorite(d), ...Object.entries(QUALIFICATION).map(([champ, { libelle, valeurs }]) => libelle + ' : ' + (d.choix[champ] ? valeurs[d.choix[champ]] : 'non précisé')), 'Consentement au traitement : ' + (d.consentement ? 'oui' : 'non')];
   return [
     'Parcours : ' + PARCOURS_LIBELLES[d.parcours],
     ...(d.pack ? ['Pack demandé : ' + PACKS[d.pack]] : []),
@@ -341,7 +349,7 @@ async function traiter(request, env) {
     if (!success) { await compter(env, 'limite', d); return issue(request, env, d, false, [], 'limite'); }
   }
   // Renvoi de la même demande : la personne revoit « envoyé », mais ni deuxième mail ni deuxième comptage.
-  const cle = env.MESURES ? await empreinte(d, env) : null;
+  const cle = env.MESURES && env.MESURE_SEL ? await empreinte(d, env) : null;
   if (cle && (await dejaRecue(env, cle))) { await compter(env, 'doublon', d); return issue(request, env, d, true); }
   let envoye = false;
   try {

@@ -11,7 +11,8 @@ const RACINE = join(dirname(fileURLToPath(import.meta.url)), '..');
 const source = readFileSync(join(RACINE, 'src/index.js'), 'utf8');
 
 const SABOTAGES = [
-  ['qualification non exigée', `for (const champ of Object.keys(QUALIFICATION)) if (!d.choix[champ]) e.push(champ);`, ''],
+  ['qualification non exigée', `for (const champ of QUALIFICATION_OBLIGATOIRE) if (!d.choix[champ]) e.push(champ);`, ''],
+  ['projet commandes trop court accepté', `if (d.projet && d.projet.length < 10) e.push('projet');`, ''],
   ['entreprise facultative dans le parcours', `if (!d.entreprise) e.push('entreprise');\n    if (!d.telephone) e.push('telephone');`, `if (!d.telephone) e.push('telephone');`],
   ['téléphone facultatif dans le parcours', `if (!d.telephone) e.push('telephone');`, ''],
   ['budget hors liste accepté', `choix[champ] = Object.hasOwn(valeurs, valeur) ? valeur : '';`, `choix[champ] = valeur || '';`],
@@ -46,10 +47,12 @@ const SABOTAGES = [
   ['message de l\'exception écrit dans le journal', `console.error('devis:', e && e.name);`, `console.error('devis:', e && e.message);`],
   // compteur de demandes (binding MESURES)
   ['doublon jamais reconnu', `return r.meta.changes === 0;`, `return false;`],
+  ['dédoublonnage sans sel secret', `const cle = env.MESURES && env.MESURE_SEL ? await empreinte(d, env) : null;`, `const cle = env.MESURES ? await empreinte(d, env) : null;`],
+  ['empreinte limitée à l\'e-mail et au projet', `const saisie = [d.nom, d.email.toLowerCase(), d.telephone, d.entreprise, d.type, d.projet, d.supports, d.delai, d.langue, d.parcours, d.budget, d.pagesSite, d.pack, d.fonctions, d.urlSite, d.choix];`, `const saisie = [d.email.toLowerCase(), d.projet, d.urlSite];`],
   ['empreinte gardée après un échec d\'envoi', `if (!envoye && cle) await oublier(env, cle);`, ''],
   ['échec compté comme un envoi', `await compter(env, envoye ? 'envoye' : 'echec_envoi', d);`, `await compter(env, 'envoye', d);`],
   ['donnée personnelle dans le compteur', `.bind(new Date().toISOString().slice(0, 10), issue, d.type || '', d.langue || '', d.parcours || '',`, `.bind(new Date().toISOString().slice(0, 10), issue, d.email || '', d.langue || '', d.parcours || '',`],
-  ['panne de mesure qui bloque l\'envoi', `    console.error('mesure:', e && e.name);\n  }\n}\n\nasync function empreinte`, `    throw e;\n  }\n}\n\nasync function empreinte`],
+  ['panne de mesure qui bloque l\'envoi', `    console.error('mesure:', e && e.name);\n  }\n}\n\n// Empreinte de tout`, `    throw e;\n  }\n}\n\n// Empreinte de tout`],
   ['empreintes expirées jamais purgées', `await env.MESURES.prepare('DELETE FROM devis_empreintes WHERE expire < ?').bind(maintenant).run();`, ''],
   ['dédoublonnage par une lecture puis une écriture (course)', `'INSERT INTO devis_empreintes (empreinte, expire) VALUES (?, ?) ON CONFLICT (empreinte) DO NOTHING'`, `'INSERT OR REPLACE INTO devis_empreintes (empreinte, expire) VALUES (?, ?)'`],
   // parcours qualifiants, JSON, adresse à analyser
@@ -65,7 +68,7 @@ const SABOTAGES = [
   ['entreprise facultative', `if (d.parcours) {\n    if (!d.entreprise) e.push('entreprise');`, `if (d.parcours) {`],
   ['délai facultatif au simulateur', `if (d.parcours === 'simulateur' && !d.delai) e.push('delai');`, ''],
   ['adresse exigée par le mini-audit retirée', `if (d.parcours === 'audit' && !d.urlSite) e.push('url_site');`, ''],
-  ['projet exigé au mini-audit', `if (d.parcours !== 'audit' && !(d.projet`, `if (!(d.projet`],
+  ['projet exigé au mini-audit', `if (d.parcours !== 'audit' && d.parcours !== 'commandes' && !(d.projet.length >= 10)) e.push('projet');`, `if (d.parcours !== 'commandes' && !(d.projet.length >= 10)) e.push('projet');`],
   ['schémas exotiques acceptés', `if (u.protocol !== 'https:' && u.protocol !== 'http:') return '';`, ''],
   ['identifiants et ports acceptés', `if (u.username || u.password || u.port) return '';`, ''],
   ['adresses IP acceptées', `/^[0-9]+$/.test(suffixe) ||`, ''],
