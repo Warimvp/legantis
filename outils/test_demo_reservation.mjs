@@ -484,8 +484,15 @@ try {
   await p.click('#dlg button[type=submit]');
   ok(txt(await p.textContent('#a-nom-e')).length > 0 && txt(await p.textContent('#a-tel-e')).length > 0, 'ajout manuel : erreurs de validation absentes');
   await p.selectOption('#a-service', 'm1');
-  const optsH = await p.$$eval('#a-heure option', (o) => o.map((x) => x.value).filter(Boolean));
-  ok(optsH.length > 0, 'ajout manuel : aucune heure libre');
+  // Comme une gérante : si la praticienne proposée n'a plus de place ce jour-là, essayer les autres (même jour, pour comparer les indicateurs).
+  const heuresLibres = () => p.$$eval('#a-heure option', (o) => o.map((x) => x.value).filter(Boolean));
+  let optsH = await heuresLibres();
+  for (const prac of await p.$$eval('#a-prac option', (o) => o.map((x) => x.value).filter(Boolean))) {
+    if (optsH.length) break;
+    await p.selectOption('#a-prac', prac);
+    optsH = await heuresLibres();
+  }
+  ok(optsH.length > 0, 'ajout manuel : aucune heure libre, quelle que soit la praticienne');
   await p.fill('#a-nom', 'Cliente Manuelle'); await p.fill('#a-tel', '+212 6 00 00 00 00'.replace(/ /g, ' '));
   const telOk = await p.inputValue('#a-tel');
   await p.click('#dlg button[type=submit]');

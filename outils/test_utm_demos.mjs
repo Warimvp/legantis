@@ -54,6 +54,7 @@ async function parcours(nom, { entree, interne, cta, contenu, formulaire }) {
 await parcours('Maison Tilal', { entree: 'demos/restaurant/', cta: 'a[href*="/estimer-mon-projet/"]', contenu: 'demo-restaurant', formulaire: '/estimer-mon-projet/' });
 await parcours('Institut Naïa', { entree: 'demos/reservation/', interne: { lien: 'a.btn[href*="reserver/"]', chemin: '/reserver/' }, cta: 'a[href*="/estimer-mon-projet/"]', contenu: 'demo-reservation', formulaire: '/estimer-mon-projet/' });
 await parcours('Mizan Technique', { entree: 'demos/services/', interne: { lien: 'a.btn[href*="/realisations/demos/services/devis/"]', chemin: '/services/devis/' }, cta: 'a[href$="/realisations/"], a[href*="/realisations/?"]', contenu: 'demo-services', formulaire: '/estimer-mon-projet/' });
+await parcours('Mizan Technique, bouton de devis direct', { entree: 'demos/services/', cta: 'a[href*="/estimer-mon-projet/"]', contenu: 'demo-services', formulaire: '/estimer-mon-projet/' });
 await parcours('Distribution OS', { entree: 'demos/distribution-os/', cta: 'a[href*="commandes/"]', contenu: 'demo-distribution-os', formulaire: '/commandes/' });
 
 // Lien écrit par la démonstration après le chargement : recopié au clic.

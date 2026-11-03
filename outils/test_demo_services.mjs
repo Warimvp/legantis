@@ -67,7 +67,10 @@ for (const h of liensVus) {
   if (h.startsWith('/realisations/demos/services/')) {
     const r = await page.request.get(`http://127.0.0.1:${PORT}${h}`);
     verifie(r.status() === 200, `lien ${h} -> ${r.status()}`);
-  } else if (h === '/realisations/') { /* hors démo, intégré par la session principale */ }
+  } else if (h === '/realisations/' || h === '/estimer-mon-projet/') {   // sorties vers Legantis : réalisations et vraie demande de devis
+    const r = await page.request.get(`http://127.0.0.1:${PORT}${h}`);
+    verifie(r.status() === 200, `sortie ${h} -> ${r.status()}`);
+  }
   else verifie(false, `lien interne inattendu ${h}`);
 }
 verifie(liensVus.size >= 12, `au moins 12 liens distincts (${liensVus.size})`);

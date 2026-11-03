@@ -52,6 +52,31 @@ for u, p in pages.items():
     for j in p.jsonld:
         try: json.loads(j)
         except Exception as e: echecs.append(f'{u}: JSON-LD invalide {e}')
+# Catalogue de l'accueil (03/11/2026, SEO C1/C5) : chaque Service d'une page française (hors /en/, /ar/) y figure avec le même @id et le même nom.
+def services_ld(o, acc):
+    if isinstance(o, dict):
+        if o.get('@type') == 'Service' and str(o.get('@id', '')).startswith(BASE): acc[o['@id']] = o.get('name')
+        for v in o.values(): services_ld(v, acc)
+    elif isinstance(o, list):
+        for v in o: services_ld(v, acc)
+catalogue = {}
+for j in pages.get(BASE, None).jsonld if BASE in pages else []:
+    try:
+        o = json.loads(j)
+        for g in (o.get('@graph', [o]) if isinstance(o, dict) else o):
+            for cat in [g.get('hasOfferCatalog')] if isinstance(g, dict) and g.get('hasOfferCatalog') else []:
+                for e in cat.get('itemListElement', []): services_ld(e, catalogue)
+    except Exception: pass
+for u, p in pages.items():
+    if p.meta.get('og:description') is None: echecs.append(f'{u}: og:description absente')
+    if u.startswith((BASE + 'en/', BASE + 'ar/')) or u == BASE: continue
+    declares = {}
+    for j in p.jsonld:
+        try: services_ld(json.loads(j), declares)
+        except Exception: pass
+    for i, nom in declares.items():
+        if i.startswith((BASE + 'en/', BASE + 'ar/')): continue
+        if catalogue.get(i) != nom: echecs.append(f'{u}: Service {i} « {nom} » absent du catalogue de l\'accueil ou nommé autrement')
 seen = {}
 for u, p in pages.items():
     seen.setdefault('T:' + (p.title or ''), []).append(u); seen.setdefault('D:' + (p.meta.get('description') or ''), []).append(u)
@@ -430,6 +455,20 @@ for chemin in glob.glob(os.path.join(RACINE, '**', '*.html'), recursive=True):
     texte_page = open(chemin, encoding='utf-8').read()
     for mot in SUGGERE_CLIENTS:
         if mot in texte_page: echecs.append(f'{os.path.relpath(chemin, RACINE)}: formulation qui suggère des clients : « {mot} »')
+# Ce qu'une page dit de ses propres scripts doit rester vrai (03/11/2026 : « aucun script » sur l'accueil d'Institut Naïa après l'ajout de
+# source.js ; « un seul petit script » sur la création de site après l'ajout de conversion.js).
+for dossier, _, fichiers in os.walk(RACINE):
+    for nom_fichier in fichiers:
+        if not nom_fichier.endswith('.html'): continue
+        chemin = os.path.join(dossier, nom_fichier); texte_page = open(chemin, encoding='utf-8').read()
+        n_scripts = len(re.findall(r'<script\b[^>]*\bsrc=', texte_page))
+        if re.search(r"n[’']utilise aucun script", texte_page) and n_scripts: echecs.append(f'{os.path.relpath(chemin, RACINE)}: dit n\'utiliser aucun script, en charge {n_scripts}')
+        if re.search(r'un seul (petit )?script', texte_page) and n_scripts != 1: echecs.append(f'{os.path.relpath(chemin, RACINE)}: dit avoir un seul script, en charge {n_scripts}')
+# Titre d'appel final : une espace entre ses deux lignes, sinon le texte brut colle deux mots (« Parlons devotre projet »).
+for dossier, _, fichiers in os.walk(RACINE):
+    for nom_fichier in fichiers:
+        if nom_fichier.endswith('.html') and re.search(r'<h2 id="contact-titre"[^>]*><span>[^<]*</span><span', open(os.path.join(dossier, nom_fichier), encoding='utf-8').read()):
+            echecs.append(f'{os.path.relpath(os.path.join(dossier, nom_fichier), RACINE)}: titre d\'appel final sans espace entre ses deux lignes')
 IMAGES = os.path.join(RACINE, '..', 'outils', 'images.py')
 if os.path.exists(IMAGES) and 'CAPITAL' in open(IMAGES, encoding='utf-8').read(): echecs.append('outils/images.py : capital sur l\'image de partage')
 import subprocess
