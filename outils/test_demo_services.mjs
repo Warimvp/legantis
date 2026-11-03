@@ -232,6 +232,17 @@ verifie((await page.locator('#devis-annonce').textContent()).includes(num), 'ann
 verifie(await page.locator('#devis-annonce[aria-live=polite]').count() === 1, 'zone aria-live');
 verifie(await page.evaluate(() => document.activeElement.id) === 'devis-titre', 'focus sur le titre de confirmation');
 verifie(await numEtape() === 'Terminé' && await page.locator('#devis-progres li.fait').count() === 7, 'progression terminée');
+// Écran final : une sortie claire vers la vraie demande de devis de Legantis, séparée de l'entreprise fictive.
+{
+  const cta = page.locator('#devis-etape .cta-legantis a');
+  verifie(await cta.count() === 1 && await cta.getAttribute('href') === '/estimer-mon-projet/?type=web', 'confirmation : un lien vers la vraie demande de devis Legantis, ?type=web');
+  verifie(await cta.isVisible() && /Demander un devis à Legantis/.test(await cta.textContent()), 'confirmation : bouton « Demander un devis à Legantis » visible');
+  const bloc = await page.locator('#devis-etape .cta-legantis').innerText();
+  verifie(/Mizan Technique est fictive/.test(bloc) && /gratuit et sans engagement/.test(bloc) && /quitte la démonstration/.test(bloc), 'confirmation : le bloc Legantis dit que Mizan est fictive et que le lien quitte la démonstration');
+  verifie(await page.locator('#devis-etape .nav-etape a, #devis-etape .nav-etape button').count() === 3, 'confirmation : les trois actions de la démonstration restent en place');
+  const r = await page.request.get(`http://127.0.0.1:${PORT}/estimer-mon-projet/`);
+  verifie(r.status() === 200, 'confirmation : la page de devis Legantis répond');
+}
 await page.locator('#devis-recommencer').click();
 verifie((await titre()) === 'Votre besoin' && !(await page.locator('input[name=service][value=climatisation]').isChecked()), 'nouvelle simulation : réponses vidées');
 // rechargement : état réinitialisé
@@ -386,6 +397,7 @@ section('13. Parcours complet : demande créée dans la page, vue des deux côt�
 await page.goto(E);
 await demandeEnPage('Personne Fictive', 'personne@exemple.invalid');
 verifie((await titre()) === 'Demande enregistrée' && (await page.locator('#devis-numero').innerText()).trim() === 'MZ-1051', 'confirmation : numéro déterministe MZ-1051 (pas MZ-SIM)');
+verifie(await page.locator('#devis-etape .cta-legantis a[href="/estimer-mon-projet/?type=web"]').isVisible(), 'espace client, confirmation : lien vers la vraie demande de devis Legantis');
 verifie((await page.locator('#devis-etape').innerText()).includes('visible dans l\'espace client et dans la gestion'), 'la confirmation annonce la visibilité des deux côtés');
 verifie((await page.locator('#effet').innerText()).includes('MZ-1051'), 'bandeau d\'effet mentionne MZ-1051');
 verifie(await badgeG() === '8 à traiter', 'gestion : badge passe de 7 à 8');

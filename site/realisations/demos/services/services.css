@@ -169,6 +169,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px soli
 .recap dd{margin:0;font-weight:600;overflow-wrap:anywhere}
 .recap button{background:none;border:0;border-bottom:2px solid var(--ink);padding:0;min-height:44px;font:600 .8125rem var(--sans);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:var(--ink)}
 @media (min-width:640px){.recap div{grid-template-columns:200px minmax(0,1fr) auto;align-items:center}}
+.cta-legantis{margin-top:30px}
+.cta-legantis small{display:block;margin-top:10px}
 .conf-num{display:inline-block;font:700 clamp(2rem,6vw,3.2rem)/1 var(--cond);letter-spacing:.06em;border:2px solid var(--ink);padding:12px 18px;margin:10px 0 18px;background:var(--mist)}
 .sansjs{border:2px solid var(--ink);padding:16px 18px;background:var(--mist)}
 .js .sansjs{display:none}

@@ -340,7 +340,11 @@
       '<p class="avertissement"><b>Aucun SMS ni e-mail n’est envoyé.</b> Ceci est une simulation : le rendez-vous et son acompte existent seulement dans cette page, dans « Mes rendez-vous » et dans le planning de la Gestion.</p>' +
       '<div class="actions"><button type="button" class="btn" data-act="voir-mes">Voir mes rendez-vous</button>' +
       '<button type="button" class="btn btn-sec" data-act="nouveau">Prendre un autre rendez-vous</button>' +
-      '<button type="button" class="btn btn-sec" data-act="voir-gestion">Le voir dans la Gestion</button></div></div>';
+      '<button type="button" class="btn btn-sec" data-act="voir-gestion">Le voir dans la Gestion</button></div>' +
+      /* Sortie vers la vraie demande de devis de Legantis, séparée de l’institut fictif ; source.js y recopie la source au clic. */
+      '<aside class="cta-legantis" aria-label="Legantis, hors démonstration"><p class="kicker">Hors démonstration · Legantis</p>' +
+      '<p><b>Une prise de rendez-vous en ligne pour votre établissement ?</b> L’Institut Naïa est fictif. Legantis construit ce type d’outil sur mesure : réservation, planning de gestion, à vos règles.</p>' +
+      '<a class="btn" href="/estimer-mon-projet/?type=web">Demander un devis à Legantis</a><p class="aide">Devis détaillé, gratuit et sans engagement. Ce lien quitte la démonstration.</p></aside></div>';
   }
 
   function rendreEtape(focusHead) {

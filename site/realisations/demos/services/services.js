@@ -174,7 +174,10 @@
         zone.innerHTML = '<div class="etape"><h2 id="devis-titre" tabindex="-1">' + (dansEspace ? 'Demande enregistrée' : 'Demande simulée enregistrée') + '</h2><p>Merci ' + esc(etat.d.nom) + '. Voici le numéro ' + (dansEspace ? 'de la demande' : 'de la simulation') + ' :</p>' +
           '<div class="conf-num" id="devis-numero">' + esc(etat.numero) + '</div>' + suite +
           (e ? '<p>Fourchette indicative, exemple fictif : <strong>' + texteFourchette(e) + '</strong>.</p>' : '') +
-          '<div class="nav-etape">' + liens + '</div></div>';
+          '<div class="nav-etape">' + liens + '</div>' +
+          /* Sortie vers la vraie demande de devis de Legantis, séparée de l'entreprise fictive ; source.js y recopie la source au clic. */
+          '<aside class="note cta-legantis" aria-label="Legantis, hors démonstration"><p><b>Et pour votre entreprise ?</b> Mizan Technique est fictive. Legantis construit ce type d\'outil sur mesure : demandes en ligne, devis, suivi dans un espace client, à vos règles.</p>' +
+          '<a class="btn btn--ink fl" href="/estimer-mon-projet/?type=web">Demander un devis à Legantis</a><small>Devis détaillé, gratuit et sans engagement. Ce lien quitte la démonstration.</small></aside></div>';
         annonce.textContent = (dansEspace ? 'Demande créée. Numéro ' : 'Simulation confirmée. Numéro ') + etat.numero + '.';
         var t = document.getElementById('devis-titre'); if (t) t.focus();
         return;

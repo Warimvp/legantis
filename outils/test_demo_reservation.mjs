@@ -410,6 +410,11 @@ try {
   const conf = txt(await p.textContent('#conf'));
   ok(/NA-\d{6}-\d+/.test(conf), 'numéro de rendez-vous absent');
   ok(conf.includes('Aucun SMS ni e-mail n’est envoyé'), 'mention « aucun SMS ni e-mail » absente');
+  // sortie claire vers la vraie demande de devis de Legantis, séparée de l’institut fictif
+  ok(await p.$$eval('#conf .cta-legantis a', (as) => as.length === 1 && as[0].getAttribute('href') === '/estimer-mon-projet/?type=web'), 'confirmation : lien vers la vraie demande de devis Legantis (?type=web) absent');
+  ok(await p.isVisible('#conf .cta-legantis a') && /Demander un devis à Legantis/.test(await p.textContent('#conf .cta-legantis a')), 'confirmation : bouton « Demander un devis à Legantis » invisible');
+  { const b = txt(await p.textContent('#conf .cta-legantis')); ok(/Hors démonstration/.test(b) && /Naïa est fictif/.test(b) && /gratuit et sans engagement/.test(b) && /quitte la démonstration/.test(b), 'confirmation : bloc Legantis sans mention fictive ou de sortie : ' + b); }
+  ok(await p.$$eval('#conf .actions .btn', (e) => e.length) === 3, 'confirmation : les trois actions de la démonstration ont changé');
   ok(txt(await p.textContent('#toast')).includes('Aucun SMS ni e-mail'), 'annonce de confirmation absente');
   ok(await p.$eval('#toast', (t) => t.getAttribute('role')) === 'status', 'toast sans role=status');
   const numero = (conf.match(/NA-\d{6}-\d+/) || [])[0];
