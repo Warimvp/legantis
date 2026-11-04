@@ -40,7 +40,7 @@ const SABOTAGES = [
   ['type de projet exigé (les pages en cache échouent)', `if (d.parcours === 'simulateur' || d.parcours === 'offre') {`, `if (true) {`],
   ['entreprise non bornée', `texte(donnees.get('entreprise'), 120)`, `texte(donnees.get('entreprise'), 100000)`],
   ['entreprise sur plusieurs lignes', `texte(donnees.get('entreprise'), 120)`, `texte(donnees.get('entreprise'), 120, true)`],
-  ['type absent de l\'objet du mail', `PARCOURS_LIBELLES.audit : d.type ? TYPES[d.type] : '';`, `PARCOURS_LIBELLES.audit : '';`],
+  ['type absent de l\'objet du mail', `formule(d) || (d.type ? TYPES[d.type] : '');`, `formule(d) || '';`],
   ['réponse de Resend ignorée', `return reponse.ok;`, `return true;`],
   ['reply_to retiré', `reply_to: d.email,`, ''],
   ['destinataire changé', `to: [env.MAIL_TO],`, `to: ['autre@exemple.com'],`],
@@ -91,6 +91,17 @@ const SABOTAGES = [
   ['priorité absente de l\'objet', `'Demande commandes — Priorité ' + priorite(d)`, `'Demande commandes'`],
   ['consentement absent du mail /commandes/', `, 'Consentement au traitement : ' + (d.consentement ? 'oui' : 'non')];`, `];`],
   ['consentement générique non noté', `...(!d.parcours && d.consentement ? ['Consentement au traitement : oui'] : []),`, ''],
+  // formule dans l'objet et la ligne de suivi ; envois de test marqués (phase 2)
+  ['formule absente de l\'objet', `formule(d) || (d.type ? TYPES[d.type] : '')`, `(d.type ? TYPES[d.type] : '')`],
+  ['formule absente de la ligne de suivi', `'Formulaire de devis', formule(d), d.type`, `'Formulaire de devis', d.type`],
+  ['formule reprise hors parcours qualifiant', `d.pack && d.parcours && d.parcours !== 'commandes' ? PACKS[d.pack] : ''`, `d.pack ? PACKS[d.pack] : ''`],
+  ['test non marqué dans l\'objet', `const test = estTest(d) ? '[TEST] ' : '';`, `const test = '';`],
+  ['test non marqué dans la ligne de suivi', `estTest(d) ? '[TEST] ' + date : date`, `date`],
+  ['test non signalé dans le corps', `...(estTest(d) ? ['[TEST] Envoi de test (utm_source=test ou « NE PAS TRAITER ») : à ne pas compter comme prospect.', ''] : []),`, ''],
+  ['test reconnu par simple inclusion', `d.utm.source.toLowerCase() === 'test'`, `d.utm.source.toLowerCase().includes('test')`],
+  ['marqueur NE PAS TRAITER sensible à la casse', `/NE PAS TRAITER/i.test(`, `/NE PAS TRAITER/.test(`],
+  ['entreprise de test non reconnue', `/NE PAS TRAITER/i.test(d.nom + ' ' + d.entreprise)`, `/NE PAS TRAITER/i.test(d.nom)`],
+  ['envoi de test bloqué', `  let envoye = false;\n`, `  if (estTest(d)) return issue(request, env, d, true);\n  let envoye = false;\n`],
   ['exception relancée au visiteur', `return veutJson(request) ? json(env, 503, { ok: false }) : retour(env, 'fr', 'devis-echec');\n    }\n  },`, `throw e;\n    }\n  },`],
 ];
 

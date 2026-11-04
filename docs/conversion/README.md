@@ -65,6 +65,10 @@ Le Worker n'ouvre jamais l'adresse à analyser. Elle est seulement filtrée (ni 
 
 Pas de nouvelle base : le Worker continue de ne rien stocker. Le suivi se tient dans `~/Documents/bureaux/Legantis-Acquisition/legantis-suivi-commercial.xlsx`, déjà en place. Chaque mail se termine par une ligne à coller dans l'onglet Prospects, à partir de la colonne Date (Date à Délai).
 
+Une formule demandée sur la page d'offre (`pack`) apparaît dans l'objet du mail (« Demande de devis — Site Business statique — Nom ») et dans la colonne Demande de la ligne (« Page d'offre de lancement · Site Business statique · Site vitrine »). Sans formule, l'objet garde le type de projet, comme avant.
+
+**Envois de test** : un envoi dont la campagne porte `utm_source=test`, ou dont le nom ou l'entreprise contient « NE PAS TRAITER » (casse indifférente), part normalement mais est marqué : objet préfixé `[TEST]`, avertissement en tête du mail, date de la ligne écrite « [TEST] aaaa-mm-jj ». Collée par erreur, cette ligne reste visible et l'onglet Pilotage, qui compte des dates, l'ignore. Ne jamais la reporter dans le suivi.
+
 | Statut demandé | Classeur | `legantis-crm` |
 |---|---|---|
 | Nouveau | Nouveau | `demande` |

@@ -234,15 +234,25 @@ function priorite(d) {
   return cible && budget && echeance ? 'A' : 'B';
 }
 
+// Envoi de test (essai du propriétaire, contrôle après publication) : jamais compté comme prospect. Règle simple, sans rien bloquer : la campagne
+// porte utm_source=test, ou le nom ou l'entreprise contient « NE PAS TRAITER ». Le mail part comme les autres, mais marqué [TEST] dans l'objet et la ligne de suivi.
+const estTest = d => d.utm.source.toLowerCase() === 'test' || /NE PAS TRAITER/i.test(d.nom + ' ' + d.entreprise);
+
+// Formule à prix fixe : seulement depuis un parcours qualifiant (c'est là que le corps du mail l'affiche), jamais depuis /commandes/.
+const formule = d => d.pack && d.parcours && d.parcours !== 'commandes' ? PACKS[d.pack] : '';
+
 // Ligne prête à coller dans l'onglet Prospects de legantis-suivi-commercial.xlsx, à partir de la colonne Date : tabulations, pour qu'elle se répartisse seule dans les colonnes
-// (Date, Heure, Nom, Entreprise, Activité, Ville, E-mail, Téléphone, WhatsApp, Source, Demande, Budget, Délai). Une cellule qui commence par = + - @ serait une formule dans
-// un tableur : elle est neutralisée par une apostrophe ; les guillemets sont retirés d'abord, sinon "=FORMULE" passerait le contrôle et redeviendrait une formule.
+// (Date, Heure, Nom, Entreprise, Activité, Ville, E-mail, Téléphone, WhatsApp, Source, Demande, Budget, Délai). La formule demandée va dans Demande, juste après le parcours.
+// Envoi de test : la date devient le texte « [TEST] aaaa-mm-jj » ; collée par erreur, la ligne reste visible et l'onglet Pilotage, qui compte les dates, l'ignore.
+// Une cellule qui commence par = + - @ serait une formule dans un tableur : elle est neutralisée par une apostrophe ; les guillemets sont retirés d'abord, sinon "=FORMULE"
+// passerait le contrôle et redeviendrait une formule.
 function ligneSuivi(d) {
   const cellule = v => { const s = String(v ?? '').replace(/[\r\n\t"]+/g, ' ').trim(); return /^[=+\-@]/.test(s) ? "'" + s : s; };
   const reponse = champ => d.choix[champ] ? QUALIFICATION[champ].valeurs[d.choix[champ]] : '';
-  const demande = [PARCOURS_LIBELLES[d.parcours] || 'Formulaire de devis', d.type ? TYPES[d.type] : '', d.urlSite].filter(Boolean).join(' · ');
+  const demande = [PARCOURS_LIBELLES[d.parcours] || 'Formulaire de devis', formule(d), d.type ? TYPES[d.type] : '', d.urlSite].filter(Boolean).join(' · ');
   const source = [d.utm.source, d.utm.campaign].filter(Boolean).join(' / ') || 'Site';
-  return [new Date().toISOString().slice(0, 10), '', d.nom, d.entreprise, reponse('activite'), reponse('ville'), d.email, d.telephone, '', source, demande, d.budget ? BUDGETS[d.budget] : reponse('budget'), d.delai ? DELAIS[d.delai] : ''].map(cellule).join('\t');
+  const date = new Date().toISOString().slice(0, 10);
+  return [estTest(d) ? '[TEST] ' + date : date, '', d.nom, d.entreprise, reponse('activite'), reponse('ville'), d.email, d.telephone, '', source, demande, d.budget ? BUDGETS[d.budget] : reponse('budget'), d.delai ? DELAIS[d.delai] : ''].map(cellule).join('\t');
 }
 
 function lignesParcours(d) {
@@ -268,6 +278,7 @@ function lignesSource(d) {
 
 function corps(d) {
   return [
+    ...(estTest(d) ? ['[TEST] Envoi de test (utm_source=test ou « NE PAS TRAITER ») : à ne pas compter comme prospect.', ''] : []),
     'Demande de devis reçue par le formulaire de legantis.net (page ' + (d.langue === 'en' ? 'anglaise' : 'française') + ').',
     '',
     'Type de projet : ' + (d.type ? TYPES[d.type] : 'non précisé'),
@@ -284,18 +295,20 @@ function corps(d) {
     'Ce que vous souhaitez développer :',
     d.projet || 'non précisé',
     '',
-    'Ligne à coller dans l\'onglet Prospects du classeur de suivi, colonne Date :',
+    estTest(d) ? '[TEST] Ligne marquée, à ne pas coller dans l\'onglet Prospects :' : 'Ligne à coller dans l\'onglet Prospects du classeur de suivi, colonne Date :',
     ligneSuivi(d),
     '',
     '— Répondre à ce message écrit directement à ' + d.nom + ' (« Répondre » utilise son adresse).',
   ].join('\n');
 }
 
-// « Demande de devis » reste en tête de tous les objets : c'est ce que l'analyseur du courrier de legantis-crm reconnaît.
+// « Demande de devis » reste en tête de tous les objets réels : c'est ce que l'analyseur du courrier de legantis-crm reconnaît. Un envoi de test commence par « [TEST] »,
+// visible d'un coup d'œil dans la boîte de réception (l'analyseur, pas encore branché, devra l'écarter). Une formule demandée remplace le type de projet dans l'objet.
 function objet(d) {
-  if (d.parcours === 'commandes') return ('Demande commandes — Priorité ' + priorite(d) + ' — ' + d.entreprise + ' — ' + d.nom).slice(0, 120);
-  const libelle = d.parcours === 'audit' ? PARCOURS_LIBELLES.audit : d.type ? TYPES[d.type] : '';
-  return ('Demande de devis — ' + (libelle ? libelle + ' — ' : '') + d.nom).slice(0, 120);
+  const test = estTest(d) ? '[TEST] ' : '';
+  if (d.parcours === 'commandes') return (test + 'Demande commandes — Priorité ' + priorite(d) + ' — ' + d.entreprise + ' — ' + d.nom).slice(0, 120);
+  const libelle = d.parcours === 'audit' ? PARCOURS_LIBELLES.audit : formule(d) || (d.type ? TYPES[d.type] : '');
+  return (test + 'Demande de devis — ' + (libelle ? libelle + ' — ' : '') + d.nom).slice(0, 120);
 }
 
 async function envoyer(d, env) {

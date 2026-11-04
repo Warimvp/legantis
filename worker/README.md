@@ -61,8 +61,8 @@ Le Worker sait compter les demandes dans une base **D1** (offre gratuite de Clou
 ## Tests
 
 ```
-node --test test/*.test.js     # 56 tests, aucune dépendance : fetch, la limite et D1 (une vraie base SQLite en mémoire qui exécute la migration) sont des doubles
-node test/sabotages.mjs        # 74 copies volontairement cassées : chacune doit faire échouer les tests
+node --test test/*.test.js     # 64 tests, aucune dépendance : fetch, la limite et D1 (une vraie base SQLite en mémoire qui exécute la migration) sont des doubles
+node test/sabotages.mjs        # 89 copies volontairement cassées : chacune doit faire échouer les tests
 ```
 
 Les champs des formulaires HTML doivent être lus par le Worker (`donnees.get('…')`) : `outils/controles_site.py` les compare.

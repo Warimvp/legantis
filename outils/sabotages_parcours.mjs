@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const ICI = path.dirname(fileURLToPath(import.meta.url));
 const SITE = path.join(ICI, '..', 'site');
-const JS = 'assets/conversion.js', CSS = 'assets/site.css', DEMO = 'realisations/demos/demos.js';
+const JS = 'assets/conversion.js', CSS = 'assets/site.css', DEMO = 'realisations/demos/services/pages.js';
 const SABOTAGES = [
   ['source UTM non reportée', JS, 'reporterSource();\n', '\n'],
   ['formulaire laissé après un succès', JS, 'form.hidden = true;', ''],
@@ -22,11 +22,11 @@ const SABOTAGES = [
   ['comparaison inerte au clavier', JS, "curseur.addEventListener('input', function () { poser(Number(curseur.value)); });", ''],
   ['comparaison inerte à la souris', JS, 'if (glisse) depuisPointeur(ev);', ''],
   ['étapes cachées sans effet', CSS, '.assistant-bloc [hidden], .assistant [hidden] { display: none !important; }', ''],
-  ['sans script : formulaire laissé après l\'envoi', CSS, '[data-formulaire]:has(#devis-envoye:target) form { display: none; }', ''],
+  ['sans script : formulaire laissé après l\'envoi', CSS, '[data-formulaire]:has(#devis-envoye:is(:target, .visible)) form { display: none; }', ''],
   ['filtre des réalisations cassé', CSS, '.realisations:has(#f-demo:checked) .projet:not([data-nature~="demo"]),', ''],
   ['barre de contact absente au téléphone', CSS, '  .contact-rapide { display: flex; }\n', ''],
-  ['bouton principal repoussé sous la barre', CSS, '.ouverture--accroche .chapeau { font-size: 1.04rem; line-height: 1.5; margin-bottom: 22px; }', '.ouverture--accroche .chapeau { margin-bottom: 400px; }'],
-  ['démonstration qui envoie', DEMO, 'ev.preventDefault();', ''],
+  ['bouton principal repoussé sous la barre', CSS, '.ouverture--accroche .ouverture-bas .chapeau { margin-bottom: 26px; }', '.ouverture--accroche .ouverture-bas .chapeau { margin-bottom: 400px; }'],   // règle effective : celle du bloc max-width 600px est écrasée par celle-ci, plus précise
+  ['démonstration qui envoie', DEMO, 'ev.preventDefault(); vider();', 'vider();'],   // formulaire simulé de Mizan Technique ; l'ancien demos.js n'est plus chargé par aucune page
   ['simulateur repoussé sous le premier écran', 'estimer-mon-projet/index.html', 'service-tete--compacte', 'service-tete-x'],
   ['lien WhatsApp revenu sur /commandes/', 'commandes/index.html', '<!-- commercial:whatsapp type=commandes style=bouton --><!-- /commercial -->', '<a class="bouton" href="https://wa.me/212600000000">WhatsApp</a>'],
   ['source non relevée sur /commandes/', 'commandes/index.html', '<script src="../assets/conversion.js" defer></script>\n', ''],

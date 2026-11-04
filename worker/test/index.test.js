@@ -511,6 +511,61 @@ test('offres de lancement : la page déclare les mêmes formules que le Worker',
   }
 });
 
+test('formule demandée : dans l\'objet du mail et dans la colonne Demande de la ligne de suivi', async () => {
+  const ligne = () => envois[0].corps.text.split('\n').find(l => l.includes('\t')).split('\t');
+  for (const [pack, libelle] of [['business', 'Site Business statique'], ['essentiel', 'Site Essentiel'], ['starter', 'Pack Starter']]) {
+    envois.length = 0;
+    await worker.fetch(post({ ...SIMULATEUR, parcours: 'offre', pack }), ENV);
+    assert.equal(envois[0].corps.subject, `Demande de devis — ${libelle} — Karim Alaoui`);
+    assert.equal(ligne()[10], `Page d'offre de lancement · ${libelle} · Site vitrine`);
+    assert.equal(ligne().length, 13);
+  }
+  envois.length = 0;   // sans formule, ou formule inconnue : l'objet garde le type de projet, comme avant
+  await worker.fetch(post({ ...SIMULATEUR, parcours: 'offre', pack: 'gratuit-a-vie' }), ENV);
+  await worker.fetch(post({ ...SIMULATEUR, parcours: 'offre' }), ENV);
+  assert.deepEqual(envois.map(e => e.corps.subject), ['Demande de devis — Site vitrine — Karim Alaoui', 'Demande de devis — Site vitrine — Karim Alaoui']);
+  assert.equal(envois[1].corps.text.split('\n').find(l => l.includes('\t')).split('\t')[10], 'Page d\'offre de lancement · Site vitrine');
+  envois.length = 0;   // hors parcours qualifiant, la formule n'est ni dans le corps ni dans l'objet ni dans la ligne
+  await worker.fetch(post({ ...VALIDE, pack: 'business' }), ENV);
+  await worker.fetch(post({ parcours: 'commandes', langue: 'fr', type: 'logiciel', entreprise: 'Négoce Test', nom: 'Sara', telephone: '0612345678', email: 'sara@exemple.ma', activite: 'distribution', budget: '25-50', delai: 'vite', pack: 'business' }), ENV);
+  assert.equal(envois[0].corps.subject, 'Demande de devis — Amina Benali');
+  assert.equal(envois[1].corps.subject, 'Demande commandes — Priorité A — Négoce Test — Sara');
+  for (const e of envois) assert.ok(!e.corps.text.includes('Business'), e.corps.text);
+});
+
+test('envoi de test (utm_source=test ou « NE PAS TRAITER ») : le mail part, marqué [TEST] dans l\'objet, le corps et la ligne de suivi', async () => {
+  const ligne = e => e.corps.text.split('\n').find(l => l.includes('\t')).split('\t');
+  const r = await worker.fetch(post({ ...SIMULATEUR, parcours: 'offre', pack: 'business', utm_source: 'test', utm_campaign: 'pilote' }), ENV);
+  assert.equal(lieu(r), 'https://legantis.net/offre-lancement/#devis-envoye');
+  await worker.fetch(post({ ...SIMULATEUR, entreprise: 'TEST — ne pas traiter' }), ENV);
+  await worker.fetch(post({ ...VALIDE, nom: 'Essai NE PAS TRAITER', utm_source: 'TEST' }), ENV);
+  await worker.fetch(post({ parcours: 'commandes', langue: 'fr', type: 'logiciel', entreprise: 'TEST — NE PAS TRAITER', nom: 'Sara', telephone: '0612345678', email: 'sara@exemple.ma', activite: 'distribution', budget: '25-50', delai: 'vite' }), ENV);
+  assert.equal(envois.length, 4, 'un envoi de test n\'est jamais bloqué');
+  assert.deepEqual(envois.map(e => e.corps.subject), [
+    '[TEST] Demande de devis — Site Business statique — Karim Alaoui',
+    '[TEST] Demande de devis — Site vitrine — Karim Alaoui',
+    '[TEST] Demande de devis — Essai NE PAS TRAITER',
+    '[TEST] Demande commandes — Priorité A — TEST — NE PAS TRAITER — Sara',
+  ]);
+  for (const e of envois) {
+    assert.ok(e.corps.text.startsWith('[TEST] Envoi de test'), e.corps.text);
+    assert.match(ligne(e)[0], /^\[TEST\] \d{4}-\d{2}-\d{2}$/);
+    assert.equal(ligne(e).length, 13);
+    assert.ok(e.corps.text.includes('[TEST] Ligne marquée, à ne pas coller'));
+  }
+  envois.length = 0;   // une vraie demande n'est jamais marquée : source qui contient « test », entreprise « Testa »
+  await worker.fetch(post({ ...SIMULATEUR, entreprise: 'Testa SARL', utm_source: 'testeur' }), ENV);
+  await worker.fetch(post({ ...SIMULATEUR, nom: 'Test', utm_source: 'facebook' }), ENV);
+  for (const e of envois) {
+    assert.ok(!e.corps.subject.includes('[TEST]') && !e.corps.text.includes('[TEST]'), e.corps.subject);
+    assert.match(ligne(e)[0], /^\d{4}-\d{2}-\d{2}$/);
+    assert.ok(e.corps.text.includes('Ligne à coller dans l\'onglet Prospects du classeur de suivi, colonne Date :'));
+  }
+  envois.length = 0;   // objet borné à 120 caractères, le marqueur toujours en tête
+  await worker.fetch(post({ ...SIMULATEUR, nom: 'x'.repeat(100), utm_source: 'test' }), ENV);
+  assert.ok(envois[0].corps.subject.startsWith('[TEST] Demande de devis') && envois[0].corps.subject.length === 120);
+});
+
 test('mesure : parcours, source et campagne comptés, rien de personnel', async () => {
   const base = d1();
   await worker.fetch(post({ ...SIMULATEUR, utm_source: 'facebook', utm_campaign: 'nov' }), { ...ENV, MESURE_SEL: 'sel-de-test', MESURES: base });

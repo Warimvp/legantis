@@ -96,6 +96,7 @@ const visible = (page, s) => page.locator(s).isVisible();
   await page.click('.assistant-envoi button');
   await page.locator('#devis-envoye').waitFor({ state: 'visible' });
   verifier('envoi : message de succès, formulaire et progression masqués', await visible(page, '#devis-envoye') && !(await visible(page, 'form.assistant')) && !(await visible(page, '.assistant-progression')) && !(await visible(page, '.assistant-compteur')));
+  verifier('envoi : le script masque lui-même le formulaire, sans dépendre de :has() (navigateurs plus anciens)', await page.locator('form.assistant').evaluate(f => f.hidden === true));
   verifier('envoi : un seul mail', envois.length === 1);
   const m = envois[0];
   verifier('mail : objet', m?.subject === 'Demande de devis — Site vitrine — Sara Test', m?.subject);
@@ -252,7 +253,8 @@ const visible = (page, s) => page.locator(s).isVisible();
   verifier('UTM dans le mail', t.includes('Source de la visite (UTM) : facebook / paid / lancement / video 1'), t);
   verifier('parcours « offre » dans le mail', t.includes('Parcours : Page d\'offre de lancement'));
   verifier('formule choisie dans le mail, sous son nom', t.includes('Pack demandé : Site Business statique\n'), t);
-  verifier('ligne de suivi complète', /\tfacebook \/ lancement\tPage d'offre de lancement · Site vitrine\t5 000 à 15 000 MAD\t/.test(t), t);
+  verifier('formule choisie dans l\'objet du mail', envois[0]?.subject === 'Demande de devis — Site Business statique — Sara Test', envois[0]?.subject);
+  verifier('ligne de suivi complète, formule dans la colonne Demande', /\tfacebook \/ lancement\tPage d'offre de lancement · Site Business statique · Site vitrine\t5 000 à 15 000 MAD\t/.test(t), t);
   await page.goto(ORIGINE + '/?utm_source=instagram&utm_campaign=bio');
   const lien = await page.getAttribute('.ouverture .bouton--plein', 'href');
   verifier('UTM transmis au lien du simulateur, sans stockage', lien.includes('utm_source=instagram') && lien.includes('utm_campaign=bio'), lien);
@@ -333,6 +335,23 @@ const visible = (page, s) => page.locator(s).isVisible();
     const avant = envois.length;
     await page.goto(`${ORIGINE}/realisations/demos/${nom}/`);
     verifier(`démonstration ${nom} : bandeau, rien n'est envoyé`, (await page.locator('.demo-bandeau').innerText()).includes('entreprise et données fictives') && envois.length === avant);
+  }
+  // Un formulaire de démonstration n'envoie rien : rempli correctement et soumis, la page ne tente aucune navigation (form-action 'none' la bloquerait,
+  // mais une tentative bloquée est déjà un défaut : violation de la politique de sécurité), ne change pas d'adresse et dit que c'est une simulation.
+  {
+    const avant = envois.length, navigations = [], erreursDemo = [];
+    await page.goto(`${ORIGINE}/realisations/demos/services/contact/`);
+    const noter = r => { if (r.isNavigationRequest()) navigations.push(r.method() + ' ' + r.url()); };
+    const noterErreur = m => { if (m.type() === 'error') erreursDemo.push(m.text()); };
+    page.on('request', noter); page.on('console', noterErreur);
+    await page.evaluate(() => { window.__violations = []; document.addEventListener('securitypolicyviolation', e => window.__violations.push(e.violatedDirective)); });
+    await page.fill('#c-nom', 'Personne Fictive'); await page.fill('#c-email', 'essai@exemple.invalid'); await page.selectOption('#c-sujet', { index: 1 }); await page.fill('#c-message', 'Message fictif pour la démonstration.');
+    await page.click('#contact-app button[type="submit"]', { noWaitAfter: true });
+    await page.waitForTimeout(300);
+    page.off('request', noter); page.off('console', noterErreur);
+    const violations = await page.evaluate(() => window.__violations).catch(() => ['page quittée']);
+    const retour = await visible(page, '#contact-app .retour').catch(() => false);
+    verifier('démonstration : le formulaire simulé n\'envoie rien et ne tente aucun envoi, la page le dit', navigations.length === 0 && violations.length === 0 && erreursDemo.length === 0 && page.url() === `${ORIGINE}/realisations/demos/services/contact/` && retour && envois.length === avant, [...navigations, ...violations, ...erreursDemo].join(' | ') || page.url());
   }
   // Politique de sécurité : un script injecté dans la page ne s'exécute pas.
   await page.goto(`${ORIGINE}/`);
