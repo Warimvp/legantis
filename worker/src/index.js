@@ -27,7 +27,9 @@ const FONCTIONS = {
   catalogue: 'Catalogue produits', 'paiement-ligne': 'Paiement en ligne', commandes: 'Gestion des commandes', 'espace-client': 'Espace client', stock: 'Gestion de stock',
   authentification: 'Authentification', 'tableau-de-bord': 'Tableau de bord', notifications: 'Notifications', administration: 'Administration', paiement: 'Paiement', integrations: 'Intégrations externes',
 };
-const PACKS = { starter: 'Pack Starter', business: 'Pack Business' };
+// Formules à prix fixe (identifiants de config/commercial.json, libellés de la page d'offre). Ajouter une clé ne retire rien : une page en cache qui envoie
+// encore « starter » reste acceptée. Un identifiant inconnu n'est jamais recopié dans le mail.
+const PACKS = { starter: 'Pack Starter', essentiel: 'Site Essentiel', business: 'Site Business statique' };
 const ESTIMATION = /^(Estimation personnalisée|Fourchette indicative\u00A0?: [\d\u00A0 ]+ à [\d\u00A0 ]+ MAD( HT| TTC)?)$/;   // la page le calcule : seule une forme connue passe dans le mail
 
 // Mesure des demandes (facultative, préparée le 26/10/2026) : binding D1 MESURES, schéma dans migrations/0001_mesures.sql.

@@ -488,6 +488,29 @@ test('pack demandé : recopié s\'il est connu seulement', async () => {
   assert.ok(!envois[0].corps.text.includes('Pack demandé'));
 });
 
+test('offres de lancement : les deux formules de la page arrivent avec leur nom dans le mail', async () => {
+  await worker.fetch(post({ ...SIMULATEUR, parcours: 'offre', pack: 'essentiel' }), ENV);
+  assert.ok(envois[0].corps.text.includes('Pack demandé : Site Essentiel\n'), envois[0].corps.text);
+  envois.length = 0;
+  await worker.fetch(post({ ...SIMULATEUR, parcours: 'offre', pack: 'business' }), ENV);
+  assert.ok(envois[0].corps.text.includes('Pack demandé : Site Business statique\n'), envois[0].corps.text);
+  envois.length = 0;
+  await worker.fetch(post({ ...SIMULATEUR, parcours: 'offre', pack: 'Essentiel' }), ENV);   // casse différente : valeur inconnue, rien de recopié
+  assert.ok(!envois[0].corps.text.includes('Pack demandé'));
+});
+
+test('offres de lancement : la page déclare les mêmes formules que le Worker', async () => {
+  const { readFileSync, existsSync } = await import('node:fs');
+  const chemin = new URL('../../config/commercial.json', import.meta.url);
+  if (!existsSync(chemin)) return;   // Worker copié seul (sabotages) : rien à comparer
+  const ids = JSON.parse(readFileSync(chemin, 'utf8')).packs.map(p => p.id);
+  for (const id of ids) {
+    envois.length = 0;
+    await worker.fetch(post({ ...SIMULATEUR, parcours: 'offre', pack: id }), ENV);
+    assert.ok(envois[0].corps.text.includes('Pack demandé : '), `formule « ${id} » de config/commercial.json ignorée par le Worker`);
+  }
+});
+
 test('mesure : parcours, source et campagne comptés, rien de personnel', async () => {
   const base = d1();
   await worker.fetch(post({ ...SIMULATEUR, utm_source: 'facebook', utm_campaign: 'nov' }), { ...ENV, MESURE_SEL: 'sel-de-test', MESURES: base });

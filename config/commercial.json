@@ -2,7 +2,90 @@
   "_lire": "Valeurs de PRODUCTION appliquées à site/ par outils/commercial.py. Dépôt public : rien de non validé ici. Mode d'emploi : docs/conversion/README.md.",
   "whatsapp": { "numero": "" },
   "offre_ouverture": null,
-  "packs": [],
+  "packs_pages": ["offre-lancement/"],
+  "packs": [
+    {
+      "id": "essentiel",
+      "valide": true,
+      "nom": "Site Essentiel",
+      "accroche": "Être trouvé et contacté : le site de présentation d'une petite entreprise, sur une base standardisée.",
+      "prix_mad": 6490,
+      "regime": "HT",
+      "fiche": [
+        { "libelle": "Pages", "valeur": "jusqu'à 5" },
+        { "libelle": "Langue", "valeur": "une" },
+        { "libelle": "Design", "valeur": "sections éprouvées, à vos couleurs et à votre logo" },
+        { "libelle": "Retours", "valeur": "1 série d'ajustements sur l'aperçu de l'accueil, puis 1 série de corrections regroupées" },
+        { "libelle": "Délai indicatif", "valeur": "2 à 3 semaines après réception de tous vos contenus" }
+      ],
+      "inclus": [
+        "jusqu'à 5 pages, par exemple : accueil, services, à propos, réalisations, contact",
+        "aperçu de la page d'accueil, validé par écrit avant la réalisation des autres pages",
+        "affichage adapté au téléphone, à la tablette et à l'ordinateur",
+        "formulaire de contact (demandes reçues par e-mail) et lien vers votre WhatsApp",
+        "référencement technique de base : titres, descriptions, plan du site, données structurées",
+        "présentation sur une adresse de test, puis mise en ligne sur votre nom de domaine",
+        "code source et accès remis à la mise en ligne"
+      ],
+      "exclus": [
+        "design dessiné sur mesure : le site part de sections éprouvées, adaptées à votre identité",
+        "modification des contenus par vous-même (aucun espace d'administration)",
+        "rubrique actualités, prise de rendez-vous, paiement en ligne, boutique",
+        "rédaction des textes, traduction et photos",
+        "seconde langue",
+        "hébergement et nom de domaine (voir la maintenance)"
+      ],
+      "fournir": [
+        "les textes de chaque page",
+        "votre logo et vos photos",
+        "une seule personne pour valider chaque étape"
+      ],
+      "note": "Formule strictement standardisée : ce qui dépasse le périmètre écrit est chiffré avant d'être fait.",
+      "cta": "Demander un devis pour l'Essentiel"
+    },
+    {
+      "id": "business",
+      "valide": true,
+      "vedette": true,
+      "badge": "L'offre que nous recommandons",
+      "nom": "Site Business statique",
+      "accroche": "Présenter une activité plus large, avec plus de pages et deux séries de corrections, sans gérer le site vous-même.",
+      "prix_mad": 12900,
+      "regime": "HT",
+      "fiche": [
+        { "libelle": "Pages", "valeur": "jusqu'à 8" },
+        { "libelle": "Langue", "valeur": "une" },
+        { "libelle": "Design", "valeur": "sections éprouvées, à vos couleurs et à votre logo" },
+        { "libelle": "Retours", "valeur": "1 série d'ajustements sur l'aperçu de l'accueil, puis 2 séries de corrections regroupées" },
+        { "libelle": "Délai indicatif", "valeur": "3 à 4 semaines après réception de tous vos contenus" }
+      ],
+      "inclus": [
+        "jusqu'à 8 pages, pour détailler vos services, vos réalisations ou vos implantations",
+        "aperçu de la page d'accueil, validé par écrit avant la réalisation des autres pages",
+        "deux séries de corrections regroupées sur le site complet",
+        "affichage adapté au téléphone, à la tablette et à l'ordinateur",
+        "formulaire de contact (demandes reçues par e-mail) et lien vers votre WhatsApp",
+        "référencement technique de base : titres, descriptions, plan du site, données structurées",
+        "présentation sur une adresse de test, puis mise en ligne sur votre nom de domaine",
+        "code source et accès remis à la mise en ligne"
+      ],
+      "exclus": [
+        "espace d'administration : vos changements de contenu passent par nous (maintenance ou devis)",
+        "design dessiné sur mesure : le site part de sections éprouvées, adaptées à votre identité",
+        "rubrique actualités, prise de rendez-vous, paiement en ligne, boutique",
+        "rédaction des textes, traduction et photos",
+        "seconde langue",
+        "hébergement et nom de domaine (voir la maintenance)"
+      ],
+      "fournir": [
+        "les textes de chaque page",
+        "votre logo et vos photos",
+        "une seule personne pour valider chaque étape"
+      ],
+      "note": "« Statique » : un site rapide, sans base de données ni administration à maintenir.",
+      "cta": "Demander un devis pour le Business"
+    }
+  ],
   "packs_faq": [],
   "grille": { "valide": false }
 }

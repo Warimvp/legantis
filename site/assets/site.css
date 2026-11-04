@@ -1220,6 +1220,41 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
 .offre-phare p { color: var(--gris); max-width: 60ch; }
 @media (max-width: 760px) { .packs { grid-template-columns: minmax(0, 1fr); } }
 .offres-note { margin-top: 18px; font-size: 0.92rem; color: var(--gris); max-width: var(--mesure); }
+/* Page Offres de lancement (pilote) : fiche, limites et contenus à fournir des cartes de pack, offre sur devis, socle commun */
+.pack-badge { justify-self: start; margin: 0 0 -4px; padding: 6px 11px; border-radius: 999px; background: var(--tampon); color: var(--sur-tampon); font: 500 0.68rem/1.2 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; }
+.pack-fiche { display: grid; margin: 0; border-block: 1px solid var(--filet); }
+.pack-fiche > div { display: grid; grid-template-columns: minmax(7.5rem, 32%) minmax(0, 1fr); gap: 12px; padding: 9px 0; border-top: 1px solid var(--filet); }
+.pack-fiche > div:first-child { border-top: 0; }
+.pack-fiche dt { font: 500 0.7rem/1.5 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--gris); padding-top: 2px; }
+.pack-fiche dd { margin: 0; font-size: 0.95rem; }
+.pack-sous-titre { margin: 4px 0 -6px; font: 500 0.7rem/1.4 var(--f-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--tampon); }
+.pack-exclus--visible, .pack-fournir { display: grid; gap: 14px; }
+.pack-exclus--visible ul, .pack-fournir ul { margin-top: 0; color: var(--gris); font-size: 0.93rem; }
+.pack-exclus--visible li, .pack-fournir li { padding-inline-start: 26px; position: relative; }
+.pack-exclus--visible li::before { content: "–" / ""; position: absolute; inset-inline-start: 4px; color: var(--gris); }
+.pack-fournir li::before { content: "→" / ""; position: absolute; inset-inline-start: 0; color: var(--gris); }
+.pack--vedette .pack-prix b { color: var(--tampon); }
+.pack .bouton { margin-top: 6px; }
+.offre-surdevis { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 40px; padding: clamp(22px, 3vw, 32px); border: 1px dashed color-mix(in srgb, var(--tampon) 45%, var(--filet)); border-radius: 8px; background: var(--carte); }
+.offre-surdevis > div { flex: 1 1 30rem; display: grid; gap: 10px; }
+.offre-surdevis h3 { font-weight: 700; font-size: clamp(1.4rem, 2.2vw, 1.8rem); line-height: 1.05; font-stretch: 114%; letter-spacing: -0.03em; }
+.offre-surdevis p:not(.pack-badge) { color: var(--gris); max-width: 64ch; }
+.offre-surdevis .pack-badge { margin: 0; background: var(--tampon-pale); color: var(--tampon); }
+.socle { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px clamp(32px, 5vw, 72px); margin-bottom: clamp(44px, 6vw, 72px); }
+.socle h3 { font-weight: 650; font-size: 1.3rem; line-height: 1.2; margin-bottom: 14px; }
+.limites { list-style: none; margin: 0; padding: 0; display: grid; }
+.limites li { position: relative; padding: 13px 0 13px 26px; border-top: 1px solid var(--filet); color: var(--gris); }
+.limites li:first-child { border-top: 0; padding-top: 2px; }
+.limites li::before { content: "×" / ""; position: absolute; left: 4px; color: var(--gris); font-weight: 700; }
+.limites li:first-child::before { top: 1px; }
+.note-offre { margin-top: 18px; font-size: 0.92rem; color: var(--gris); max-width: var(--mesure); }
+.note-offre--cadre { margin-top: clamp(32px, 4vw, 48px); padding: 16px 20px; border-inline-start: 3px solid var(--tampon); background: var(--carte); border-radius: 0 6px 6px 0; color: var(--encre); }
+.modeles .projet-image { display: block; }
+.projets.modeles { grid-template-columns: repeat(3, minmax(0, 1fr)); }   /* spécificité 0,2,0 : l'emporte sur la grille à 12 colonnes de /realisations/ (≥ 1025 px) */
+@media (max-width: 1024px) { .projets.modeles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .projets.modeles { grid-template-columns: minmax(0, 1fr); } }
+.cinq { max-width: 52rem; }
+@media (max-width: 760px) { .socle { grid-template-columns: minmax(0, 1fr); } .pack-fiche > div { grid-template-columns: minmax(0, 1fr); gap: 2px; } }
 
 /* Barre de contact : fixe en bas de l'écran au téléphone (le bouton de la barre du haut y est masqué) ; à l'ordinateur, seul le lien WhatsApp reste, discret, s'il est configuré */
 .contact-rapide { position: fixed; z-index: 45; inset: auto 0 0 0; display: none; gap: 8px; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: color-mix(in srgb, var(--chaux) 90%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-block-start: 1px solid var(--filet); }

@@ -10,7 +10,8 @@ pas, le bloc reste vide (ou réduit à ce qui ne dépend d'aucune décision) : a
 
 Le dépôt est public : les hypothèses de prix ne vont jamais dans config/ ni dans site/, seulement dans ~/Documents/bureaux/Legantis-Acquisition/. L'aperçu porte un bandeau et
 un noindex ; il sert à montrer les pages tarifaires avant décision, jamais à publier. Un pack n'est écrit dans site/ que s'il porte "valide": true, un prix entier
-et un régime "HT" ou "TTC" : voir docs/conversion/README.md."""
+et un régime "HT" ou "TTC" : voir docs/conversion/README.md. "packs_pages" (facultatif) limite les packs, leur FAQ et leur choix dans le formulaire aux pages
+citées (par exemple ["offre-lancement/"]) : ailleurs, les blocs restent vides comme sans pack. Absent, les packs vont partout où un bloc les attend."""
 import json, os, re, shutil, sys
 from urllib.parse import quote
 
@@ -53,9 +54,17 @@ def controler(config, production):
     numero = (config.get('whatsapp') or {}).get('numero', '')
     if numero and not re.fullmatch(r'212[5-7]\d{8}', numero):
         raise SystemExit(f'whatsapp.numero invalide : {numero!r} (attendu 2126XXXXXXXX, sans + ni espace)')
+    pages_packs = config.get('packs_pages')
+    if pages_packs is not None and (not isinstance(pages_packs, list) or not all(isinstance(p, str) and re.fullmatch(r'(?:[a-z0-9-]+/)+', p) for p in pages_packs)):
+        raise SystemExit(f'packs_pages invalide : {pages_packs!r} (attendu une liste de dossiers de site/, par exemple ["offre-lancement/"])')
     if not production:
         return
+    ids = [p.get('id') for p in config.get('packs') or []]
+    if len(set(ids)) != len(ids):
+        raise SystemExit(f'packs : identifiants en double {ids!r}')
     for pack in config.get('packs') or []:
+        if not isinstance(pack.get('id'), str) or not re.fullmatch(r'[a-z-]{1,20}', pack['id']):
+            raise SystemExit(f"pack {pack.get('id')!r} : identifiant attendu en minuscules et tirets, 20 caractères au plus (il passe dans l'adresse et dans le formulaire)")
         if pack.get('valide') is not True:
             raise SystemExit(f"pack {pack.get('id')} : \"valide\": true manquant, refus de le publier")
         if not isinstance(pack.get('prix_mad'), int) or pack['prix_mad'] <= 0 or pack.get('regime') not in ('HT', 'TTC'):
@@ -84,6 +93,8 @@ def bloc_offre_ouverture(config, params, prefixe):
 
 
 def bloc_packs(config, params, prefixe):
+    """Cartes des packs. Champs facultatifs d'un pack : badge (mention courte au-dessus du nom), fiche ([{libelle, valeur}] : pages, langue, corrections, délai),
+    fournir (contenus attendus du client), note. Paramètre exclus=visible : la liste « Non compris » est ouverte au lieu d'être repliée (page d'offre)."""
     packs = config.get('packs') or []
     if not packs:
         return ''
@@ -93,13 +104,25 @@ def bloc_packs(config, params, prefixe):
         lien = '#demande' if cible == 'demande' else f'{prefixe}estimer-mon-projet/?type=vitrine&amp;pack={echapper(p["id"])}'
         inclus = ''.join(f'<li>{echapper(i)}</li>' for i in p['inclus'])
         exclus = ''.join(f'<li>{echapper(i)}</li>' for i in p.get('exclus') or [])
+        fiche = ''.join(f'<div><dt>{echapper(f["libelle"])}</dt><dd>{echapper(f["valeur"])}</dd></div>' for f in p.get('fiche') or [])
+        fournir = ''.join(f'<li>{echapper(i)}</li>' for i in p.get('fournir') or [])
+        if exclus and params.get('exclus') == 'visible':
+            bloc_exclus = f'<div class="pack-exclus pack-exclus--visible"><p class="pack-sous-titre">Non compris</p><ul role="list">{exclus}</ul></div>'
+        elif exclus:
+            bloc_exclus = f'<details class="pack-exclus"><summary>Ce qui n\'est pas inclus</summary><ul role="list">{exclus}</ul></details>'
+        else:
+            bloc_exclus = ''
         cartes.append(
-            f'<article class="pack{" pack--vedette" if p.get("vedette") else ""}" aria-labelledby="pack-{p["id"]}">'
-            f'<h3 id="pack-{p["id"]}">{echapper(p["nom"])}</h3><p class="pack-accroche">{echapper(p["accroche"])}</p>'
+            f'<article class="pack{" pack--vedette" if p.get("vedette") else ""}" id="offre-{p["id"]}" aria-labelledby="pack-{p["id"]}" data-pack-carte="{echapper(p["id"])}">'
+            + (f'<p class="pack-badge">{echapper(p["badge"])}</p>' if p.get('badge') else '')
+            + f'<h3 id="pack-{p["id"]}">{echapper(p["nom"])}</h3><p class="pack-accroche">{echapper(p["accroche"])}</p>'
             f'<p class="pack-prix"><b>{montant(p["prix_mad"])}</b> <span>MAD {echapper(p["regime"])}</span></p>'
-            f'<ul class="pack-inclus" role="list">{inclus}</ul>'
+            + (f'<dl class="pack-fiche">{fiche}</dl>' if fiche else '')
+            + (f'<p class="pack-sous-titre">Compris</p>' if params.get('exclus') == 'visible' else '')
+            + f'<ul class="pack-inclus" role="list">{inclus}</ul>'
+            + bloc_exclus
+            + (f'<div class="pack-fournir"><p class="pack-sous-titre">À fournir par vous</p><ul role="list">{fournir}</ul></div>' if fournir else '')
             + (f'<p class="pack-note">{echapper(p["note"])}</p>' if p.get('note') else '')
-            + (f'<details class="pack-exclus"><summary>Ce qui n\'est pas inclus</summary><ul role="list">{exclus}</ul></details>' if exclus else '')
             + f'<a class="bouton {"bouton--plein" if p.get("vedette") else "bouton--trait"}" href="{lien}" data-pack="{echapper(p["id"])}">{echapper(p.get("cta", "Choisir cette offre"))} <span class="fleche" aria-hidden="true">→</span></a></article>')
     return '<div class="packs">' + ''.join(cartes) + '</div>'
 
@@ -179,9 +202,24 @@ def pages(racine):
                 yield os.path.join(dossier, nom)
 
 
+def dossier_page(racine, chemin):
+    """« offre-lancement/ » pour site/offre-lancement/index.html, « » pour l'accueil."""
+    rel = os.path.relpath(os.path.dirname(chemin), racine)
+    return '' if rel == '.' else rel.replace(os.sep, '/') + '/'
+
+
+def config_de_la_page(config, racine, chemin):
+    """Hors des pages de packs_pages, la page est rendue comme si aucun pack n'existait (blocs vides, FAQ du coût inchangée)."""
+    pages_packs = config.get('packs_pages')
+    if pages_packs is None or dossier_page(racine, chemin) in pages_packs:
+        return config
+    return {**config, 'packs': [], 'packs_faq': []}
+
+
 def rendre(html, config, racine, chemin):
     profondeur = os.path.relpath(chemin, racine).count(os.sep)
     prefixe = '../' * profondeur
+    config = config_de_la_page(config, racine, chemin)
 
     def remplacer(m):
         nom, brut = m.group(1), m.group(2).strip()
@@ -195,6 +233,9 @@ def rendre(html, config, racine, chemin):
 
 def appliquer(racine, config):
     """Réécrit les blocs ; renvoie la liste des pages modifiées."""
+    for dossier in config.get('packs_pages') or []:
+        if not os.path.exists(os.path.join(racine, dossier, 'index.html')):
+            raise SystemExit(f'packs_pages : {dossier} ne correspond à aucune page de {racine}')
     modifiees = []
     for chemin in pages(racine):
         avant = open(chemin, encoding='utf-8').read()

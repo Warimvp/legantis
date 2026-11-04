@@ -24,7 +24,8 @@ Sans valeur validée, le bloc reste vide. Le dépôt est **public** : aucune hyp
 | Fonction | Dans `config/commercial.json` | Ce qui change |
 |---|---|---|
 | WhatsApp | `"whatsapp": { "numero": "2126XXXXXXXX" }` | barre mobile, lien discret à l'ordinateur, lien du simulateur, du mini-audit et de la page d'offre, messages préremplis par type |
-| Packs | `"packs": [ … ]`, chacun avec `"valide": true`, `prix_mad` entier, `regime` `HT` ou `TTC`, `inclus`, `exclus` | cartes sur l'accueil et la page d'offre, choix dans le formulaire |
+| Packs | `"packs": [ … ]`, chacun avec `"valide": true`, `id` (minuscules et tirets, 20 caractères au plus, connu de `PACKS` dans `worker/src/index.js`), `prix_mad` entier, `regime` `HT` ou `TTC`, `inclus`, `exclus` ; facultatifs : `badge`, `vedette`, `fiche` (`[{ "libelle", "valeur" }]`), `fournir`, `note`, `cta` | cartes sur l'accueil et la page d'offre, choix dans le formulaire |
+| Pages des packs | `"packs_pages": ["offre-lancement/"]` (facultatif) | packs, FAQ des packs, choix du formulaire et FAQ du coût seulement sur ces pages ; ailleurs, rendu comme sans pack |
 | FAQ des packs | `"packs_faq": [ { "question", "reponse" } ]` | accueil et page d'offre |
 | Offre de l'ouverture | `"offre_ouverture": { "valide": true, "titre", "texte", "lien" }` | encart sous les boutons de l'accueil |
 | Fourchettes du simulateur | `"grille": { "valide": true, "devise": "MAD", "regime": "HT", "postes": … }` | fourchette indicative à l'étape 4 |
@@ -39,13 +40,21 @@ Une option sélectionnée sans prix ramène au message d'estimation personnalis�
 
 Si des packs sont publiés, adapter à la main la réponse de la FAQ de l'accueil « Combien coûte un projet ? » et celle sur le simulateur.
 
+### Offres de lancement (pilote, `/offre-lancement/`)
+
+`config/commercial.json` porte deux packs limités par `packs_pages` à `/offre-lancement/`, qui reste `noindex`, hors sitemap et reliée d'aucune page du sitemap. Le bloc de la page est `<!-- commercial:packs cible=demande exclus=visible -->` : les limites sont ouvertes, pas repliées. Le bouton d'une carte, ou `?pack=` dans l'adresse, présélectionne la formule du formulaire (`conversion.js`).
+
+`controles_site.py` vérifie sur cette page : cartes et prix égaux à la configuration, régime écrit, « hors taxes » en clair, tout montant TTC indicatif et sous réserve du régime de TVA, formules du formulaire égales à la configuration et connues du Worker, aucun compte à rebours ni formule d'urgence, explication de la limite des cinq contrats, mention fictive à côté de chaque capture de modèle, Pack Commandes sans montant, aucun prix de pack hors de `packs_pages`, aucun lien depuis les pages du sitemap. Chaque critère est éprouvé par un sabotage dans `test_commercial.py`.
+
+Relier la page ou l'indexer est une décision du propriétaire : retirer `noindex`, l'ajouter au sitemap, la retirer de `HORS_SITEMAP` et du contrôle des liens dans `controles_site.py`, et revoir le contrôle des packs de `avant_production.py`.
+
 ## Formulaires
 
 | Parcours | Page | Retour | Champs obligatoires côté serveur |
 |---|---|---|---|
 | générique | accueils FR et EN (`#devis`) | `/` ou `/en/` | nom, e-mail, projet |
 | `simulateur` | `/estimer-mon-projet/` | même page | + entreprise, téléphone, type, budget, délai, consentement |
-| `offre` | `/offre-lancement/` | même page | + entreprise, téléphone, type, budget, consentement |
+| `offre` | `/offre-lancement/` | même page | + entreprise, téléphone, type, budget, consentement (formule facultative : `essentiel`, `business`, `starter`) |
 | `audit` | `/audit-gratuit/` | même page | nom, e-mail, entreprise, téléphone, adresse du site, consentement |
 
 Le Worker n'ouvre jamais l'adresse à analyser. Elle est seulement filtrée (ni IP, ni réseau interne, ni port, ni identifiants), pour que le lien reçu par mail soit sain.

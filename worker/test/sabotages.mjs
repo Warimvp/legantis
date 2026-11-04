@@ -60,6 +60,8 @@ const SABOTAGES = [
   ['parcours non filtré', `Object.hasOwn(PARCOURS, donnees.get('parcours')) ? donnees.get('parcours') : ''`, `donnees.get('parcours') || ''`],
   ['budget non filtré', `Object.hasOwn(BUDGETS, donnees.get('budget')) ? donnees.get('budget') : ''`, `donnees.get('budget') || ''`],
   ['fonctions non filtrées', `.filter(f => Object.hasOwn(FONCTIONS, f))`, ''],
+  ['formule Essentiel retirée de la liste blanche', `essentiel: 'Site Essentiel', `, ''],
+  ['formule Business sous un autre nom', `business: 'Site Business statique'`, `business: 'Pack Business'`],
   ['pack non filtré', `Object.hasOwn(PACKS, donnees.get('pack')) ? donnees.get('pack') : ''`, `donnees.get('pack') || ''`],
   ['consentement facultatif', `if (!d.consentement) e.push('consentement');`, ''],
   ['consentement accepté pour toute valeur', `donnees.get('consentement') === 'oui'`, `true`],

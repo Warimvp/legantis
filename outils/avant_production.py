@@ -28,7 +28,13 @@ verifier('un seul commit à publier', n == '1', f'{n} commits : l\'historique co
 
 conf = json.load(open(os.path.join(RACINE, 'config', 'commercial.json'), encoding='utf-8'))
 verifier('WhatsApp désactivé', not (conf.get('whatsapp') or {}).get('numero'))
-verifier('packs désactivés', not conf.get('packs') and not conf.get('offre_ouverture'))
+# Packs : éteints, ou limités par packs_pages à des pages noindex et absentes du sitemap (pilote du 04/11/2026, /offre-lancement/). Publier des prix
+# sur une page indexée ou sur l'accueil reste une décision du propriétaire : il faudra alors changer ce contrôle sciemment.
+plan = open(os.path.join(SITE, 'sitemap.xml'), encoding='utf-8').read()
+def page_pilote(dossier):
+    chemin = os.path.join(SITE, dossier, 'index.html')
+    return os.path.exists(chemin) and re.search(r'<meta name="robots" content="noindex', open(chemin, encoding='utf-8').read()) and f'https://legantis.net/{dossier}<' not in plan
+verifier('packs éteints ou limités à des pages noindex hors sitemap', not conf.get('offre_ouverture') and (not conf.get('packs') or (bool(conf.get('packs_pages')) and all(page_pilote(x) for x in conf['packs_pages']))))
 verifier('grille de prix désactivée', (conf.get('grille') or {}).get('valide') is False)
 pages = [os.path.join(d, x) for d, _, fs in os.walk(SITE) for x in fs if x.endswith(('.html', '.js'))]
 texte = {p: open(p, encoding='utf-8').read() for p in pages}

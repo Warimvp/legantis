@@ -288,6 +288,17 @@
     poser(50);
   }
 
+  /* Page Offres de lancement : le bouton d'une carte de pack, ou ?pack= dans l'adresse, préremplit la formule du formulaire ; seule une valeur
+     présente dans la liste est retenue. Sans script, le visiteur la choisit lui-même dans la liste. */
+  function choisirPack(valeur) {
+    var choix = document.getElementById('demande-pack'), v = String(valeur || '').replace(/[^a-z-]/g, '').slice(0, 20);
+    if (choix && v && choix.querySelector('option[value="' + v + '"]')) choix.value = v;
+  }
+  document.querySelectorAll('a[data-pack][href="#demande"]').forEach(function (lien) {
+    lien.addEventListener('click', function () { choisirPack(lien.getAttribute('data-pack')); });
+  });
+  if (!document.querySelector('form.assistant')) choisirPack(new URLSearchParams(location.search).get('pack'));
+
   reporterSource();
   document.querySelectorAll('form[data-envoi]').forEach(brancherEnvoi);
   var assistant = document.querySelector('form.assistant');

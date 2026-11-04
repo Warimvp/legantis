@@ -470,6 +470,59 @@ for dossier, _, fichiers in os.walk(RACINE):
     for nom_fichier in fichiers:
         if nom_fichier.endswith('.html') and re.search(r'<h2 id="contact-titre"[^>]*><span>[^<]*</span><span', open(os.path.join(dossier, nom_fichier), encoding='utf-8').read()):
             echecs.append(f'{os.path.relpath(os.path.join(dossier, nom_fichier), RACINE)}: titre d\'appel final sans espace entre ses deux lignes')
+# ── Offres de lancement (pilote, 04/11/2026) ─────────────────────────────────────────────────────────────────────────────────────────────
+# Prix = config/commercial.json (cartes et formulaire), mention HT, aucune fausse urgence, modèles de design présentés comme fictifs, page hors navigation
+# tant que le propriétaire n'a pas décidé de la relier. Éprouvé par outils/test_commercial.py (sabotages « offres de lancement »).
+OFFRE = BASE + 'offre-lancement/'
+if os.path.exists(CONFIG) and os.path.exists(fichier(OFFRE)):
+    conf = json.load(open(CONFIG, encoding='utf-8'))
+    packs = conf.get('packs') or []
+    h = open(fichier(OFFRE), encoding='utf-8').read(); tv = visible(h)
+    # 1. chaque carte affiche le prix et le régime de la configuration, dans l'ordre ; rien d'autre ne ressemble à une carte de prix
+    cartes = re.findall(r'<article class="pack[^"]*" id="offre-([a-z-]+)".*?<p class="pack-prix"><b>([^<]*)</b> <span>MAD ([A-Z]+)</span></p>', h, re.S)
+    attendu = [(p_['id'], f"{p_['prix_mad']:,}".replace(',', '&nbsp;'), p_['regime']) for p_ in packs]
+    if packs and cartes != attendu: echecs.append(f'{OFFRE}: cartes de prix {cartes} différentes de config/commercial.json {attendu}')
+    n_prix = h.count('class="pack-prix"')
+    if n_prix != len(packs): echecs.append(f'{OFFRE}: {n_prix} prix affichés pour {len(packs)} packs configurés')
+    # 2. formulaire : exactement les formules configurées, et le Worker les connaît toutes
+    choix = re.search(r'<select id="demande-pack" name="pack">(.*?)</select>', h, re.S)
+    options = re.findall(r'<option value="([^"]*)">([^<]*)</option>', choix.group(1)) if choix else []
+    if packs and options != [('', 'Je ne sais pas encore')] + [(p_['id'], p_['nom']) for p_ in packs]: echecs.append(f'{OFFRE}: offres du formulaire {options} différentes de config/commercial.json')
+    packs_worker = re.search(r'const PACKS = \{([^}]*)\}', WS)
+    for p_ in packs:
+        if not packs_worker or not re.search(rf"\b{re.escape(p_['id'])}: '", packs_worker.group(1)): echecs.append(f'{OFFRE}: formule « {p_["id"]} » inconnue du Worker (PACKS) : elle serait perdue dans le mail')
+    # 3. régime affiché : HT écrit en clair ; un TTC éventuel est indicatif et sous réserve du régime de TVA
+    if packs and 'hors taxes' not in tv.lower(): echecs.append(f'{OFFRE}: « hors taxes » absent de la page')
+    for m in re.finditer(r'\d[\d ]*\s*(?:MAD\s*|DH\s*)?TTC|TTC\W{0,3}\d', tv):   # un montant TTC (la question « HT ou TTC ? » n'en est pas un)
+        autour = tv[max(0, m.start() - 160): m.end() + 160].lower()
+        if 'indicatif' not in autour or 'régime de tva' not in autour: echecs.append(f'{OFFRE}: TTC affiché sans « indicatif » ni « sous réserve du régime de TVA »'); break
+    # 4. aucune fausse urgence : ni minuterie ni compte à rebours, ni rareté inventée ; la limite des cinq contrats est expliquée par la capacité
+    if re.search(r'<time\b|\b(?:class|id|data-[a-z-]+)="[^"]*(?:rebours|countdown|minuterie|timer|chrono|expire)', h, re.I): echecs.append(f'{OFFRE}: élément de compte à rebours ou de minuterie')
+    if re.search(r'setInterval|setTimeout|requestAnimationFrame', h): echecs.append(f'{OFFRE}: script en ligne de minuterie')
+    URGENCE = r"plus que \d|il ne reste|derni[eè]res? places?|places? limit[ée]es|d[ée]p[êe]chez|offre expire|expire le|jusqu'au \d|aujourd'hui seulement|avant qu'il ne soit trop tard|\d+ ?(?:h|heures?|jours?) restant"
+    u_ = re.search(URGENCE, tv, re.I)
+    if u_: echecs.append(f'{OFFRE}: formule d\'urgence « {u_.group(0)} »')
+    for mot in ('cinq premiers contrats', 'plus de deux projets', 'compte à rebours', 'temps réellement passé'):
+        if mot not in tv.lower(): echecs.append(f'{OFFRE}: explication de la limite des cinq contrats incomplète (« {mot} » absent)')
+    # 5. exemples de design : chaque capture est signalée comme fictive à côté de l'image
+    for li in re.findall(r'<li class="projet modele">(.*?)</li>', h, re.S):
+        if 'Modèle fictif' not in li or 'fictives' not in li: echecs.append(f'{OFFRE}: capture de modèle sans mention fictive à côté'); break
+    if '<li class="projet modele">' not in h: echecs.append(f'{OFFRE}: exemples de design (modèles fictifs) absents')
+    # 6. Pack Commandes : sur devis après diagnostic, lien vers /commandes/, aucun montant dans son encart
+    encart = re.search(r'<article class="offre-surdevis".*?</article>', h, re.S)
+    if not encart or 'href="../commandes/"' not in encart.group(0) or 'diagnostic gratuit' not in encart.group(0) or re.search(r'\d\s*(?:MAD|DH)', visible(encart.group(0))): echecs.append(f'{OFFRE}: encart Pack Commandes absent, sans lien, sans diagnostic gratuit ou avec un montant')
+    # 7. pilote : packs et montants des packs seulement sur les pages de packs_pages ; aucune page du sitemap ne relie la page d'offre
+    autorisees = conf.get('packs_pages')
+    montants_packs = {f"{p_['prix_mad']:,}".replace(',', ' ') for p_ in packs}
+    if autorisees is not None:
+        for chemin in glob.glob(os.path.join(RACINE, '**', '*.html'), recursive=True):
+            rel = os.path.relpath(os.path.dirname(chemin), RACINE).replace(os.sep, '/') + '/'
+            if rel in autorisees or rel.startswith('realisations/demos/'): continue
+            t_ = open(chemin, encoding='utf-8').read()
+            vis = visible(t_)
+            if 'class="pack-prix"' in t_ or any(re.search(rf'\b{re.escape(m_)}\s*(?:MAD|DH)', vis) for m_ in montants_packs): echecs.append(f'{os.path.relpath(chemin, RACINE)}: prix d\'un pack hors des pages autorisées (packs_pages)')
+    for u_ in pages:
+        if re.search(r'href="[^"]*offre-lancement/?[#"?]', open(fichier(u_), encoding='utf-8').read()): echecs.append(f'{u_}: lien vers /offre-lancement/ (page pilote non reliée tant que le propriétaire n\'a pas décidé)')
 IMAGES = os.path.join(RACINE, '..', 'outils', 'images.py')
 if os.path.exists(IMAGES) and 'CAPITAL' in open(IMAGES, encoding='utf-8').read(): echecs.append('outils/images.py : capital sur l\'image de partage')
 import subprocess
