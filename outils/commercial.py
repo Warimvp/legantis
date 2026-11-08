@@ -167,6 +167,11 @@ def bloc_faq_cout(config, params, prefixe):
     if config.get('packs'):
         return ("<p>Nos sites web simples ont des formules à prix fixe, présentées dans les offres. Pour une application ou un logiciel, cela dépend de ce qu'il fait&nbsp;: "
                 "nombre d'écrans, comptes utilisateurs, langues, supports visés. Nous vous remettons gratuitement un devis détaillé, avec le prix et le délai.</p>")
+    if fourchette_publiable((config.get('fourchettes') or {}).get('visibilite')) and config.get('mise_en_avant') is not None:
+        f = config['fourchettes']['visibilite']
+        return (f"<p>Pour un site de présentation de trois pages au plus, dans une seule langue, notre offre de lancement est à partir de {montant(f['a_partir_de'])}&nbsp;MAD {f['regime']}, "
+                f"<a href=\"{prefixe}offre-lancement/\">périmètre écrit sur la page de l'offre</a>. Au-delà (plus de pages, seconde langue, boutique en ligne, espace client, réservation, application), "
+                "cela dépend de ce que le projet fait&nbsp;: nous vous remettons gratuitement un devis détaillé, avec le prix et le délai, et vous décidez ensuite, librement.</p>")
     return ("<p>Cela dépend de ce qu'il fait&nbsp;: nombre d'écrans, comptes utilisateurs, langues, supports visés. Nous ne publions pas de prix unique, car deux projets ne se ressemblent pas&nbsp;: "
             "nous vous remettons gratuitement un devis détaillé, avec le prix et le délai, et vous décidez ensuite, librement.</p>")
 

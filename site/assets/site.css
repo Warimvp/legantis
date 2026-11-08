@@ -1095,6 +1095,7 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
 .ouverture--accroche .ouverture-pied { animation-delay: .6s; }
 .offre-ouverture { display: inline-grid; gap: 4px; margin-top: 22px; padding: 12px 18px; border: 1px solid color-mix(in srgb, var(--tampon) 45%, var(--filet)); border-radius: 8px; background: var(--carte); color: var(--encre); text-decoration: none; animation: monter .6s var(--sortie) .5s both; }
 .offre-ouverture:hover { border-color: var(--tampon); }
+.ouverture-texte .offre-ouverture { margin-bottom: 20px; }
 @media (max-width: 600px) {
   .ouverture--accroche { padding-top: calc(var(--barre) + 6px); }
   .ouverture--accroche .ouverture-corps { padding-top: 10px; padding-bottom: 20px; }

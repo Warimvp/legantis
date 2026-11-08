@@ -1,11 +1,11 @@
 {
   "_lire": "Valeurs de PRODUCTION appliquées à site/ par outils/commercial.py. Dépôt public : rien de non validé ici. Mode d'emploi : docs/conversion/README.md.",
   "whatsapp": { "numero": "" },
-  "offre_ouverture": null,
+  "offre_ouverture": { "valide": true, "titre": "Offre de lancement", "texte": "Votre site professionnel dès 3 490 MAD HT, jusqu'à trois pages. Découvrir l'offre Visibilité", "lien": "offre-lancement/" },
   "packs_pages": ["offre-lancement/"],
   "fourchettes": {
     "_lire": "Fourchettes indicatives des trois offres de l'accueil, ETEINTES : aucune n'est publiée tant que \"valide\" n'est pas vrai (accord écrit du propriétaire). Mode d'emploi : docs/conversion/README.md.",
-    "visibilite": { "valide": false, "a_partir_de": null, "jusqu_a": null, "regime": "HT" },
+    "visibilite": { "valide": true, "a_partir_de": 3490, "jusqu_a": null, "regime": "HT", "note": "Site Visibilité : trois pages au plus, une langue, périmètre écrit sur la page de l'offre. Le reste, sur devis." },
     "gestion": { "valide": false, "a_partir_de": null, "jusqu_a": null, "regime": "HT" },
     "applications": { "valide": false, "a_partir_de": null, "jusqu_a": null, "regime": "HT" }
   },
@@ -55,5 +55,7 @@
     }
   ],
   "packs_faq": [],
-  "grille": { "valide": false }
+  "grille": { "valide": false },
+  "_mise_en_avant": "Pages indexées autorisées à citer le prix d'appel du Site Visibilité et à relier /offre-lancement/ dans leur contenu (candidat du 08/11/2026, NON publié : décision D11a du propriétaire). Les entrées de menu et de pied « Offre Visibilité » sont admises partout. Absent : la page d'offre reste isolée.",
+  "mise_en_avant": ["", "creation-site-web-casablanca/"]
 }

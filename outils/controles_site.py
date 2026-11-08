@@ -592,9 +592,14 @@ if os.path.exists(CONFIG) and os.path.exists(fichier(OFFRE)):
             if rel in autorisees or rel.startswith('realisations/demos/'): continue
             t_ = open(chemin, encoding='utf-8').read()
             vis = visible(t_)
-            if 'class="pack-prix"' in t_ or any(re.search(rf'\b{re.escape(m_)}\s*(?:MAD|DH)', vis) for m_ in montants_packs): echecs.append(f'{os.path.relpath(chemin, RACINE)}: prix d\'un pack hors des pages autorisées (packs_pages)')
+            mise_ = (rel if rel != './' else '') in (conf.get('mise_en_avant') or [])   # prix d'appel admis en texte seulement sur les pages listées par la configuration (candidat D11) ; jamais la carte de prix
+            if 'class="pack-prix"' in t_ or (not mise_ and any(re.search(rf'\b{re.escape(m_)}\s*(?:MAD|DH)', vis) for m_ in montants_packs)): echecs.append(f'{os.path.relpath(chemin, RACINE)}: prix d\'un pack hors des pages autorisées (packs_pages)')
     for u_ in pages:
-        if re.search(r'href="[^"]*offre-lancement/?[#"?]', open(fichier(u_), encoding='utf-8').read()): echecs.append(f'{u_}: lien vers /offre-lancement/ (page pilote non reliée tant que le propriétaire n\'a pas décidé)')
+        lien_ = open(fichier(u_), encoding='utf-8').read()
+        if conf.get('mise_en_avant') is not None:   # le propriétaire a décidé de relier l'offre (candidat D11a) : liens de contenu admis sur les pages listées seulement
+            if u_[len(BASE):] in conf['mise_en_avant']: continue
+            lien_ = re.sub(r'<li><a href="[^"]*offre-lancement/">Offre Visibilité</a></li>', '', lien_)   # l'entrée commune du menu et du pied reste admise partout
+        if re.search(r'href="[^"]*offre-lancement/?[#"?]', lien_): echecs.append(f'{u_}: lien vers /offre-lancement/ (page pilote non reliée tant que le propriétaire n\'a pas décidé)')
 # aucun identifiant en double dans une page (deux formulaires sur la même page : messages et libellés distincts, sinon #ancre et <label for> visent le mauvais élément)
 import collections
 for chemin in glob.glob(os.path.join(RACINE, '**', '*.html'), recursive=True):

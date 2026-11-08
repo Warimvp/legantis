@@ -3,6 +3,8 @@
     python3 outils/avant_production.py --complet  ajoute les tests du Worker, les contrôles du site et les parcours Chromium
 Sortie 1 au premier motif de refus. À lancer depuis la branche candidate, juste avant la fusion."""
 import json, os, re, subprocess, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from garde_encart import encart_admis
 RACINE = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 SITE = os.path.join(RACINE, 'site')
 INTERDITS = ('docs/acquisition', 'docs/marketing', 'docs/sortlist.md', 'docs/conversion/RAPPORT-VALIDATION.md', 'prive')
@@ -34,7 +36,8 @@ plan = open(os.path.join(SITE, 'sitemap.xml'), encoding='utf-8').read()
 def page_pilote(dossier):
     chemin = os.path.join(SITE, dossier, 'index.html')
     return os.path.exists(chemin) and re.search(r'<meta name="robots" content="noindex', open(chemin, encoding='utf-8').read()) and f'https://legantis.net/{dossier}<' not in plan
-verifier('packs éteints ou limités à des pages noindex hors sitemap', not conf.get('offre_ouverture') and (not conf.get('packs') or (bool(conf.get('packs_pages')) and all(page_pilote(x) for x in conf['packs_pages']))))
+encart_ok, encart_motif = encart_admis(conf)   # règle précise de l'encart d'accueil (décision D11a du 08/11/2026) : outils/garde_encart.py
+verifier('packs limités aux pages noindex hors sitemap ; encart d\'accueil admis seulement s\'il est validé et conforme', encart_ok and (not conf.get('packs') or (bool(conf.get('packs_pages')) and all(page_pilote(x) for x in conf['packs_pages']))), encart_motif)
 verifier('grille de prix désactivée', (conf.get('grille') or {}).get('valide') is False)
 pages = [os.path.join(d, x) for d, _, fs in os.walk(SITE) for x in fs if x.endswith(('.html', '.js'))]
 texte = {p: open(p, encoding='utf-8').read() for p in pages}
@@ -49,7 +52,7 @@ m = open(os.path.join(SITE, 'mentions-legales', 'index.html'), encoding='utf-8')
 verifier('mentions légales : ni pixel ni cookie, comme le site', 'ni cookie, ni outil de mesure d\'audience, ni pixel publicitaire' in m)
 
 if '--complet' in sys.argv:
-    for nom, cmd in (('Worker', ['node', '--test', 'worker/test/index.test.js']), ('contrôles du site', [sys.executable, 'outils/controles_site.py']), ('outil commercial', [sys.executable, 'outils/test_commercial.py']), ('estimation', ['node', 'outils/test_estimation.js']), ('parcours', ['node', 'outils/parcours_test.mjs']), ('démonstration restaurant', ['node', 'outils/test_demo_restaurant.mjs']), ('démonstration réservation', ['node', 'outils/test_demo_reservation.mjs']), ('démonstration services', ['node', 'outils/test_demo_services.mjs']), ('assistant sans saut de page', ['node', 'outils/test_cls_assistant.mjs']), ('contact rapide', ['node', 'outils/test_contact_rapide.mjs']), ('ordre Worker / site', ['node', 'outils/test_ordre_deploiement.mjs']), ('contrôles de l\'accueil éprouvés', [sys.executable, 'outils/sabotages_controles_accueil.py']), ('sabotages du Worker', ['node', 'worker/test/sabotages.mjs']), ('six formulaires', ['node', 'outils/test_formulaires.mjs']), ('source UTM dans les démonstrations', ['node', 'outils/test_utm_demos.mjs']), ('Distribution OS : règles', ['node', '--test', 'outils/test_distribution_os.js']), ('Distribution OS : parcours', ['node', 'outils/parcours_distribution_os.mjs'])):
+    for nom, cmd in (('Worker', ['node', '--test', 'worker/test/index.test.js']), ('contrôles du site', [sys.executable, 'outils/controles_site.py']), ('outil commercial', [sys.executable, 'outils/test_commercial.py']), ('garde-fou de l\'encart', [sys.executable, 'outils/test_garde_encart.py']), ('estimation', ['node', 'outils/test_estimation.js']), ('parcours', ['node', 'outils/parcours_test.mjs']), ('démonstration restaurant', ['node', 'outils/test_demo_restaurant.mjs']), ('démonstration réservation', ['node', 'outils/test_demo_reservation.mjs']), ('démonstration services', ['node', 'outils/test_demo_services.mjs']), ('assistant sans saut de page', ['node', 'outils/test_cls_assistant.mjs']), ('contact rapide', ['node', 'outils/test_contact_rapide.mjs']), ('ordre Worker / site', ['node', 'outils/test_ordre_deploiement.mjs']), ('contrôles de l\'accueil éprouvés', [sys.executable, 'outils/sabotages_controles_accueil.py']), ('sabotages du Worker', ['node', 'worker/test/sabotages.mjs']), ('six formulaires', ['node', 'outils/test_formulaires.mjs']), ('source UTM dans les démonstrations', ['node', 'outils/test_utm_demos.mjs']), ('Distribution OS : règles', ['node', '--test', 'outils/test_distribution_os.js']), ('Distribution OS : parcours', ['node', 'outils/parcours_distribution_os.mjs'])):
         r = subprocess.run(cmd, cwd=RACINE, capture_output=True, text=True)
         verifier(f'{nom} : tests', r.returncode == 0 and 'ÉCHECS' not in r.stdout, r.stdout[-300:])
 
