@@ -195,6 +195,36 @@ for u, lang in ((BASE, 'fr'), (BASE + 'en/', 'en')):
     for ident in ('devis-envoye', 'devis-echec'):
         if ident not in pages[u].ids: echecs.append(f'{u}: message #{ident} absent')
     if not re.search(r'<button class="bouton bouton--plein" type="submit">', corps): echecs.append(f'{u}: bouton d\'envoi absent')
+
+# contact rapide (05/11/2026) : nom, un moyen de contact (e-mail OU téléphone) et le besoin, sur l'accueil FR. Parcours « rapide » du Worker, qui renvoie vers #rappel-envoye / #rappel-echec
+# (les ancres du formulaire détaillé, #devis-envoye / #devis-echec, restent à celui-ci : jamais deux fois le même identifiant dans une page).
+CHAMPS_RAPIDE = {'langue', 'parcours', 'nom', 'contact', 'type', 'projet', 'consentement', 'site_web'}
+TYPES_WORKER = set(re.findall(r'(\w+):', (re.search(r"const TYPES = \{([^}]*)\}", open(WORKER_SRC, encoding='utf-8').read()) or [None, ''])[1])) if os.path.exists(WORKER_SRC) else None
+for u, lang in ((BASE, 'fr'), (BASE + 'en/', 'en')):
+    if u not in pages: continue
+    h = open(fichier(u), encoding='utf-8').read()
+    m = re.search(r'<form class="devis-form rappel-form"([^>]*)>(.*?)</form>', h, re.S)
+    if not m: echecs.append(f'{u}: formulaire de contact rapide absent'); continue
+    ouv, corps = m.group(1), m.group(2)
+    if 'method="post"' not in ouv or not re.search(r'action="https://[a-z0-9-]+(\.[a-z0-9-]+)*\.workers\.dev/"', ouv): echecs.append(f'{u}: contact rapide : method="post" et adresse workers.dev attendus')
+    for attr, ident in (('data-ok', 'rappel-envoye'), ('data-echec', 'rappel-echec')):
+        if f'{attr}="{ident}"' not in ouv or ident not in pages[u].ids: echecs.append(f'{u}: contact rapide : {attr}="{ident}" et message #{ident} attendus')
+    noms = set(re.findall(r'<(?:input|select|textarea)\b[^>]*\bname="([^"]+)"', corps))
+    if noms != CHAMPS_RAPIDE or (champs_worker is not None and not noms <= champs_worker): echecs.append(f'{u}: contact rapide : champs {sorted(noms)} ≠ {sorted(CHAMPS_RAPIDE)} ou non lus par le Worker')
+    if '<input type="hidden" name="parcours" value="rapide">' not in corps or f'<input type="hidden" name="langue" value="{lang}">' not in corps: echecs.append(f'{u}: contact rapide : champs cachés parcours=rapide et langue={lang} attendus')
+    for nom in ('nom', 'contact', 'type', 'consentement'):
+        if not re.search(r'<(?:input|select)\b[^>]*\bname="' + nom + r'"[^>]*\brequired\b', corps): echecs.append(f'{u}: contact rapide : champ « {nom} » non obligatoire')
+    for ident in re.findall(r'<(?:input|select|textarea)\b[^>]*\bid="([^"]+)"', corps):
+        if f'<label for="{ident}">' not in corps and f'<label for="{ident}"><input' not in corps: echecs.append(f'{u}: contact rapide : champ #{ident} sans <label for>')
+    options = set(re.findall(r'<option value="([a-z]+)"', corps))
+    if TYPES_WORKER is not None and (not options or not options <= TYPES_WORKER): echecs.append(f'{u}: contact rapide : besoins {sorted(options)} absents de la liste du Worker')
+    if not re.search(r'<div class="visuellement-cache" aria-hidden="true"><label>[^<]*<input type="text" name="site_web" tabindex="-1" autocomplete="off"></label></div>', corps): echecs.append(f'{u}: contact rapide : champ piège absent ou visible')
+    if ('mentions-legales/#donnees' if lang == 'fr' else 'legal/#personal-data') not in corps: echecs.append(f'{u}: contact rapide : lien vers les mentions légales (données) absent')
+    # trois offres : chacune a son identifiant et son devis, dont le type existe dans le simulateur
+    for ident, type_ in (('visibilite', 'vitrine'), ('gestion', 'logiciel'), ('applications', 'web')):
+        offre = re.search(r'<li class="prestation[^"]*" id="' + ident + r'">(.*?)</li>', h, re.S)
+        cible_devis = f'href="estimer-mon-projet/?type={type_}"' if lang == 'fr' else 'href="#rappel"'   # l'accueil anglais n'a pas de simulateur : ses offres mènent au contact rapide
+        if not offre or cible_devis not in offre.group(1): echecs.append(f'{u}: offre « {ident} » absente ou sans devis ({cible_devis})')
 for u, mots in ((BASE + 'mentions-legales/', ('Cloudflare', 'Resend', 'Hostinger', 'id="donnees"', 'ni cookie')), (BASE + 'en/legal/', ('Cloudflare', 'Resend', 'Hostinger', 'id="personal-data"', 'no cookies'))):
     if u not in pages: continue
     h = open(fichier(u), encoding='utf-8').read()
@@ -417,6 +447,8 @@ CONFIG = os.path.join(RACINE, '..', 'config', 'commercial.json')
 if os.path.exists(CONFIG):
     conf = json.load(open(CONFIG, encoding='utf-8'))
     montants_valides = {f"{p['prix_mad']:,}".replace(',', ' ') for p in conf.get('packs') or []}
+    for f_ in [v for k, v in (conf.get('fourchettes') or {}).items() if not k.startswith('_')]:   # fourchettes indicatives des trois offres : admises seulement validées
+        if f_.get('valide') is True: montants_valides |= {f"{f_[k]:,}".replace(',', ' ') for k in ('a_partir_de', 'jusqu_a') if isinstance(f_.get(k), int)}
     ADMIS = {'10 000', '5 000', '15 000', '50 000', '25 000', '100 000'}   # capital ; tranches de budget du visiteur (simulateur, /commandes/)
     for dossier, _, fichiers in os.walk(RACINE):
         for nom in fichiers:
@@ -456,6 +488,34 @@ for chemin in glob.glob(os.path.join(RACINE, '**', '*.html'), recursive=True):
     texte_page = open(chemin, encoding='utf-8').read()
     for mot in SUGGERE_CLIENTS:
         if mot in texte_page: echecs.append(f'{os.path.relpath(chemin, RACINE)}: formulation qui suggère des clients : « {mot} »')
+# Produits édités par Legantis : jamais « conçus par Legantis » (premiers commits d'Ostad et de Rihla antérieurs à l'immatriculation du 07/09/2026), jamais « publiés » en bloc (Ostad n'est ni sur l'App Store ni ouvert au public), jamais « au stade du lancement » pour Ostad.
+# Démonstrations : chaque page porte la mention « fictif » (hors redirection). Ostad : l'état réel reste dit, et aucun nom ni chiffre de démonstration n'est présenté comme réel.
+for chemin in glob.glob(os.path.join(RACINE, 'realisations', 'demos', '**', 'index.html'), recursive=True):
+    t_demo = open(chemin, encoding='utf-8').read()
+    if 'http-equiv="refresh"' not in t_demo and not re.search(r'fictif|fictive|invent[ée]', t_demo, re.I): echecs.append(f'{os.path.relpath(chemin, RACINE)}: démonstration sans mention « fictif »')
+for rel_, etat_, note_ in (('etude-de-cas-ostad/', "pas encore ouvert au grand public", 'fictifs'), ('en/case-study-ostad/', "not yet open to the general public", 'fictitious')):
+    if BASE + rel_ not in pages: continue
+    t_ostad = open(fichier(BASE + rel_), encoding='utf-8').read()
+    if etat_ not in t_ostad: echecs.append(f'{rel_}: état réel d\'Ostad (« {etat_} ») absent')
+    if note_ not in t_ostad: echecs.append(f'{rel_}: mention « {note_} » sous la galerie absente')
+for chemin in glob.glob(os.path.join(RACINE, '**', '*.html'), recursive=True):
+    if os.sep + 'demos' + os.sep in chemin: continue
+    t_nom = open(chemin, encoding='utf-8').read()
+    for motif in ('Al Khawarizmi', 'Nadia El Amrani', 'Yassine Bennani', '35 élèves', '180 MAD'):
+        if motif in t_nom: echecs.append(f'{os.path.relpath(chemin, RACINE)}: donnée de démonstration présentée hors démonstration : « {motif} »')
+# Référencement de l'accueil FR : « création de sites web » (Casablanca, Maroc) reste dans le titre et la description, sans bourrage (au plus 20 occurrences de « site(s) web » dans le texte visible).
+if BASE in pages:
+    accueil = open(fichier(BASE), encoding='utf-8').read()
+    titre_accueil = (re.search(r'<title>(.*?)</title>', accueil, re.S) or [None, ''])[1]
+    desc_accueil = (re.search(r'<meta name="description" content="(.*?)"', accueil, re.S) or [None, ''])[1]
+    if not (titre_accueil.startswith('Création de sites web') and 'Casablanca' in titre_accueil): echecs.append(f'{BASE}: titre « {titre_accueil} » : « Création de sites web » en tête et « Casablanca » attendus')
+    if not ('Création de sites web' in desc_accueil and 'Maroc' in desc_accueil): echecs.append(f'{BASE}: description sans « Création de sites web » ou sans « Maroc »')
+    if len(re.findall(r'sites? web', re.sub(r'<[^>]+>', ' ', re.sub(r'<(script|style)\b.*?</\1>', '', accueil, flags=re.S)), re.I)) > 20: echecs.append(f'{BASE}: « site(s) web » plus de 20 fois dans le texte visible (sur-optimisation)')
+FORMULATIONS_PRODUITS = (r'con[çc]us?,? d[ée]velopp[ée]s? et maintenus? par Legantis', r'designed, built and maintained by Legantis', r'Des produits publi[ée]s', r'Published products', r'Ostad est au stade du lancement', r'Ostad is at launch stage')
+for chemin in glob.glob(os.path.join(RACINE, '**', '*.html'), recursive=True):
+    texte_page = open(chemin, encoding='utf-8').read()
+    for motif in FORMULATIONS_PRODUITS:
+        if re.search(motif, texte_page): echecs.append(f'{os.path.relpath(chemin, RACINE)}: formulation sur les produits à ne pas employer : « {motif} »')
 # Ce qu'une page dit de ses propres scripts doit rester vrai (03/11/2026 : « aucun script » sur l'accueil d'Institut Naïa après l'ajout de
 # source.js ; « un seul petit script » sur la création de site après l'ajout de conversion.js).
 for dossier, _, fichiers in os.walk(RACINE):
@@ -523,6 +583,12 @@ if os.path.exists(CONFIG) and os.path.exists(fichier(OFFRE)):
             if 'class="pack-prix"' in t_ or any(re.search(rf'\b{re.escape(m_)}\s*(?:MAD|DH)', vis) for m_ in montants_packs): echecs.append(f'{os.path.relpath(chemin, RACINE)}: prix d\'un pack hors des pages autorisées (packs_pages)')
     for u_ in pages:
         if re.search(r'href="[^"]*offre-lancement/?[#"?]', open(fichier(u_), encoding='utf-8').read()): echecs.append(f'{u_}: lien vers /offre-lancement/ (page pilote non reliée tant que le propriétaire n\'a pas décidé)')
+# aucun identifiant en double dans une page (deux formulaires sur la même page : messages et libellés distincts, sinon #ancre et <label for> visent le mauvais élément)
+import collections
+for chemin in glob.glob(os.path.join(RACINE, '**', '*.html'), recursive=True):
+    sans_script = re.sub(r'<script\b.*?</script>|<!--.*?-->', '', open(chemin, encoding='utf-8').read(), flags=re.S)
+    doubles = [k for k, v in collections.Counter(re.findall(r'<[a-zA-Z][^>]*?\sid="([^"]+)"', sans_script)).items() if v > 1]
+    if doubles: echecs.append(f'{os.path.relpath(chemin, RACINE)}: identifiants en double {doubles}')
 IMAGES = os.path.join(RACINE, '..', 'outils', 'images.py')
 if os.path.exists(IMAGES) and 'CAPITAL' in open(IMAGES, encoding='utf-8').read(): echecs.append('outils/images.py : capital sur l\'image de partage')
 import subprocess

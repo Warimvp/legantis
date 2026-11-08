@@ -525,3 +525,4 @@ select.saisie { appearance: none; -webkit-appearance: none; padding-right: 40px;
   .carte-menu { outline-offset: -8px; }
   .console { margin-inline: calc(-1 * var(--pad)); border-inline: 0; }
 }
+.conf-legantis { margin: 18px 0 0; }

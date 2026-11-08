@@ -10,7 +10,8 @@
    Événements : « Devis clic » (emplacement), « Formulaire vu », « Devis envoyé » / « Devis échec » (arrivée sur l'ancre que
    le Worker renvoie ; le chiffre de référence reste le compteur du Worker), « Réalisations vues », « Produit clic »
    (produit, destination), « E-mail clic », « Téléphone clic » (emplacement), et depuis le 30/10/2026 « WhatsApp clic », « Mini-audit clic », « Simulateur ouvert »,
-   « Simulateur étape » (rang), « Demande envoyée » (parcours). */
+   « Simulateur étape » (rang), « Demande envoyée » (parcours), et depuis le 05/11/2026 « Contact rapide clic » (emplacement), « Contact rapide vu »,
+   « Contact rapide envoyé » / « Contact rapide échec » (arrivée sur #rappel-envoye / #rappel-echec ; le chiffre de référence reste le compteur du Worker, parcours « rapide »). */
 (function () {
   'use strict';
 
@@ -27,6 +28,7 @@
     if (a.classList.contains('menu-devis')) return 'menu';
     if (a.classList.contains('pied-devis')) return 'pied';
     if (a.classList.contains('badge')) return 'badge';
+    if (a.closest('.prestation--offre')) return 'offre-' + (a.closest('.prestation--offre').id || 'x');   // visibilite, gestion, applications
     if (a.closest('.ouverture')) return 'ouverture';
     if (a.closest('.contact-rapide')) return 'barre-mobile';
     if (a.closest('.service-tete')) return 'en-tete';
@@ -59,6 +61,7 @@
     var a = ev.target && ev.target.closest ? ev.target.closest('a[href]') : null;
     if (!a) return;
     var href = a.getAttribute('href') || '';
+    if (/^#rappel$/.test(href)) return envoyer('Contact rapide clic', { emplacement: emplacement(a) });
     if (/(^|\/)#devis$|estimer-mon-projet\/|^#demande$/.test(href)) return envoyer('Devis clic', { emplacement: emplacement(a) });
     if (/audit-gratuit\//.test(href)) return envoyer('Mini-audit clic', { emplacement: emplacement(a) });
     if (/(^|\/)commandes\/$/.test(href)) return envoyer('Offre Commandes clic', { emplacement: emplacement(a) });
@@ -80,6 +83,7 @@
     io.observe(el);
   }
   vueUneFois('#devis-nom', 'Formulaire vu');
+  vueUneFois('#rappel-nom', 'Contact rapide vu');
   vueUneFois('#produits .titre .couverture', 'Réalisations vues');
 
   // Simulateur : ouverture et étape atteinte (le rang seulement, jamais un choix du visiteur).
@@ -99,4 +103,6 @@
   // Retour du Worker (303 vers #devis-envoye ou #devis-echec) : une fois, à l'arrivée.
   if (location.hash === '#devis-envoye') envoyer('Devis envoyé');
   else if (location.hash === '#devis-echec') envoyer('Devis échec');
+  else if (location.hash === '#rappel-envoye') envoyer('Contact rapide envoyé');
+  else if (location.hash === '#rappel-echec') envoyer('Contact rapide échec');
 })();

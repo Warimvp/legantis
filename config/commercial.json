@@ -3,6 +3,12 @@
   "whatsapp": { "numero": "" },
   "offre_ouverture": null,
   "packs_pages": ["offre-lancement/"],
+  "fourchettes": {
+    "_lire": "Fourchettes indicatives des trois offres de l'accueil, ETEINTES : aucune n'est publiée tant que \"valide\" n'est pas vrai (accord écrit du propriétaire). Mode d'emploi : docs/conversion/README.md.",
+    "visibilite": { "valide": false, "a_partir_de": null, "jusqu_a": null, "regime": "HT" },
+    "gestion": { "valide": false, "a_partir_de": null, "jusqu_a": null, "regime": "HT" },
+    "applications": { "valide": false, "a_partir_de": null, "jusqu_a": null, "regime": "HT" }
+  },
   "packs": [
     {
       "id": "essentiel",

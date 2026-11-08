@@ -11,7 +11,7 @@ let echecs = 0; const ok = (c, m) => { console.log((c ? '✓ ' : '✗ ') + m); i
   await new Promise(r => serveur.listen(0, '127.0.0.1', r)); const BASE = 'http://127.0.0.1:' + serveur.address().port + '/';
   const b = await chromium.launch();
   async function page(id) {
-    const ctx = await b.newContext({ viewport: { width: 1280, height: 800 } }); const p = await ctx.newPage(); const meta = [];
+    const ctx = await b.newContext({ viewport: { width: 1280, height: 800 }, bypassCSP: true }); const p = await ctx.newPage(); const meta = [];
     await ctx.route(/facebook/, r => { meta.push(r.request().url()); return r.fulfill({ status: 200, contentType: 'text/javascript', body: '' }); });
     await p.goto(BASE + 'estimer-mon-projet/'); if (id) await p.evaluate(v => { window.LEGANTIS_PIXEL_ID = v; }, id);
     await p.addScriptTag({ content: SCRIPT });

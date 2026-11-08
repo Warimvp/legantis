@@ -269,7 +269,7 @@ function initResa() {
   const vueConf = () => `<div class="conf"><h3 tabindex="-1" id="etape-titre">Table réservée, en simulation</h3><p class="conf-petit">Numéro de réservation simulé</p><p class="conf-num">${esc(conf.num)}</p>` +
     `<p class="etape-aide">Aucun message n'est envoyé. La réservation apparaît dans « Mes réservations » et dans la vue « Côté restaurant ». Table attribuée : ${conf.table}.</p>` +
     recapHtml([['Date', maj1(jourLong(conf.date))], ['Service', SV[conf.service].nom + ' · ' + heure(conf.heure)], ['Couverts', String(conf.couverts)], ['Table', tabTxt(conf.table)], ['Contact', conf.nom]]) +
-    '<div class="etape-actions"><button class="btn" data-act="nouvelle">Faire une autre réservation</button><a class="btn btn--filet" href="#restaurant">Voir côté restaurant</a></div></div>';
+    '<div class="etape-actions"><button class="btn" data-act="nouvelle">Faire une autre réservation</button><a class="btn btn--filet" href="#restaurant">Voir côté restaurant</a></div>' + '<p class="conf-legantis"><a class="btn btn--filet" href="/estimer-mon-projet/?type=vitrine">Demander un site comme celui-ci à Legantis</a></p>'+ '</div>';
 
   function render(focusTitre, keepKey) {
     if (D.slot && D.date && !statutCreneau(D.date, D.service, D.slot, D.covers).ok) { D.slot = null; if (step > 3) { step = 3; E.slotPerdu = true; focusTitre = true; } else if (step === 3) E.slotPerdu = true; }
@@ -384,7 +384,7 @@ function initEmporter() {
     if (S.conf) {
       const o = S.conf;
       pan.innerHTML = `<div class="tk-ok"><h3 tabindex="-1" id="tk-titre">Commande reçue <span>simulée</span></h3><p class="conf-petit" style="margin-top:12px">Numéro de commande simulé</p><p class="tk-num">${esc(o.num)}</p>` +
-        `<p class="tk-paiement"><b>Paiement sur place</b> au retrait, ${esc(jourLong(o.date))} à ${heure(o.heure)}. Rien n'a été payé en ligne.</p>` + recapHtmlTk(o) + '<div class="etape-actions" style="border-color:var(--encre)"><button class="btn" data-pa="nouvelle">Nouvelle commande</button></div></div>';
+        `<p class="tk-paiement"><b>Paiement sur place</b> au retrait, ${esc(jourLong(o.date))} à ${heure(o.heure)}. Rien n'a été payé en ligne.</p>` + recapHtmlTk(o) + '<div class="etape-actions" style="border-color:var(--encre)"><button class="btn" data-pa="nouvelle">Nouvelle commande</button></div>' + '<p class="conf-legantis"><a class="btn btn--filet" href="/estimer-mon-projet/?type=vitrine">Demander un site comme celui-ci à Legantis</a></p>'+ '</div>';
       return;
     }
     const indis = ls.filter(l => S.indispo[l.d.id]);

@@ -254,7 +254,10 @@ const port = srv.address().port;
 const PAGE = `http://localhost:${port}/realisations/demos/reservation/reserver/`;
 const browser = await chromium.launch({ executablePath: process.env.NAVIGATEUR_CHEMIN || undefined, slowMo: process.env.NAVIGATEUR === 'webkit' ? 60 : 0 });
 
-const aujourdhui = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })();
+// JOUR_FIGE=2026-11-09T10:00 : horloge figée dans chaque page (reproduit un jour donné ; la démonstration sème ses rendez-vous d'après la date). Sans lui : la date du jour.
+const JOUR_FIGE = process.env.JOUR_FIGE ? new Date(process.env.JOUR_FIGE) : null;
+if (JOUR_FIGE) { const nouveau = browser.newContext.bind(browser); browser.newContext = async (o) => { const c = await nouveau(o); await c.clock.setFixedTime(JOUR_FIGE); return c; }; }
+const aujourdhui = (() => { const d = JOUR_FIGE || new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })();
 const NBSP = /[\u00a0\u202f]/g;
 const txt = (s) => (s || '').replace(NBSP, ' ').replace(/\s+/g, ' ').trim();
 
@@ -395,6 +398,10 @@ try {
     await p.click('[data-act=suite]', { force: true }); await p.click('[data-act=suite]', { force: true });
     const h = String(Math.floor(autre / 60)).padStart(2, '0') + ':' + String(autre % 60).padStart(2, '0');
     ok(txt(await p.textContent('#recap-final')).includes(h), 'modification de l’heure non répercutée');
+  } else {
+    // un seul créneau proposé ce jour-là (cela dépend de la date) : on revient au récapitulatif avec le même créneau
+    await p.click('[data-act=suite]', { force: true }); await p.click('[data-act=suite]', { force: true });
+    ok(txt(await p.textContent('#recap-final')).includes(String(Math.floor(choix / 60)).padStart(2, '0')), 'retour au récapitulatif sans l’heure choisie');
   }
   const heureFinale = autre != null ? autre : choix;
   // rien n’est réservé avant la confirmation
@@ -537,6 +544,8 @@ try {
     await q.click('#dlg button[type=submit]');
     ok(!(await q.$eval('#dlg', (d) => d.open)), 'blocage d’un créneau libre refusé : ' + txt(await q.textContent('#b-msg')));
     ok((await q.$$('.g-plan .g-col[data-prac=in] .bloc')).length === 1, 'blocage absent du planning');
+    await q.mouse.move(0, 0);   // le survol d'un rendez-vous le passe au premier plan (voulu) : on juge le planning au repos
+    ok(await q.$eval('.g-plan .bloc', (b) => { b.scrollIntoView({ block: 'center' }); const r = b.getBoundingClientRect(); const e = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return !!e && e.closest('.bloc') === b; }), 'blocage : recouvert par un autre élément du planning (rendez-vous annulé au même créneau)');
     await q.click('#onglet-client');
     await q.waitForSelector('#creneaux');
     await q.click('.etapes [data-e="2"]').catch(() => {});
@@ -582,7 +591,8 @@ try {
     // onglets : flèches
     await q.focus('#onglet-client'); await q.keyboard.press('ArrowRight');
     ok(await q.$eval('#onglet-gestion', (b) => b.getAttribute('aria-selected')) === 'true', 'clavier : flèche sur les onglets sans effet');
-    // dialogue : focus piégé puis rendu
+    // dialogue : focus piégé puis rendu. Le planning s'ouvre sur aujourd'hui, jour parfois fermé (dimanche, jour férié) donc vide : on ouvre le jour du rendez-vous qui vient d'être pris.
+    await q.fill('#g-date', j); await q.dispatchEvent('#g-date', 'change');
     await q.waitForSelector('.g-plan .rv, .g-liste .li');
     await q.click('.g-plan .rv >> nth=0');
     ok(await q.$eval('#dlg', (d) => d.contains(document.activeElement)), 'dialogue : focus hors du dialogue');

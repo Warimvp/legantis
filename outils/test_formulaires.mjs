@@ -57,7 +57,7 @@ async function contexte(options = {}) {
 const VALEURS = { nom: 'Sara Test', email: 'sara@exemple.ma', entreprise: 'Atelier Test', telephone: '06 12 34 56 78', projet: 'Un outil pour suivre nos commandes fictives.', url_site: 'exemple.ma' };
 // Remplit le formulaire sans dépendre de ses étapes : valeur connue, sinon première option proposée.
 const remplir = (page, extra = {}) => page.evaluate(({ V, extra }) => {
-  const f = document.querySelector('form[action*="workers.dev"]');
+  const f = document.querySelector('form[action*="workers.dev"]:not(.rappel-form)');
   for (const c of f.elements) {
     if (!c.name || c.name === 'site_web' || c.type === 'hidden' || c.type === 'submit') continue;
     if (c.type === 'radio') { const g = [...f.querySelectorAll(`[name="${c.name}"]`)]; if (!g.some(x => x.checked)) g[0].checked = true; }
@@ -68,7 +68,7 @@ const remplir = (page, extra = {}) => page.evaluate(({ V, extra }) => {
   }
   for (const [k, v] of Object.entries(extra)) { const c = f.elements[k]; if (c) c.value = v; }
 }, { V: VALEURS, extra });
-const envoyer = page => page.evaluate(() => { const f = document.querySelector('form[action*="workers.dev"]'); f.noValidate = true; f.requestSubmit(); });
+const envoyer = page => page.evaluate(() => { const f = document.querySelector('form[action*="workers.dev"]:not(.rappel-form)'); f.noValidate = true; f.requestSubmit(); });
 const FORMS = [['accueil FR', '/'], ['accueil EN', '/en/'], ['/commandes/', '/commandes/'], ['devis guidé', '/estimer-mon-projet/?type=web'], ['mini-audit', '/audit-gratuit/'], ['offre', '/offre-lancement/']];
 const attendre = (page, n) => page.waitForFunction(() => true).then(() => new Promise(async fin => { for (let i = 0; i < 40; i++) { if (envois.length >= n) break; await new Promise(r => setTimeout(r, 50)); } setTimeout(fin, 120); }));
 const message = (page, id) => page.locator(id).first().isVisible();
@@ -90,11 +90,11 @@ for (const [nom, url] of FORMS) {
     envois = [];
     const ctx = await contexte({ javaScriptEnabled: false }); const p = await ctx.newPage();
     await p.goto(ORIGINE + url.split('?')[0]);
-    for (const [k, v] of Object.entries(VALEURS)) { const c = p.locator(`form[action*="workers.dev"] [name="${k}"]`).first(); if (await c.count() && await c.isVisible().catch(() => false)) await c.fill(v); }
-    for (const s of await p.locator('form[action*="workers.dev"] select').all()) if (await s.isVisible()) { const v = await s.locator('option[value]:not([value=""])').first().getAttribute('value'); await s.selectOption(v); }
-    for (const g of new Set(await p.locator('form[action*="workers.dev"] input[type="radio"]').evaluateAll(l => l.map(x => x.name)))) await p.locator(`form[action*="workers.dev"] input[name="${g}"]`).first().check({ force: true });
-    await p.locator('form[action*="workers.dev"] input[name="consentement"]').check({ force: true });
-    await p.locator('form[action*="workers.dev"] [type="submit"]').last().click({ force: true });
+    for (const [k, v] of Object.entries(VALEURS)) { const c = p.locator(`form[action*="workers.dev"]:not(.rappel-form) [name="${k}"]`).first(); if (await c.count() && await c.isVisible().catch(() => false)) await c.fill(v); }
+    for (const s of await p.locator('form[action*="workers.dev"]:not(.rappel-form) select').all()) if (await s.isVisible()) { const v = await s.locator('option[value]:not([value=""])').first().getAttribute('value'); await s.selectOption(v); }
+    for (const g of new Set(await p.locator('form[action*="workers.dev"]:not(.rappel-form) input[type="radio"]').evaluateAll(l => l.map(x => x.name)))) await p.locator(`form[action*="workers.dev"]:not(.rappel-form) input[name="${g}"]`).first().check({ force: true });
+    await p.locator('form[action*="workers.dev"]:not(.rappel-form) input[name="consentement"]').check({ force: true });
+    await p.locator('form[action*="workers.dev"]:not(.rappel-form) [type="submit"]').last().click({ force: true });
     await p.waitForURL(u => u.hash === '#devis-envoye' || u.hash === '#devis-echec', { timeout: 8000 }).catch(() => {});
     verifier(`${nom} : sans JavaScript, envoi et retour`, envois.length === 1 && p.url().endsWith('#devis-envoye'), p.url() + ' envois ' + envois.length);
     await ctx.close();
@@ -103,7 +103,7 @@ for (const [nom, url] of FORMS) {
     envois = [];
     const ctx = await contexte(); const p = await ctx.newPage(); await p.goto(ORIGINE + url); await p.waitForTimeout(100);
     await remplir(p, { email: 'pas-une-adresse' }); await envoyer(p); await p.waitForTimeout(300);
-    verifier(`${nom} : e-mail invalide refusé, rien d'envoyé, saisie conservée`, envois.length === 0 && (await p.evaluate(() => document.querySelector('form[action*="workers.dev"]').elements.nom.value)) === VALEURS.nom);
+    verifier(`${nom} : e-mail invalide refusé, rien d'envoyé, saisie conservée`, envois.length === 0 && (await p.evaluate(() => document.querySelector('form[action*="workers.dev"]:not(.rappel-form)').elements.nom.value)) === VALEURS.nom);
     await ctx.close();
   }
   { // champ piège
@@ -124,7 +124,7 @@ for (const [nom, url] of FORMS) {
     envois = []; panne = true;
     const ctx = await contexte(); const p = await ctx.newPage(); await p.goto(ORIGINE + url); await p.waitForTimeout(100);
     await remplir(p); await envoyer(p); await p.waitForTimeout(350); panne = false;
-    verifier(`${nom} : panne de Resend, échec affiché, saisie conservée`, await message(p, '#devis-echec') && !(await message(p, '#devis-envoye')) && (await p.evaluate(() => document.querySelector('form[action*="workers.dev"]').elements.email.value)) === VALEURS.email);
+    verifier(`${nom} : panne de Resend, échec affiché, saisie conservée`, await message(p, '#devis-echec') && !(await message(p, '#devis-envoye')) && (await p.evaluate(() => document.querySelector('form[action*="workers.dev"]:not(.rappel-form)').elements.email.value)) === VALEURS.email);
     await ctx.close();
   }
   { // limite de débit (binding simulé)
@@ -147,7 +147,7 @@ for (const [nom, url] of FORMS) {
 {
   envois = [];
   const ctx = await contexte(); const p = await ctx.newPage(); await p.goto(ORIGINE + '/commandes/'); await p.waitForTimeout(100);
-  await remplir(p); await p.evaluate(() => { const f = document.querySelector('form[action*="workers.dev"]'); f.elements.ville.value = ''; f.elements.equipe.value = ''; f.elements.projet.value = ''; });
+  await remplir(p); await p.evaluate(() => { const f = document.querySelector('form[action*="workers.dev"]:not(.rappel-form)'); f.elements.ville.value = ''; f.elements.equipe.value = ''; f.elements.projet.value = ''; });
   await envoyer(p); await attendre(p, 1); await p.waitForTimeout(150);
   verifier('/commandes/ allégé : envoi avec les seuls champs obligatoires', envois.length === 1 && /Priorité/.test(envois[0].subject) && /Ville : non précisé/.test(envois[0].text), JSON.stringify(envois[0] || {}).slice(0, 140));
   await ctx.close();
@@ -157,7 +157,7 @@ for (const [nom, url] of FORMS) {
   envois = []; retard = 250;
   const ctx = await contexte(); const p = await ctx.newPage(); await p.goto(ORIGINE + '/en/'); await p.waitForTimeout(100);
   await remplir(p, { email: 'pas-une-adresse' }); await envoyer(p);
-  const pendant = await p.locator('.devis-form [type="submit"]').innerText(); await p.waitForTimeout(500); retard = 0;
+  const pendant = await p.locator('.devis-form:not(.rappel-form) [type="submit"]').innerText(); await p.waitForTimeout(500); retard = 0;
   verifier('accueil EN : bouton « Sending… » pendant l\'envoi', pendant === 'Sending…', pendant);
   verifier('accueil EN : erreur de champ en anglais', (await p.locator('#erreur-email').innerText()) === 'Please enter a valid email address.');
   panne = true; await remplir(p); await envoyer(p); await p.waitForTimeout(350); panne = false;
@@ -168,7 +168,7 @@ for (const [nom, url] of FORMS) {
 {
   const ctx = await contexte({ javaScriptEnabled: false }); const p = await ctx.newPage(); await p.goto(ORIGINE + '/en/?echec-reel');
   await p.fill('#devis-nom', VALEURS.nom); await p.fill('#devis-email', VALEURS.email); await p.selectOption('#devis-type', { index: 1 }); await p.fill('#devis-projet', VALEURS.projet); await p.check('#devis-consentement');
-  await Promise.all([p.waitForURL(u => u.hash === '#devis-echec'), p.click('.devis-form [type="submit"]')]);
+  await Promise.all([p.waitForURL(u => u.hash === '#devis-echec'), p.click('.devis-form:not(.rappel-form) [type="submit"]')]);
   verifier('accueil EN sans script : l\'échec indique le bouton Retour', (await p.locator('#devis-echec').innerText()).includes('Back button'));
   await p.goBack(); await p.waitForLoadState();
   verifier('accueil EN sans script : le bouton Retour rend la saisie', (await p.inputValue('#devis-nom')) === VALEURS.nom && (await p.inputValue('#devis-projet')) === VALEURS.projet);

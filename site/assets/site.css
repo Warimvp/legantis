@@ -1594,3 +1594,34 @@ html[dir="rtl"] .pied-marque { padding-right: 0; border-right: 0; padding-left: 
   html[dir="rtl"] .marque small { letter-spacing: 0.04em; }
   .document h1 { font-size: clamp(1.9rem, 9.4vw, 2.2rem); }
 }
+
+/* ── Accueil du 05/11/2026 : trois offres (Visibilité, Gestion, Applications) et contact rapide ─────────────────────────────────────────────────
+   Les cartes réutilisent .prestation (numéro, icône, lampe, projecteur de lumiere.js) ; le contact rapide réutilise .offre et .devis-form
+   (champs, erreurs, messages :target, repli sans script). Propriétés logiques seulement : rien à miroiter dans le bloc « Arabe ». */
+.bento--trois { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.prestation--offre { min-block-size: 0; }
+.prestation--offre .prestation-tete { margin-block-end: 22px; }
+.prestation .prestation-pour { margin-block-end: 12px; max-inline-size: 36ch; min-block-size: 2.9em; font: 500 0.8rem/1.45 var(--f-mono); letter-spacing: 0.02em; color: var(--tampon); }
+.prestation h3 small { display: block; margin-block-start: 8px; font: 500 0.72rem/1.4 var(--f-mono); font-stretch: 100%; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gris); }
+.prestation-liens { display: grid; margin-block-start: 6px; }
+.prestation-liens .suivre { margin-block-start: 12px; }
+.prestation .prestation-cta { align-self: flex-start; margin-block-start: auto; }
+.prestation-liens { margin-block-end: 26px; }
+.prestation--offre .etiquettes { margin-block-start: 0; padding-block-start: 26px; }
+.offres-conseil { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; margin-block-start: 30px; color: var(--gris); }
+.ouverture-rappel { margin-block-start: 18px; max-inline-size: 52ch; font-size: 0.95rem; line-height: 1.5; color: var(--gris-chapeau); }
+.ouverture-rappel a { color: var(--encre); text-decoration: underline; text-underline-offset: 3px; }
+.offre--rappel .offre-texte h2 { margin: 16px 0 20px; font-weight: 700; font-size: clamp(2rem, 3.6vw, 3.1rem); line-height: 1; font-stretch: 116%; letter-spacing: -0.04em; }
+.offre--rappel .offre-texte h2 em { font-style: normal; color: var(--tampon); }
+.offre--rappel .offre-texte > p.offre-ou { margin-block: -12px 0; font-size: 0.94rem; }
+.devis-form.rappel-form { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.champ-aide { font-size: 0.82rem; line-height: 1.4; color: var(--gris); }
+.offre:has(#rappel-envoye:is(:target, .visible)) :is(.devis-form, .offre-ou) { display: none; }
+@media (max-width: 900px) {
+  .bento--trois { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 820px) {
+  .devis-form.rappel-form { grid-template-columns: minmax(0, 1fr); }
+}
+.prestation .prestation-prix { margin-block-start: 14px; padding-block-start: 12px; border-block-start: 1px solid var(--filet); font: 500 0.82rem/1.5 var(--f-mono); letter-spacing: 0.02em; color: var(--encre); max-inline-size: none; }
+.prestation .prestation-prix small { display: block; font: inherit; color: var(--gris); }

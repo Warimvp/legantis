@@ -71,12 +71,41 @@ def controler(config, production):
             raise SystemExit(f"pack {pack.get('id')} : prix_mad entier et regime HT ou TTC obligatoires")
         if not pack.get('inclus') or not pack.get('exclus'):
             raise SystemExit(f"pack {pack.get('id')} : inclus et exclus obligatoires (périmètre écrit avant publication)")
+    for cle, f in (config.get('fourchettes') or {}).items():
+        if cle.startswith('_'):
+            continue
+        if cle not in OFFRES:
+            raise SystemExit(f'fourchettes : offre inconnue {cle!r} (attendu {OFFRES})')
+        if f.get('valide') is True and not fourchette_publiable(f):
+            raise SystemExit(f'fourchettes.{cle} : a_partir_de entier et regime HT ou TTC obligatoires')
+        if f.get('valide') is True and f.get('jusqu_a') is not None and (not isinstance(f['jusqu_a'], int) or f['jusqu_a'] < f['a_partir_de']):
+            raise SystemExit(f'fourchettes.{cle} : jusqu_a entier et au moins égal à a_partir_de')
     offre = config.get('offre_ouverture')
     if offre and offre.get('valide') is not True:
         raise SystemExit('offre_ouverture : "valide": true manquant, refus de la publier')
     grille = config.get('grille') or {}
     if grille.get('valide') is True and grille.get('regime') not in ('HT', 'TTC'):
         raise SystemExit('grille : regime HT ou TTC obligatoire quand elle est validée')
+
+
+OFFRES = ('visibilite', 'gestion', 'applications')
+
+
+def fourchette_publiable(f):
+    """Une fourchette indicative n'est publiée que validée par le propriétaire, avec un montant entier, un régime HT ou TTC et un maximum cohérent."""
+    return bool(f) and f.get('valide') is True and isinstance(f.get('a_partir_de'), int) and f['a_partir_de'] > 0 and f.get('regime') in ('HT', 'TTC')
+
+
+def bloc_fourchette(config, params, prefixe):
+    """Ligne « À partir de X MAD HT » d'une des trois offres de l'accueil (paramètre offre=visibilite|gestion|applications). Vide tant que la fourchette n'est pas validée :
+    config/commercial.json "fourchettes" est éteint à la livraison, la publication d'un montant est un acte du propriétaire (voir docs/conversion/README.md)."""
+    f = (config.get('fourchettes') or {}).get(params.get('offre', ''))
+    if not fourchette_publiable(f):
+        return ''
+    haut = f.get('jusqu_a')
+    plage = f'de {montant(f["a_partir_de"])} à {montant(haut)}' if haut else f'à partir de {montant(f["a_partir_de"])}'
+    note = f' <small>{echapper(f["note"])}</small>' if f.get('note') else ''
+    return f'<p class="prestation-prix">Prix indicatif, {plage}&nbsp;MAD {f["regime"]}{note}</p>'
 
 
 def lien_whatsapp(config, cle):
@@ -191,7 +220,7 @@ def bloc_contact_rapide(config, params, prefixe):
 
 RENDUS = {
     'offre-ouverture': bloc_offre_ouverture, 'packs': bloc_packs, 'faq-packs': bloc_faq_packs, 'pack-choix': bloc_pack_choix,
-    'grille': bloc_grille, 'whatsapp': bloc_whatsapp, 'contact-rapide': bloc_contact_rapide, 'faq-cout': bloc_faq_cout,
+    'fourchette': bloc_fourchette, 'grille': bloc_grille, 'whatsapp': bloc_whatsapp, 'contact-rapide': bloc_contact_rapide, 'faq-cout': bloc_faq_cout,
 }
 
 

@@ -53,6 +53,8 @@ node outils/test_demo_restaurant.mjs
 node outils/test_demo_reservation.mjs
 ```
 
+La démonstration de réservation sème ses rendez-vous d'après la date : `JOUR_FIGE=2026-11-11T10:00 node outils/test_demo_reservation.mjs` fige l'horloge pour rejouer un jour donné (dimanche, jour férié, un seul créneau libre…).
+
 ```bash
 node outils/test_demo_services.mjs
 ```
@@ -67,6 +69,18 @@ node outils/test_utm_demos.mjs
 
 ```bash
 node outils/test_formulaires.mjs
+```
+
+```bash
+node outils/test_contact_rapide.mjs
+```
+
+```bash
+node outils/test_ordre_deploiement.mjs
+```
+
+```bash
+python3 outils/sabotages_controles_accueil.py
 ```
 
 Sur le moteur de Safari : préfixer par `NAVIGATEUR=webkit TOUCHE_TAB=Alt+Tab`.

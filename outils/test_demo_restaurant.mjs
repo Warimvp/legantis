@@ -25,6 +25,9 @@ const verifie = (cond, msg) => { if (cond) ok++; else { echecs++; console.log(' 
 const section = t => console.log('\n' + t);
 
 const browser = await chromium.launch({ executablePath: process.env.NAVIGATEUR_CHEMIN || undefined });
+// JOUR_FIGE=2026-11-11T10:00 : horloge figée dans chaque page (la démonstration sème ses réservations d'après la date) ; sans lui, la date du jour.
+const JOUR_FIGE = process.env.JOUR_FIGE ? new Date(process.env.JOUR_FIGE) : null;
+if (JOUR_FIGE) { const nouveau = browser.newContext.bind(browser); browser.newContext = async (o) => { const c = await nouveau(o); await c.clock.setFixedTime(JOUR_FIGE); return c; }; }
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR' });
 const page = await ctx.newPage();
 const erreursConsole = [], hotes = new Set(), posts = [];
@@ -33,7 +36,7 @@ page.on('pageerror', e => erreursConsole.push('pageerror: ' + e.message));
 page.on('request', r => { hotes.add(new URL(r.url()).host); if (r.method() !== 'GET') posts.push(r.method() + ' ' + r.url()); });
 
 const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-const today = new Date(); today.setHours(0, 0, 0, 0);
+const today = new Date(JOUR_FIGE || Date.now()); today.setHours(0, 0, 0, 0);
 const ouverts = Array.from({ length: 30 }, (_, i) => { const d = new Date(today); d.setDate(d.getDate() + i); return d; }).filter(d => d.getDay() !== 1).map(iso);
 const txt = async sel => (await page.locator(sel).first().innerText()).replace(/\s+/g, ' ').trim();
 const num = async sel => parseInt(await txt(sel), 10);
@@ -118,8 +121,10 @@ await page.locator('[data-act=auto]').click();
 verifie(await page.locator('[data-act=auto]').getAttribute('aria-pressed') === 'true' && /maison choisira/.test(await txt('#table-choix')), '« Laisser la maison choisir » : état annoncé');
 await page.locator('[data-act=auto]').click();
 let gros = {};
-for (const d of ouverts) { await charger(); if (await versTable(d, 'midi', 4)) { gros = await etatsPlan(); break; } }
 const deux = ['S1', 'S4', 'S7', 'C1'];
+// Les réservations de la démonstration sont semées d'après la date : un jour très rempli a toutes ses tables de 2 places déjà réservées (aucune ne peut alors être « trop petite »).
+// On prend le premier jour ouvert où au moins une table de 2 places est libre ; sans un seul tel jour sur 30, le contrôle ci-dessous échoue, comme avant.
+for (const d of ouverts) { await charger(); if (await versTable(d, 'midi', 4)) { gros = await etatsPlan(); if (deux.some(k => gros[k] === 'petite')) break; } }
 verifie(deux.some(k => gros[k] === 'petite') && deux.every(k => ['petite', 'reservee', 'bloquee'].includes(gros[k])) && Object.keys(gros).filter(k => !deux.includes(k)).every(k => gros[k] !== 'petite'), '4 couverts : les tables de 2 places sont « trop petites », les autres non');
 
 /* ================================================================== 3 */
@@ -144,6 +149,7 @@ const recap = await txt('.recap');
 verifie(recap.includes(T) && /Menu Tilal/.test(recap), 'récapitulatif : table et menu');
 await page.locator('[data-act=confirmer]').click();
 const numResa = await txt('.conf-num');
+verifie(await page.$$eval('.conf .conf-legantis a', as => as.length === 1 && as[0].getAttribute('href') === '/estimer-mon-projet/?type=vitrine'), 'confirmation de réservation : lien vers la vraie demande de devis Legantis (?type=vitrine)');
 verifie(/^MT-\d{6}-\d{4}$/.test(numResa), 'numéro de réservation simulé : ' + numResa);
 verifie((await txt('#mr-liste')).includes(numResa) && (await txt('#mr-liste')).includes('table ' + T), 'Mes réservations : numéro et table');
 verifie(await page.locator('#cs-jour').inputValue() === d1 && await page.locator('#cs-service input[value=soir]').isChecked(), 'côté restaurant : le jour et le service de la réservation sont affichés');
@@ -186,7 +192,7 @@ verifie((await etatsPlan())[T] === 'libre', 'table libérée côté client');
 
 section('5. Blocage d\'une table et créneaux');
 await onglet('plan');
-const planR = await etatsPlan('#plan-resto'); const X = Object.keys(planR).find(k => planR[k] === 'libre' && k !== T);
+const planR = await etatsPlan('#plan-resto'), planC = await etatsPlan(); const X = Object.keys(planR).find(k => planR[k] === 'libre' && k !== T && planC[k] === 'libre');   // libre des deux côtés : le plan du client montre un autre service si la journée est chargée
 await page.locator(`#plan-resto .tbl[data-t=${X}]`).click();
 verifie(/Bloquer la table/.test(await txt('#fiche')), 'fiche de table : bouton Bloquer');
 await page.locator('[data-bl="1"]').click();
@@ -242,6 +248,7 @@ const hr = heures.find(h => h >= '19:30') || heures[0];
 await page.selectOption('#p-heure', hr);
 await page.locator('[data-pa=commander]').click();
 const numCmd = await txt('.tk-num');
+verifie(await page.$$eval('.tk-ok .conf-legantis a', as => as.length === 1 && as[0].getAttribute('href') === '/estimer-mon-projet/?type=vitrine'), 'commande à emporter : lien vers la vraie demande de devis Legantis (?type=vitrine)');
 verifie(/^EM-\d{4}-\d+$/.test(numCmd) && /Paiement sur place/.test(await txt('#panier')) && /Rien n'a été payé/.test(await txt('#panier')), 'numéro de commande simulé et paiement sur place : ' + numCmd);
 verifie(await page.locator('#pastille-panier').isHidden() && await page.locator('[data-ajout=p3]').getAttribute('class').then(c => !c.includes('dans')), 'panier vidé, boutons de la carte remis à zéro');
 verifie(/Reçue/i.test(await txt('#mc-liste')) && (await txt('#mc-liste')).includes(numCmd), 'Mes commandes : reçue');

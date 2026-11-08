@@ -19,7 +19,11 @@ const TYPES = { site: 'Site web', vitrine: 'Site vitrine', ecommerce: 'Site e-co
 // Parcours qualifiants : le formulaire d'où vient la demande. Le chemin de retour est fixe (jamais une adresse fournie par le visiteur) ; sans parcours connu,
 // c'est le formulaire générique des accueils, qui reste moins exigeant pour qu'une page en cache puisse toujours envoyer.
 const PARCOURS = { simulateur: '/estimer-mon-projet/', audit: '/audit-gratuit/', offre: '/offre-lancement/', commandes: '/commandes/' };
-const PARCOURS_LIBELLES = { simulateur: 'Simulateur de projet', audit: 'Mini-audit gratuit', offre: 'Page d\'offre de lancement', commandes: 'Page Commandes' };
+const PARCOURS_LIBELLES = { simulateur: 'Simulateur de projet', audit: 'Mini-audit gratuit', offre: 'Page d\'offre de lancement', commandes: 'Page Commandes', rapide: 'Contact rapide' };
+// Contact rapide (05/11/2026) : nom, un moyen de contact (e-mail OU téléphone) et le besoin, sur l'accueil FR et EN. Il renvoie à l'accueil de la langue, donc il n'a pas de
+// chemin dans PARCOURS, et ses messages ont leurs propres ancres (la page a déjà #devis-envoye pour le formulaire détaillé).
+const PARCOURS_RAPIDE = 'rapide';
+const ANCRES_RAPIDE = { envoye: 'rappel-envoye', echec: 'rappel-echec' };
 const BUDGETS = { moins5: 'Moins de 5 000 MAD', '5a15': '5 000 à 15 000 MAD', '15a50': '15 000 à 50 000 MAD', plus50: 'Plus de 50 000 MAD', definir: 'À définir ensemble' };
 const PAGES_SITE = { '1a3': '1 à 3 pages', '4a6': '4 à 6 pages', '7a15': '7 à 15 pages', plus15: 'Plus de 15 pages', inconnu: 'Je ne sais pas encore' };
 const FONCTIONS = {
@@ -111,7 +115,7 @@ function json(env, statut, corps) {
 
 // Issue d'une demande : 303 vers la page d'origine sans script, JSON avec script.
 function issue(request, env, d, envoye, erreurs = [], code = '') {
-  if (!veutJson(request)) return retour(env, d.langue, envoye ? 'devis-envoye' : 'devis-echec', d.parcours);
+  if (!veutJson(request)) return retour(env, d.langue, d.parcours === PARCOURS_RAPIDE ? (envoye ? ANCRES_RAPIDE.envoye : ANCRES_RAPIDE.echec) : envoye ? 'devis-envoye' : 'devis-echec', d.parcours);
   return json(env, envoye ? 200 : erreurs.length ? 422 : 503, { ok: envoye, ...(erreurs.length ? { erreurs } : {}), ...(code ? { code } : {}) });
 }
 
@@ -164,6 +168,14 @@ const telephoneValide = t => /^[+0-9 ().-]+$/.test(t) && t.replace(/\D/g, '').le
 // ce contrôle est celui qui compte (un robot n'exécute pas la validation de la page).
 function champsEnErreur(d) {
   const e = [];
+  if (d.parcours === PARCOURS_RAPIDE) {
+    // Un moyen de contact suffit : e-mail valide, ou téléphone valide (le visiteur marocain préfère souvent être rappelé). Le besoin est un choix de la liste.
+    if (!(d.nom.length >= 1)) e.push('nom');
+    if (!d.email && !telephoneValide(d.telephone)) e.push('contact');
+    if (!d.type) e.push('type');
+    if (!d.consentement) e.push('consentement');
+    return e;
+  }
   if (!(d.nom.length >= 1)) e.push('nom');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) e.push('email');
   if (d.parcours !== 'audit' && d.parcours !== 'commandes' && !(d.projet.length >= 10)) e.push('projet');
@@ -201,15 +213,21 @@ function lireChoix(donnees) {
 
 function lire(donnees) {
   const nom = texte(donnees.get('nom'), 100);
-  const email = texte(donnees.get('email'), 254);
-  const telephone = texte(donnees.get('telephone'), 30);
+  const parcoursBrut = donnees.get('parcours');
+  let email = texte(donnees.get('email'), 254);
+  let telephone = texte(donnees.get('telephone'), 30);
+  if (parcoursBrut === PARCOURS_RAPIDE) {
+    // Champ unique « contact » : une adresse e-mail ou un numéro. Ce qui ne ressemble pas à une adresse est traité comme un numéro, puis validé comme tel.
+    const contact = texte(donnees.get('contact'), 254);
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact)) { email = contact; telephone = ''; } else { email = ''; telephone = contact.slice(0, 30); }
+  }
   const entreprise = texte(donnees.get('entreprise'), 120);
   const type = Object.hasOwn(TYPES, donnees.get('type')) ? donnees.get('type') : '';
   const projet = texte(donnees.get('projet'), 4000, true);
   const supports = [...new Set(donnees.getAll('supports'))].filter(s => Object.hasOwn(SUPPORTS, s));
   const delai = Object.hasOwn(DELAIS, donnees.get('delai')) ? donnees.get('delai') : '';
   const langue = donnees.get('langue') === 'en' ? 'en' : 'fr';
-  const parcours = Object.hasOwn(PARCOURS, donnees.get('parcours')) ? donnees.get('parcours') : '';
+  const parcours = Object.hasOwn(PARCOURS, parcoursBrut) || parcoursBrut === PARCOURS_RAPIDE ? parcoursBrut : '';
   const budget = Object.hasOwn(BUDGETS, donnees.get('budget')) ? donnees.get('budget') : '';
   const pagesSite = Object.hasOwn(PAGES_SITE, donnees.get('pages_site')) ? donnees.get('pages_site') : '';
   const pack = Object.hasOwn(PACKS, donnees.get('pack')) ? donnees.get('pack') : '';
@@ -257,6 +275,7 @@ function ligneSuivi(d) {
 
 function lignesParcours(d) {
   if (!d.parcours) return [];
+  if (d.parcours === PARCOURS_RAPIDE) return ['Parcours : ' + PARCOURS_LIBELLES.rapide + ' (nom, moyen de contact et besoin seulement)', 'Moyen de contact donné : ' + (d.email ? 'e-mail' : 'téléphone, à rappeler'), 'Consentement au traitement : ' + (d.consentement ? 'oui' : 'non')];
   if (d.parcours === 'commandes') return ['Priorité estimée : ' + priorite(d), ...Object.entries(QUALIFICATION).map(([champ, { libelle, valeurs }]) => libelle + ' : ' + (d.choix[champ] ? valeurs[d.choix[champ]] : 'non précisé')), 'Consentement au traitement : ' + (d.consentement ? 'oui' : 'non')];
   return [
     'Parcours : ' + PARCOURS_LIBELLES[d.parcours],
@@ -284,7 +303,7 @@ function corps(d) {
     'Type de projet : ' + (d.type ? TYPES[d.type] : 'non précisé'),
     'Nom : ' + d.nom,
     'Entreprise : ' + (d.entreprise || 'non indiquée'),
-    'E-mail : ' + d.email,
+    'E-mail : ' + (d.email || 'non indiqué'),
     'Téléphone : ' + (d.telephone || 'non indiqué'),
     'Supports visés : ' + (d.supports.length ? d.supports.map(s => SUPPORTS[s]).join(', ') : 'non précisés'),
     'Délai souhaité : ' + (d.delai ? DELAIS[d.delai] : 'non précisé'),
@@ -298,7 +317,7 @@ function corps(d) {
     estTest(d) ? '[TEST] Ligne marquée, à ne pas coller dans l\'onglet Prospects :' : 'Ligne à coller dans l\'onglet Prospects du classeur de suivi, colonne Date :',
     ligneSuivi(d),
     '',
-    '— Répondre à ce message écrit directement à ' + d.nom + ' (« Répondre » utilise son adresse).',
+    d.email ? '— Répondre à ce message écrit directement à ' + d.nom + ' (« Répondre » utilise son adresse).' : '— Aucune adresse e-mail : rappeler ' + d.nom + ' au ' + d.telephone + '.',
   ].join('\n');
 }
 
@@ -307,7 +326,7 @@ function corps(d) {
 function objet(d) {
   const test = estTest(d) ? '[TEST] ' : '';
   if (d.parcours === 'commandes') return (test + 'Demande commandes — Priorité ' + priorite(d) + ' — ' + d.entreprise + ' — ' + d.nom).slice(0, 120);
-  const libelle = d.parcours === 'audit' ? PARCOURS_LIBELLES.audit : formule(d) || (d.type ? TYPES[d.type] : '');
+  const libelle = d.parcours === 'audit' ? PARCOURS_LIBELLES.audit : d.parcours === PARCOURS_RAPIDE ? [PARCOURS_LIBELLES.rapide, d.type ? TYPES[d.type] : ''].filter(Boolean).join(' — ') : formule(d) || (d.type ? TYPES[d.type] : '');
   return (test + 'Demande de devis — ' + (libelle ? libelle + ' — ' : '') + d.nom).slice(0, 120);
 }
 
@@ -318,7 +337,7 @@ async function envoyer(d, env) {
     body: JSON.stringify({
       from: env.MAIL_FROM,
       to: [env.MAIL_TO],
-      reply_to: d.email,
+      ...(d.email ? { reply_to: d.email } : {}),   // contact rapide par téléphone : pas d'adresse de réponse, le numéro est dans le corps
       subject: objet(d),
       text: corps(d),
     }),

@@ -135,3 +135,7 @@ node mesure/test_pixel.js
 ```bash
 python3 outils/avant_production.py --complet
 ```
+
+## Fourchettes indicatives des trois offres (05/11/2026, éteintes)
+
+L'accueil FR porte, dans chaque carte d'offre (Visibilité, Gestion, Applications), un bloc `<!-- commercial:fourchette offre=… -->` vide tant que `config/commercial.json` → `fourchettes.<offre>` n'est pas validé. Pour publier une fourchette, sur accord écrit du propriétaire seulement : renseigner `a_partir_de` (entier, MAD), éventuellement `jusqu_a`, `regime` (`HT` ou `TTC`), mettre `"valide": true`, puis `python3 outils/commercial.py`, `python3 outils/controles_site.py` et `python3 outils/test_commercial.py`. Une valeur à `false`, non entière, sans régime ou avec un maximum inférieur au minimum est refusée ; un montant écrit à la main dans une page est refusé par le contrôle du site. Les hypothèses et leur calcul restent dans le dossier privé, jamais ici.

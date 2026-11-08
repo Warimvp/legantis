@@ -15,7 +15,7 @@ let echecs = 0; const ok = (c, m) => { console.log((c ? '✓ ' : '✗ ') + m); i
   const b = await chromium.launch();
   async function page(chemin, avecOutil = true, largeur = 1440) {
     const mob = largeur < 768;
-    const ctx = await b.newContext({ viewport: { width: largeur, height: mob ? 844 : 900 }, isMobile: mob, hasTouch: mob }); const p = await ctx.newPage();
+    const ctx = await b.newContext({ viewport: { width: largeur, height: mob ? 844 : 900 }, isMobile: mob, hasTouch: mob, bypassCSP: true }); const p = await ctx.newPage();   // les pages portent une CSP script-src 'self' (V3) : le script de mesure est injecté en ligne par le test
     const err = [], requetes = []; p.on('pageerror', e => err.push(String(e)));
     if (avecOutil) await p.addInitScript(() => { window.__ev = []; window.plausible = (nom, o) => window.__ev.push([nom, (o && o.props) || {}]); });
     await p.goto(BASE + chemin); await p.evaluate(() => document.fonts.ready);
@@ -65,6 +65,22 @@ let echecs = 0; const ok = (c, m) => { console.log((c ? '✓ ' : '✗ ') + m); i
     await ctx.close(); }
   // 2. Retour du Worker : #devis-envoye et #devis-echec, une seule fois
   for (const [h, nom] of [['#devis-envoye', 'Devis envoyé'], ['#devis-echec', 'Devis échec']]) {
+    const { ctx, ev } = await page('' + h); const e = await ev();
+    ok(e.filter(x => x[0] === nom).length === 1, `arrivée sur ${h} → « ${nom} »`); await ctx.close(); }
+  // 2 bis. Contact rapide et trois offres (05/11/2026) : clics par offre, formulaire vu une fois, retour du Worker, aucun texte saisi
+  { const { ctx, p, ev } = await page('');
+    for (const sel of ['#visibilite a.prestation-cta', '#gestion a.prestation-cta', '#applications a.prestation-cta']) await clic(p, sel);
+    await clic(p, '.ouverture-rappel a');
+    await p.fill('#rappel-nom', 'SECRET-RAPIDE'); await p.fill('#rappel-contact', 'secret-rapide@exemple.ma');
+    await p.evaluate(() => document.querySelector('#rappel-nom').scrollIntoView({ block: 'center' })); await p.waitForTimeout(400);
+    const e = await ev(); const j = JSON.stringify(e);
+    const devis = e.filter(x => x[0] === 'Devis clic').map(x => x[1].emplacement);
+    ok(JSON.stringify(devis) === JSON.stringify(['offre-visibilite', 'offre-gestion', 'offre-applications']), `trois offres : Devis clic par offre (${devis.join(', ')})`);
+    ok(e.filter(x => x[0] === 'Contact rapide clic').map(x => x[1].emplacement).join() === 'ouverture', 'lien « Pressé ? » : Contact rapide clic (ouverture)');
+    ok(e.filter(x => x[0] === 'Contact rapide vu').length === 1, 'Contact rapide vu : une fois');
+    ok(!/SECRET/.test(j), 'contact rapide : aucun texte saisi dans les événements');
+    await ctx.close(); }
+  for (const [h, nom] of [['#rappel-envoye', 'Contact rapide envoyé'], ['#rappel-echec', 'Contact rapide échec']]) {
     const { ctx, ev } = await page('' + h); const e = await ev();
     ok(e.filter(x => x[0] === nom).length === 1, `arrivée sur ${h} → « ${nom} »`); await ctx.close(); }
   // 3. Page de prestation EN et étude de cas : emplacements propres aux pages de service

@@ -347,7 +347,7 @@ button{cursor:pointer}
   .rv.st-arrive{background:var(--ocre-l);border-color:#C99A2E}.rv.st-arrive .rv-st{color:var(--ocre-d)}
   .rv.st-termine{background:#E7E2D6;border-color:#A59E8E}.rv.st-termine .rv-st{color:#3F3B33}
   .rv.st-absent{background:var(--terre-l);border-color:var(--terre)}.rv.st-absent .rv-st{color:#6E2B18}
-  .rv.st-annule{background:rgba(252,249,242,.7);border:1.5px dashed #A59E8E}.rv.st-annule .rv-n{text-decoration:line-through}.rv.st-annule .rv-st{color:var(--muet)}
+  .rv.st-annule{background:rgba(252,249,242,.7);border:1.5px dashed #A59E8E;z-index:1}   /* sous un créneau bloqué posé au même endroit : sinon il le recouvre et le blocage ne se clique plus */.rv.st-annule .rv-n{text-decoration:line-through}.rv.st-annule .rv-st{color:var(--muet)}
   .bloc{border:1.5px solid #a89c80;background:repeating-linear-gradient(135deg,#efe6d2 0 6px,#e3d8bf 6px 7px);font-size:.8125rem;display:block}
   .bloc b{display:block}.bloc span{color:var(--muet)}
 }

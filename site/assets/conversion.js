@@ -58,7 +58,7 @@
     champs: {
       nom: 'Please enter your name.', email: 'Please enter a valid email address.', entreprise: 'Please enter your company or business.',
       telephone: 'Please enter a valid phone number, for example +212 6 12 34 56 78.', projet: 'Describe your project in a few words (at least 10 characters).',
-      type: 'Please choose a type of project.', budget: 'Please choose a budget range.', delai: 'Please choose a timeline.',
+      contact: 'Please enter a valid email address or phone number.', type: 'Please choose a type of project.', budget: 'Please choose a budget range.', delai: 'Please choose a timeline.',
       consentement: 'Please tick the box so that we can process your request.', url_site: 'Please enter the public address of your website, for example yoursite.ma.',
     },
     defaut: 'Please check this field.', envoi: 'Sending…',
@@ -67,7 +67,7 @@
     champs: {
       nom: 'Indiquez votre nom.', email: 'Indiquez une adresse e-mail valide.', entreprise: 'Indiquez votre entreprise ou votre activité.',
       telephone: 'Indiquez un numéro de téléphone valide, par exemple 06 12 34 56 78.', projet: 'Décrivez votre besoin en quelques mots (10 caractères au moins).',
-      type: 'Choisissez un type de projet.', budget: 'Choisissez une tranche de budget.', delai: 'Choisissez un délai.',
+      contact: 'Indiquez une adresse e-mail ou un numéro de téléphone valide.', type: 'Choisissez un type de projet.', budget: 'Choisissez une tranche de budget.', delai: 'Choisissez un délai.',
       consentement: 'Cochez la case pour que nous puissions traiter votre demande.', url_site: 'Indiquez l\'adresse publique de votre site, par exemple votresite.ma.',
     },
     defaut: 'Vérifiez ce champ.', envoi: 'Envoi en cours…',
@@ -77,7 +77,8 @@
   /* Envoi : même POST que sans script, avec Accept: application/json. La réponse du Worker dit quoi afficher ; en cas d'échec, rien de ce qui a été saisi n'est perdu. */
   function brancherEnvoi(form) {
     var bloc = form.closest('[data-formulaire]') || document;
-    var ok = bloc.querySelector('#devis-envoye'), echec = bloc.querySelector('#devis-echec');
+    /* Un formulaire peut avoir ses propres messages (contact rapide : data-ok / data-echec), la page garde ainsi des identifiants uniques. */
+    var ok = bloc.querySelector('#' + (form.getAttribute('data-ok') || 'devis-envoye')), echec = bloc.querySelector('#' + (form.getAttribute('data-echec') || 'devis-echec'));
     var bouton = form.querySelector('[type="submit"]');
     var enCours = false;
 

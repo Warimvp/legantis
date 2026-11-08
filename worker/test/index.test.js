@@ -685,3 +685,131 @@ test('formulaire générique : la case cochée est notée, son absence ne bloque
   await worker.fetch(post({ ...VALIDE, consentement: 'oui' }), ENV);
   assert.ok(envois[0].corps.text.includes('Consentement au traitement : oui'));
 });
+
+// ── Contact rapide (05/11/2026) : nom, un moyen de contact (e-mail OU téléphone), besoin, consentement ──────────────────────────────────────────────
+const RAPIDE = { parcours: 'rapide', langue: 'fr', nom: 'Karim Alaoui', contact: 'karim@exemple.ma', type: 'site', consentement: 'oui' };
+
+test('contact rapide par e-mail : part par Resend, objet et retour propres au parcours', async () => {
+  const r = await worker.fetch(post(RAPIDE), ENV);
+  assert.equal(r.status, 303);
+  assert.equal(lieu(r), 'https://legantis.net/#rappel-envoye');
+  assert.equal(envois.length, 1);
+  const { corps } = envois[0];
+  assert.equal(corps.reply_to, 'karim@exemple.ma');
+  assert.equal(corps.subject, 'Demande de devis — Contact rapide — Site web — Karim Alaoui');
+  for (const morceau of ['Type de projet : Site web', 'E-mail : karim@exemple.ma', 'Téléphone : non indiqué', 'Parcours : Contact rapide', 'Moyen de contact donné : e-mail', 'Consentement au traitement : oui']) assert.ok(corps.text.includes(morceau), morceau);
+});
+
+test('contact rapide par téléphone : aucun e-mail exigé, pas d\'adresse de réponse, le numéro est dans le mail', async () => {
+  const r = await worker.fetch(post({ ...RAPIDE, contact: '06 12 34 56 78' }), ENV);
+  assert.equal(lieu(r), 'https://legantis.net/#rappel-envoye');
+  const { corps } = envois[0];
+  assert.equal('reply_to' in corps, false);
+  for (const morceau of ['E-mail : non indiqué', 'Téléphone : 06 12 34 56 78', 'Moyen de contact donné : téléphone, à rappeler', 'rappeler Karim Alaoui au 06 12 34 56 78']) assert.ok(corps.text.includes(morceau), morceau);
+  const ligne = corps.text.split('\n').find(l => l.includes('\t')).split('\t');
+  assert.deepEqual([ligne[2], ligne[6], ligne[7], ligne[10]], ['Karim Alaoui', '', '06 12 34 56 78', 'Contact rapide · Site web']);
+});
+
+test('contact rapide en anglais : retour vers /en/ avec les ancres du parcours', async () => {
+  assert.equal(lieu(await worker.fetch(post({ ...RAPIDE, langue: 'en' }), ENV)), 'https://legantis.net/en/#rappel-envoye');
+  reponseResend = () => new Response('{"message":"x"}', { status: 500 });
+  assert.equal(lieu(await worker.fetch(post({ ...RAPIDE, langue: 'en' }), ENV)), 'https://legantis.net/en/#rappel-echec');
+  assert.equal(lieu(await worker.fetch(post(RAPIDE), ENV)), 'https://legantis.net/#rappel-echec');
+});
+
+for (const [libelle, champs, attendu] of [
+  ['sans nom', { nom: '' }, 'nom'],
+  ['sans moyen de contact', { contact: '' }, 'contact'],
+  ['contact qui n\'est ni une adresse ni un numéro', { contact: 'bonjour' }, 'contact'],
+  ['numéro trop court', { contact: '0612' }, 'contact'],
+  ['adresse sans domaine', { contact: 'karim@exemple' }, 'contact'],
+  ['sans besoin choisi', { type: '' }, 'type'],
+  ['besoin hors de la liste', { type: 'pirate' }, 'type'],
+  ['sans consentement', { consentement: '' }, 'consentement'],
+]) {
+  test(`contact rapide refusé : ${libelle}`, async () => {
+    const r = await worker.fetch(post({ ...RAPIDE, ...champs }, JSON_OK), ENV);
+    assert.equal(r.status, 422);
+    assert.ok((await r.json()).erreurs.includes(attendu), attendu);
+    assert.equal(envois.length, 0);
+  });
+}
+
+test('contact rapide : le champ contact ne remplace pas l\'e-mail des autres formulaires', async () => {
+  const { email, ...sansEmail } = VALIDE;
+  const r = await worker.fetch(post({ ...sansEmail, contact: 'karim@exemple.ma' }, JSON_OK), ENV);
+  assert.equal(r.status, 422);
+  assert.ok((await r.json()).erreurs.includes('email'));
+  assert.equal(envois.length, 0);
+});
+
+test('contact rapide : réponse JSON du script, et besoin libre facultatif recopié', async () => {
+  const r = await worker.fetch(post({ ...RAPIDE, projet: 'Un site pour mon cabinet.' }, JSON_OK), ENV);
+  assert.equal(r.status, 200);
+  assert.deepEqual(await r.json(), { ok: true });
+  assert.ok(envois[0].corps.text.includes('Un site pour mon cabinet.'));
+});
+
+test('contact rapide : champ piège rempli, rien n\'est envoyé', async () => {
+  const r = await worker.fetch(post({ ...RAPIDE, site_web: 'http://spam.example' }), ENV);
+  assert.equal(lieu(r), 'https://legantis.net/#rappel-envoye');
+  assert.equal(envois.length, 0);
+});
+
+// ── Contact rapide : anti-spam, données hostiles, consentement strict ─────────────────────────────────────────────────────────────────────────────
+test('contact rapide : limite de débit, aucun mail, retour sur l\'échec du contact rapide', async () => {
+  const r = await worker.fetch(post(RAPIDE), { ...ENV, LIMITE: { limit: async () => ({ success: false }) } });
+  assert.equal(lieu(r), 'https://legantis.net/#rappel-echec');
+  assert.equal(envois.length, 0);
+  const j = await worker.fetch(post(RAPIDE, JSON_OK), { ...ENV, LIMITE: { limit: async () => ({ success: false }) } });
+  assert.equal(j.status, 503);
+  assert.equal((await j.json()).code, 'limite');
+});
+
+test('contact rapide : le consentement doit valoir « oui » (« on », « true » refusés)', async () => {
+  for (const valeur of ['on', 'true', '1', 'non']) {
+    const r = await worker.fetch(post({ ...RAPIDE, consentement: valeur }, JSON_OK), ENV);
+    assert.equal(r.status, 422, valeur);
+    assert.ok((await r.json()).erreurs.includes('consentement'));
+  }
+  assert.equal(envois.length, 0);
+});
+
+test('contact rapide : un saut de ligne dans le nom ne peut pas injecter d\'en-tête dans l\'objet', async () => {
+  await worker.fetch(post({ ...RAPIDE, nom: 'Karim\r\nBcc: pirate@exemple.com' }), ENV);
+  const { subject, text } = envois[0].corps;
+  assert.ok(!/[\r\n]/.test(subject), JSON.stringify(subject));
+  assert.ok(!text.split('\n').some(l => l.startsWith('Bcc:')));
+  assert.equal(envois[0].corps.to.length, 1);
+});
+
+test('contact rapide : formule de tableur dans le nom neutralisée dans la ligne de suivi', async () => {
+  await worker.fetch(post({ ...RAPIDE, nom: '=HYPERLINK("http://pirate.example","x")' }), ENV);
+  const ligne = envois[0].corps.text.split('\n').find(l => l.includes('\t')).split('\t');
+  assert.ok(ligne[2].startsWith("'"), ligne[2]);
+});
+
+test('contact rapide : contact démesuré ou numéro avec des lettres refusé', async () => {
+  for (const contact of ['a'.repeat(300) + '@exemple.ma', '06 12 34 56 78 abc', '=1+1', '<script>alert(1)</script>', '+212 6 12 34 56 78 ; DROP TABLE']) {
+    const r = await worker.fetch(post({ ...RAPIDE, contact }, JSON_OK), ENV);
+    assert.equal(r.status, 422, contact.slice(0, 30));
+  }
+  assert.equal(envois.length, 0);
+});
+
+test('contact rapide : le texte libre reste du texte brut, borné à 4 000 caractères', async () => {
+  await worker.fetch(post({ ...RAPIDE, projet: '<img src=x onerror=alert(1)>' + 'x'.repeat(5000) }), ENV);
+  const { text } = envois[0].corps;
+  assert.ok(text.includes('<img src=x onerror=alert(1)>'));   // texte brut : jamais interprété comme HTML (le mail est en text, pas en html)
+  assert.equal('html' in envois[0].corps, false);
+  assert.ok(text.length < 6000);
+});
+
+test('contact rapide : numéros marocains usuels acceptés (06, +212, 00212, parenthèses)', async () => {
+  for (const contact of ['0612345678', '+212 6 12 34 56 78', '00212612345678', '(+212) 612-345-678']) {
+    envois.length = 0;
+    const r = await worker.fetch(post({ ...RAPIDE, contact }, JSON_OK), ENV);
+    assert.equal(r.status, 200, contact);
+    assert.equal(envois.length, 1, contact);
+  }
+});
