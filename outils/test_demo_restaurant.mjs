@@ -48,11 +48,12 @@ async function ctxResto(date, sv) { await page.selectOption('#cs-jour', date); a
 const onglet = t => page.locator(`#cs-onglets [data-tab=${t}]`).click();
 const ligne = (sel, num_) => page.locator(`#cs-panneau ${sel}`).filter({ hasText: num_ });
 /* Va jusqu'à l'étape « Table » ; renvoie false si aucun créneau libre. */
-async function versTable(date, sv, covers) {
+async function versTable(date, sv, covers, sur = false) {
   await page.locator(`.cal-j[data-d="${date}"]`).click(); await suivant();
   await page.locator(`#etape input[name=service][value=${sv}]`).check();
   await page.locator(`#etape input[name=covers][value="${covers}"]`).check(); await suivant();
-  const slot = page.locator('#etape input[name=slot]:not(:disabled)').first();
+  // sur : seulement un créneau « Disponible » (jamais « Dernières places »), pour qu'une réservation qui revient ne remplisse pas le créneau choisi.
+  const slot = page.locator(sur ? '#etape label:has(small:text-is("Disponible")) input[name=slot]:not(:disabled)' : '#etape input[name=slot]:not(:disabled)').first();
   if (!await slot.count()) return false;
   await slot.check(); await suivant();
   return (await txt('#etape-titre')).startsWith('Choisissez votre table');
@@ -129,13 +130,24 @@ verifie(deux.some(k => gros[k] === 'petite') && deux.every(k => ['petite', 'rese
 
 /* ================================================================== 3 */
 section('3. Réservation complète : le client agit, le restaurant voit');
+// Les réservations de la démonstration sont semées d'après la date. La réservation testée doit pouvoir être remise en attente (§ 4) sans que le service soit alors complet pour 2 couverts :
+// on prend le premier jour et service où un créneau « Disponible » existe et où au moins deux tables restent libres (la table réservée n'est pas la dernière).
+let dR = null, svR = null;
+for (const d of ouverts.slice(1)) {   // pas aujourd'hui : ses créneaux de début de service peuvent être « passés » selon l'heure
+  for (const sv of ['soir', 'midi']) {
+    await charger();
+    if (await versTable(d, sv, 2, true) && Object.values(await etatsPlan()).filter(c => c === 'libre').length >= 2) { dR = d; svR = sv; break; }
+  }
+  if (dR) break;
+}
+verifie(dR !== null, `un jour et un service avec un créneau « Disponible » et deux tables libres existent (${dR} ${svR})`);
 await charger();
-await ctxResto(d1, 'soir');
+await ctxResto(dR, svR);
 const avant = { att: await kpi('att'), ins: await kpi('ins'), occ: await kpi('occ') };
 const rowsAvant = await page.locator('#cs-panneau li[data-resa]').count();
 await page.locator('#degustation [data-menu=m1]').click();
 verifie(/Menu Tilal/.test(await txt('#resa-msg')), 'bouton du menu dégustation : annoncé dans le parcours');
-const okT = await versTable(d1, 'soir', 2); verifie(okT, 'étape Table atteinte (soir, 2 couverts)');
+const okT = await versTable(dR, svR, 2, true); verifie(okT, `étape Table atteinte (${svR}, 2 couverts)`);
 const planS = await etatsPlan(); const T = Object.keys(planS).find(k => planS[k] === 'libre' && ['S1', 'S4', 'S7', 'C1'].includes(k)) || Object.keys(planS).find(k => planS[k] === 'libre');
 await page.locator(`#plan-client .tbl[data-t=${T}]`).click();
 verifie((await txt('#table-choix')).includes(T), `table ${T} choisie sur le plan`);
@@ -152,7 +164,7 @@ const numResa = await txt('.conf-num');
 verifie(await page.$$eval('.conf .conf-legantis a', as => as.length === 1 && as[0].getAttribute('href') === '/estimer-mon-projet/?type=vitrine'), 'confirmation de réservation : lien vers la vraie demande de devis Legantis (?type=vitrine)');
 verifie(/^MT-\d{6}-\d{4}$/.test(numResa), 'numéro de réservation simulé : ' + numResa);
 verifie((await txt('#mr-liste')).includes(numResa) && (await txt('#mr-liste')).includes('table ' + T), 'Mes réservations : numéro et table');
-verifie(await page.locator('#cs-jour').inputValue() === d1 && await page.locator('#cs-service input[value=soir]').isChecked(), 'côté restaurant : le jour et le service de la réservation sont affichés');
+verifie(await page.locator('#cs-jour').inputValue() === dR && await page.locator(`#cs-service input[value=${svR}]`).isChecked(), 'côté restaurant : le jour et le service de la réservation sont affichés');
 const rl = ligne('li[data-resa]', numResa);
 verifie(await rl.count() === 1 && (await rl.innerText()).includes('Table Test') && await rl.getAttribute('data-statut') === 'attendue', 'restaurant : la réservation apparaît, statut « attendue »');
 verifie(await kpi('att') === avant.att + 2, `indicateur couverts attendus : ${avant.att} -> ${await kpi('att')}`);
@@ -174,7 +186,7 @@ await ligne('li[data-resa]', numResa).getByRole('button', { name: /Absente/ }).c
 verifie(await statClient() === 'absente' && /absente/i.test(await txt('#mr-liste')), 'absente : visible côté client');
 verifie(await kpi('att') === avant.att, 'une réservation absente ne compte plus dans les couverts attendus');
 await page.locator('[data-act=nouvelle]').click();
-verifie(await versTable(d1, 'soir', 2) && (await etatsPlan())[T] === 'libre', `la table ${T} d'une réservation absente est de nouveau libre côté client`);
+verifie(await versTable(dR, svR, 2, true) && (await etatsPlan())[T] === 'libre', `la table ${T} d'une réservation absente est de nouveau libre côté client`);
 // Revue V3.1 (T1) : pendant que la réservation est absente, sa table peut être reprise ou bloquée ; la remettre en attente ne doit pas la doubler.
 await onglet('plan'); await page.locator(`#plan-resto .tbl[data-t=${T}]`).click(); await page.locator('[data-bl="1"]').click();
 await onglet('resas');
