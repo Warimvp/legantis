@@ -572,8 +572,17 @@ if os.path.exists(CONFIG) and os.path.exists(fichier(OFFRE)):
         if 'Modèle fictif' not in li or 'fictives' not in li: echecs.append(f'{OFFRE}: capture de modèle sans mention fictive à côté'); break
     if '<li class="projet modele">' not in h: echecs.append(f'{OFFRE}: exemples de design (modèles fictifs) absents')
     # 6. Pack Commandes : sur devis après diagnostic, lien vers /commandes/, aucun montant dans son encart
-    encart = re.search(r'<article class="offre-surdevis".*?</article>', h, re.S)
+    encart = re.search(r'<article class="offre-surdevis" aria-labelledby="commandes-titre">.*?</article>', h, re.S)
     if not encart or 'href="../commandes/"' not in encart.group(0) or 'diagnostic gratuit' not in encart.group(0) or re.search(r'\d\s*(?:MAD|DH)', visible(encart.group(0))): echecs.append(f'{OFFRE}: encart Pack Commandes absent, sans lien, sans diagnostic gratuit ou avec un montant')
+    # 6 bis. « site plus complet » : sur devis, lien vers le simulateur, aucun montant dans son encart
+    complet = re.search(r'<article class="offre-surdevis" aria-labelledby="complet-titre">.*?</article>', h, re.S)
+    if not complet or 'href="../estimer-mon-projet/"' not in complet.group(0) or 'devis' not in complet.group(0) or re.search(r'\d\s*(?:MAD|DH)', visible(complet.group(0))): echecs.append(f'{OFFRE}: encart « un site plus complet » absent, sans lien vers le simulateur, sans devis ou avec un montant')
+    # 6 ter. le prix d'appel ne vaut que pour son périmètre : exclusions écrites sur la carte et liste « devis si » sur la page
+    for pack_ in packs:
+        carte_ = re.search(rf'<article class="pack[^"]*" id="offre-{re.escape(pack_["id"])}".*?</article>', h, re.S)
+        texte_ = visible(carte_.group(0)).lower() if carte_ else ''
+        manque_ = [m_ for m_ in ('boutique en ligne', 'espace utilisateur', 'réservation', 'sur mesure', 'seconde langue') if m_ not in texte_ and not (m_ == 'seconde langue' and 'seconde langue' in texte_)]
+        if manque_ or 'il vous faut un devis si' not in visible(h).lower(): echecs.append(f"{OFFRE}: exclusions du prix d'appel incomplètes (manque : {manque_ or 'liste « il vous faut un devis si »'})")
     # 7. pilote : packs et montants des packs seulement sur les pages de packs_pages ; aucune page du sitemap ne relie la page d'offre
     autorisees = conf.get('packs_pages')
     montants_packs = {f"{p_['prix_mad']:,}".replace(',', ' ') for p_ in packs}

@@ -33,7 +33,7 @@ const FONCTIONS = {
 };
 // Formules à prix fixe (identifiants de config/commercial.json, libellés de la page d'offre). Ajouter une clé ne retire rien : une page en cache qui envoie
 // encore « starter » reste acceptée. Un identifiant inconnu n'est jamais recopié dans le mail.
-const PACKS = { starter: 'Pack Starter', essentiel: 'Site Essentiel', business: 'Site Business statique' };
+const PACKS = { starter: 'Pack Starter', essentiel: 'Site Essentiel', business: 'Site Business statique', visibilite: 'Site Visibilité' };
 const ESTIMATION = /^(Estimation personnalisée|Fourchette indicative\u00A0?: [\d\u00A0 ]+ à [\d\u00A0 ]+ MAD( HT| TTC)?)$/;   // la page le calcule : seule une forme connue passe dans le mail
 
 // Mesure des demandes (facultative, préparée le 26/10/2026) : binding D1 MESURES, schéma dans migrations/0001_mesures.sql.

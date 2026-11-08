@@ -1219,6 +1219,8 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
 .offre-phare h3 { font-weight: 700; font-size: clamp(1.6rem, 2.8vw, 2.3rem); line-height: 1.05; font-stretch: 114%; letter-spacing: -0.03em; }
 .offre-phare p { color: var(--gris); max-width: 60ch; }
 @media (max-width: 760px) { .packs { grid-template-columns: minmax(0, 1fr); } }
+.packs > .pack:only-child { grid-column: 1 / -1; max-width: 680px; justify-self: center; }
+.offre-surdevis + .offre-surdevis { margin-top: 18px; }
 .offres-note { margin-top: 18px; font-size: 0.92rem; color: var(--gris); max-width: var(--mesure); }
 /* Page Offres de lancement (pilote) : fiche, limites et contenus à fournir des cartes de pack, offre sur devis, socle commun */
 .pack-badge { justify-self: start; margin: 0 0 -4px; padding: 6px 11px; border-radius: 999px; background: var(--tampon); color: var(--sur-tampon); font: 500 0.68rem/1.2 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; }

@@ -42,7 +42,7 @@ Si des packs sont publiés, adapter à la main la réponse de la FAQ de l'accuei
 
 ### Offres de lancement (pilote, `/offre-lancement/`)
 
-`config/commercial.json` porte deux packs limités par `packs_pages` à `/offre-lancement/`, qui reste `noindex`, hors sitemap et reliée d'aucune page du sitemap. Le bloc de la page est `<!-- commercial:packs cible=demande exclus=visible -->` : les limites sont ouvertes, pas repliées. Le bouton d'une carte, ou `?pack=` dans l'adresse, présélectionne la formule du formulaire (`conversion.js`).
+`config/commercial.json` porte un pack (`visibilite`, le Site Visibilité) limité par `packs_pages` à `/offre-lancement/`, qui reste `noindex`, hors sitemap et reliée d'aucune page du sitemap. Le bloc de la page est `<!-- commercial:packs cible=demande exclus=visible -->` : les limites sont ouvertes, pas repliées. Le bouton d'une carte, ou `?pack=` dans l'adresse, présélectionne la formule du formulaire (`conversion.js`).
 
 `controles_site.py` vérifie sur cette page : cartes et prix égaux à la configuration, régime écrit, « hors taxes » en clair, tout montant TTC indicatif et sous réserve du régime de TVA, formules du formulaire égales à la configuration et connues du Worker, aucun compte à rebours ni formule d'urgence, explication de la limite des cinq contrats, mention fictive à côté de chaque capture de modèle, Pack Commandes sans montant, aucun prix de pack hors de `packs_pages`, aucun lien depuis les pages du sitemap. Chaque critère est éprouvé par un sabotage dans `test_commercial.py`.
 
@@ -54,7 +54,7 @@ Relier la page ou l'indexer est une décision du propriétaire : retirer `noinde
 |---|---|---|---|
 | générique | accueils FR et EN (`#devis`) | `/` ou `/en/` | nom, e-mail, projet |
 | `simulateur` | `/estimer-mon-projet/` | même page | + entreprise, téléphone, type, budget, délai, consentement |
-| `offre` | `/offre-lancement/` | même page | + entreprise, téléphone, type, budget, consentement (formule facultative : `essentiel`, `business`, `starter`) |
+| `offre` | `/offre-lancement/` | même page | + entreprise, téléphone, type, budget, consentement (formule facultative : `visibilite`, `essentiel`, `business`, `starter` ; seules celles de `config/commercial.json` sont proposées) |
 | `audit` | `/audit-gratuit/` | même page | nom, e-mail, entreprise, téléphone, adresse du site, consentement |
 
 Le Worker n'ouvre jamais l'adresse à analyser. Elle est seulement filtrée (ni IP, ni réseau interne, ni port, ni identifiants), pour que le lien reçu par mail soit sain.
@@ -65,7 +65,7 @@ Le Worker n'ouvre jamais l'adresse à analyser. Elle est seulement filtrée (ni 
 
 Pas de nouvelle base : le Worker continue de ne rien stocker. Le suivi se tient dans `~/Documents/bureaux/Legantis-Acquisition/legantis-suivi-commercial.xlsx`, déjà en place. Chaque mail se termine par une ligne à coller dans l'onglet Prospects, à partir de la colonne Date (Date à Délai).
 
-Une formule demandée sur la page d'offre (`pack`) apparaît dans l'objet du mail (« Demande de devis — Site Business statique — Nom ») et dans la colonne Demande de la ligne (« Page d'offre de lancement · Site Business statique · Site vitrine »). Sans formule, l'objet garde le type de projet, comme avant.
+Une formule demandée sur la page d'offre (`pack`) apparaît dans l'objet du mail (« Demande de devis — Site Visibilité — Nom ») et dans la colonne Demande de la ligne (« Page d'offre de lancement · Site Business statique · Site vitrine »). Sans formule, l'objet garde le type de projet, comme avant.
 
 **Envois de test** : un envoi dont la campagne porte `utm_source=test`, ou dont le nom ou l'entreprise contient « NE PAS TRAITER » (casse indifférente), part normalement mais est marqué : objet préfixé `[TEST]`, avertissement en tête du mail, date de la ligne écrite « [TEST] aaaa-mm-jj ». Collée par erreur, cette ligne reste visible et l'onglet Pilotage, qui compte des dates, l'ignore. Ne jamais la reporter dans le suivi.
 

@@ -17,6 +17,10 @@
     var min = poste.base.min, max = poste.base.max, options = poste.options || {};
     var liste = (choix.fonctions || []).slice();
     if (choix.pages) liste.push('pages:' + choix.pages);
+    var requis = poste.requis || [];
+    for (var r = 0; r < requis.length; r++) {
+      if (!liste.some(function (c) { return c.indexOf(requis[r]) === 0; })) return null;
+    }
     for (var i = 0; i < liste.length; i++) {
       var o = Object.prototype.hasOwnProperty.call(options, liste[i]) ? options[liste[i]] : null;
       if (!plage(o)) return null;
@@ -26,7 +30,9 @@
   }
   function formaterMontant(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
   function libelleEstimation(e) {
-    return 'Fourchette indicative : ' + formaterMontant(e.min) + ' à ' + formaterMontant(e.max) + ' ' + e.devise + (e.regime ? ' ' + e.regime : '');
+    var unite = ' ' + e.devise + (e.regime ? ' ' + e.regime : '');
+    if (e.min === e.max) return 'Prix indicatif\u00a0: ' + formaterMontant(e.min) + unite;
+    return 'Fourchette indicative : ' + formaterMontant(e.min) + ' à ' + formaterMontant(e.max) + unite;
   }
 
   if (typeof document === 'undefined') { module.exports = { estimer: estimer, formaterMontant: formaterMontant, libelleEstimation: libelleEstimation }; return; }
@@ -188,7 +194,7 @@
       var message = form.querySelector('.assistant-personnalisee');
       var fourchette = form.querySelector('.assistant-fourchette');
       if (e) {
-        fourchette.textContent = libelleEstimation(e) + '. Le prix ferme figure dans votre devis gratuit.';
+        fourchette.textContent = libelleEstimation(e) + '. Le prix ferme figure dans votre devis gratuit.' + (e.min === e.max ? ' Il vaut pour le périmètre de l\'offre de lancement\u00a0: trois pages au plus, une seule langue, contenus fournis par vous.' : '');
         fourchette.hidden = false; message.hidden = true;
         champEstimation.value = libelleEstimation(e);
       } else {
