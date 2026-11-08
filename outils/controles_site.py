@@ -276,7 +276,7 @@ if os.path.exists(ACQ):
 #   Les liens qui affichent l'adresse e-mail (contact, ligne « Vous préférez écrire directement ? ») gardent leur mailto : ils n'ont pas ces classes.
 #   Depuis le 30/10/2026, les pages françaises mènent au simulateur (?type= garde le contexte de la prestation) ; EN et AR gardent le formulaire #devis de leur accueil.
 CTA_UNIQUES = ('barre-cta', 'menu-devis', 'pied-devis')
-TYPES_PAGE = {'creation-site-web-casablanca/': '?type=vitrine', 'application-web-maroc/': '?type=web', 'application-mobile-casablanca/': '?type=mobile', 'logiciel-sur-mesure-maroc/': '?type=logiciel', 'conseil-reprise-application-maroc/': '?type=autre', 'etude-de-cas-atlasya/': '?type=web', 'etude-de-cas-rihla/': '?type=mobile', 'etude-de-cas-ostad/': '?type=web'}
+TYPES_PAGE = {'creation-site-web-casablanca/': '?type=vitrine', 'application-web-maroc/': '?type=web', 'application-mobile-casablanca/': '?type=mobile', 'logiciel-sur-mesure-maroc/': '?type=logiciel', 'conseil-reprise-application-maroc/': '?type=autre', 'etude-de-cas-atlasya/': '?type=web', 'etude-de-cas-rihla/': '?type=mobile', 'etude-de-cas-ostad/': '?type=web', 'e-commerce-marketplace-maroc/': '?type=ecommerce', 'automatisation-integrations-maroc/': '?type=logiciel', 'expertise-technique/': '', 'partenaires-sous-traitance/': '?type=autre'}
 for u in gabarit:
     h = open(fichier(u), encoding='utf-8').read()
     rel = u[len(BASE):]
@@ -488,6 +488,9 @@ for chemin in glob.glob(os.path.join(RACINE, '**', '*.html'), recursive=True):
     texte_page = open(chemin, encoding='utf-8').read()
     for mot in SUGGERE_CLIENTS:
         if mot in texte_page: echecs.append(f'{os.path.relpath(chemin, RACINE)}: formulation qui suggère des clients : « {mot} »')
+# Titres en préparation : jamais nommés sur le site (choix du propriétaire du 24/09/2026 ; Joutia n'est pas ouvert au public). Ils se décrivent par type.
+for chemin in glob.glob(os.path.join(RACINE, '**', '*.html'), recursive=True):
+    if re.search(r'joutia', open(chemin, encoding='utf-8').read(), re.I): echecs.append(f'{os.path.relpath(chemin, RACINE)}: titre en préparation nommé (Joutia)')
 # Produits édités par Legantis : jamais « conçus par Legantis » (premiers commits d'Ostad et de Rihla antérieurs à l'immatriculation du 07/09/2026), jamais « publiés » en bloc (Ostad n'est ni sur l'App Store ni ouvert au public), jamais « au stade du lancement » pour Ostad.
 # Démonstrations : chaque page porte la mention « fictif » (hors redirection). Ostad : l'état réel reste dit, et aucun nom ni chiffre de démonstration n'est présenté comme réel.
 for chemin in glob.glob(os.path.join(RACINE, 'realisations', 'demos', '**', 'index.html'), recursive=True):

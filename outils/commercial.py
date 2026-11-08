@@ -215,7 +215,7 @@ def bloc_contact_rapide(config, params, prefixe):
     whatsapp = f'<a class="contact-rapide-wa" href="{lien}" aria-label="Écrire à Legantis sur WhatsApp">{SVG_WHATSAPP}<span>WhatsApp</span></a>' if lien else ''
     if not principal and not whatsapp:
         return ''
-    return f'<div class="contact-rapide">{principal}{whatsapp}</div>'
+    return f'<div class="contact-rapide" role="region" aria-label="Demander un devis">{principal}{whatsapp}</div>'
 
 
 RENDUS = {
