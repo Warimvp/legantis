@@ -108,6 +108,10 @@ for u, p in gabarit.items():
         if langs != attendues: echecs.append(f'{u}: hreflang {langs} ≠ sitemap {attendues}')
         for lang, href in p.alt:
             if lang != 'x-default' and alt_sitemap.get(u, {}).get(lang) != href: echecs.append(f'{u}: hreflang {lang} {href} ≠ sitemap')
+# chaque alternate déclaré dans le sitemap est lui-même une URL du sitemap (09/11/2026 : retirer le bloc d'une page arabe laissait ses alternates pendants, sans échec)
+for loc, d in alt_sitemap.items():
+    for lang, href in d.items():
+        if href not in urls: echecs.append(f'sitemap: {loc} déclare hreflang {lang} -> {href}, absent du sitemap comme <loc>')
 # x-default : le sitemap le déclare pour chaque URL qui a des alternates, identique à celui du <head> de la page
 for u, p in pages.items():
     if not alt_sitemap.get(u): continue
