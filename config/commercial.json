@@ -1,7 +1,7 @@
 {
   "_lire": "Valeurs de PRODUCTION appliquées à site/ par outils/commercial.py. Dépôt public : rien de non validé ici. Mode d'emploi : docs/conversion/README.md.",
   "whatsapp": { "numero": "" },
-  "offre_ouverture": { "valide": true, "titre": "Offre de lancement", "texte": "Votre site professionnel dès 3 490 MAD HT, jusqu'à trois pages. Découvrir l'offre Visibilité", "lien": "offre-lancement/" },
+  "offre_ouverture": { "valide": true, "titre": "Offre de lancement", "texte": "Votre site pro à prix affiché : dès 3 490 MAD HT, trois pages au plus. Voir l'offre", "lien": "offre-lancement/" },
   "packs_pages": ["offre-lancement/"],
   "fourchettes": {
     "_lire": "Fourchettes indicatives des trois offres de l'accueil, ETEINTES : aucune n'est publiée tant que \"valide\" n'est pas vrai (accord écrit du propriétaire). Mode d'emploi : docs/conversion/README.md.",
