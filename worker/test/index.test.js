@@ -813,3 +813,153 @@ test('contact rapide : numéros marocains usuels acceptés (06, +212, 00212, par
     assert.equal(envois.length, 1, contact);
   }
 });
+
+// ── Avis clients (10/11/2026) : POST /avis ──────────────────────────────────────────────────────────────────────────────────────────────
+const AVIS = { nom: 'Amina Benali', fonction: 'Gérante', entreprise: 'Salon Amina', email: 'amina@exemple.ma', realisation: 'Site vitrine', note: '5', avis: 'Équipe à l\'écoute, site livré comme prévu et expliqué pas à pas.', publication: 'complet', consentement: 'oui', langue: 'fr' };
+function postAvis(champs, options = {}) {
+  const r = post(champs, options);
+  return new Request(URL_WORKER + 'avis', { method: r.method, body: r.body, headers: r.headers, duplex: 'half' });
+}
+
+test('avis : un avis valide part par Resend et renvoie vers /donner-mon-avis/#avis-envoye', async () => {
+  const r = await worker.fetch(postAvis(AVIS), ENV);
+  assert.equal(r.status, 303);
+  assert.equal(lieu(r), 'https://legantis.net/donner-mon-avis/#avis-envoye');
+  assert.equal(envois.length, 1);
+  const { corps } = envois[0];
+  assert.deepEqual(corps.to, ['contact@legantis.net']);
+  assert.equal(corps.reply_to, 'amina@exemple.ma');
+  assert.equal(corps.subject, 'Avis client — 5/5 — publiable avec son nom — Amina Benali');
+  for (const morceau of ['Note : 5/5 (Très satisfait)', 'Nom : Amina Benali', 'Fonction : Gérante', 'Entreprise : Salon Amina', 'E-mail : amina@exemple.ma', 'Projet réalisé avec Legantis : Site vitrine', 'expliqué pas à pas.', 'Accord de publication : Oui, avec mon nom, ma fonction et mon entreprise (donné le ', 'Consentement au traitement : oui', 'vérifier que cette personne est bien un client']) assert.ok(corps.text.includes(morceau), morceau);
+});
+
+test('avis : jamais pris pour une demande de devis (objet), et l\'accord reste dans l\'objet même avec un nom très long', async () => {
+  await worker.fetch(postAvis({ ...AVIS, nom: 'N'.repeat(100), publication: 'initiales' }), ENV);
+  const { subject } = envois[0].corps;
+  assert.ok(subject.startsWith('Avis client — '), subject);
+  assert.ok(!subject.includes('Demande de devis'));
+  assert.ok(subject.includes('publiable en initiales'), subject);
+  assert.ok(subject.length <= 120);
+});
+
+test('avis : la page anglaise revient sur /en/leave-a-review/', async () => {
+  const r = await worker.fetch(postAvis({ ...AVIS, langue: 'en' }), ENV);
+  assert.equal(lieu(r), 'https://legantis.net/en/leave-a-review/#avis-envoye');
+  assert.ok(envois[0].corps.text.includes('/en/leave-a-review/'));
+  assert.ok(envois[0].corps.text.includes('page anglaise'));
+});
+
+test('avis : langue inconnue = retour sur la page française (chemin fixe)', async () => {
+  for (const langue of ['de', '__proto__', 'https://pirate.exemple', '']) {
+    envois.length = 0;
+    const r = await worker.fetch(postAvis({ ...AVIS, langue }), ENV);
+    assert.equal(lieu(r), 'https://legantis.net/donner-mon-avis/#avis-envoye', langue);
+    assert.ok(envois[0].corps.text.includes('page française'), langue);
+  }
+});
+
+test('avis : retour privé marqué comme tel, à ne jamais publier', async () => {
+  await worker.fetch(postAvis({ ...AVIS, publication: 'prive' }), ENV);
+  assert.equal(envois[0].corps.subject, 'Avis client — 5/5 — retour privé — Amina Benali');
+  assert.ok(envois[0].corps.text.includes('Accord de publication : Non : retour privé, à ne pas publier'));
+  assert.ok(envois[0].corps.text.includes('ne le publier jamais'));
+  assert.ok(!envois[0].corps.text.includes('Avant de publier'));
+});
+
+test('avis : formulaire vide refusé champ par champ, sans envoi', async () => {
+  const r = await worker.fetch(postAvis({ langue: 'fr' }, JSON_OK), ENV);
+  assert.equal(r.status, 422);
+  assert.deepEqual((await r.json()).erreurs, ['nom', 'email', 'note', 'avis', 'publication', 'consentement']);
+  const s = await worker.fetch(postAvis({ langue: 'en' }), ENV);
+  assert.equal(lieu(s), 'https://legantis.net/en/leave-a-review/#avis-echec');
+  assert.equal(envois.length, 0);
+});
+
+test('avis : note, accord de publication et consentement en liste blanche', async () => {
+  for (const [champ, valeur] of [['note', '6'], ['note', '0'], ['note', '5 '], ['note', '__proto__'], ['note', 'constructor'], ['publication', 'tout'], ['publication', '__proto__'], ['publication', 'Complet'], ['consentement', 'on'], ['email', 'amina@exemple'], ['nom', '   ']]) {
+    const r = await worker.fetch(postAvis({ ...AVIS, [champ]: valeur }, JSON_OK), ENV);
+    assert.equal(r.status, 422, champ + '=' + valeur);
+    assert.deepEqual((await r.json()).erreurs, [champ], champ + '=' + valeur);
+  }
+  assert.equal(envois.length, 0);
+  for (const note of ['1', '2', '3', '4']) {
+    const r = await worker.fetch(postAvis({ ...AVIS, note }, JSON_OK), ENV);
+    assert.equal(r.status, 200, note);
+  }
+  assert.ok(envois[0].corps.text.includes('Note : 1/5 (Très déçu)'));
+});
+
+test('avis : 20 caractères au moins, texte multiligne gardé, borné à 1 500 caractères', async () => {
+  let r = await worker.fetch(postAvis({ ...AVIS, avis: 'x'.repeat(19) }, JSON_OK), ENV);
+  assert.deepEqual((await r.json()).erreurs, ['avis']);
+  r = await worker.fetch(postAvis({ ...AVIS, avis: 'x'.repeat(20) }, JSON_OK), ENV);
+  assert.equal(r.status, 200);
+  envois.length = 0;
+  await worker.fetch(postAvis({ ...AVIS, avis: 'Première ligne\r\nDeuxième ligne <b>gras</b>\n' + 'y'.repeat(3000) }), ENV);
+  const { text } = envois[0].corps;
+  assert.ok(text.includes('Première ligne\nDeuxième ligne <b>gras</b>'));
+  assert.equal('html' in envois[0].corps, false);
+  assert.ok(text.length < 1500 + 1500, String(text.length));
+});
+
+test('avis : champs d\'une ligne sans saut de ligne (pas d\'en-tête glissé dans le mail)', async () => {
+  await worker.fetch(postAvis({ ...AVIS, nom: 'Amina\r\nBcc: pirate@exemple.com', fonction: 'Gérante\nX', entreprise: 'Salon\rY', realisation: 'Site\nZ' }), ENV);
+  const { text, subject } = envois[0].corps;
+  assert.ok(!subject.includes('\n') && !subject.includes('\r'));
+  for (const ligne of ['Nom : Amina  Bcc: pirate@exemple.com', 'Fonction : Gérante X', 'Entreprise : Salon Y', 'Projet réalisé avec Legantis : Site Z']) assert.ok(text.includes(ligne), ligne);
+});
+
+test('avis : champ piège rempli = « envoyé » sans rien envoyer', async () => {
+  const r = await worker.fetch(postAvis({ ...AVIS, site_web: 'http://spam.exemple' }), ENV);
+  assert.equal(lieu(r), 'https://legantis.net/donner-mon-avis/#avis-envoye');
+  assert.equal(envois.length, 0);
+});
+
+test('avis : GET, autre origine, autre format, corps trop grand refusés', async () => {
+  assert.equal((await worker.fetch(new Request(URL_WORKER + 'avis'), ENV)).status, 405);
+  assert.equal((await worker.fetch(postAvis(AVIS, { entetes: { Origin: 'https://pirate.exemple' } }), ENV)).status, 403);
+  assert.equal((await worker.fetch(postAvis(AVIS, { entetes: { Origin: '', Referer: 'https://legantis.net.pirate.exemple/' } }), ENV)).status, 403);
+  assert.equal((await worker.fetch(postAvis(AVIS, { entetes: { 'Content-Type': 'text/plain' } }), ENV)).status, 415);
+  assert.equal((await worker.fetch(postAvis(AVIS, { corps: 'avis=' + 'x'.repeat(20000) }), ENV)).status, 413);
+  assert.equal(envois.length, 0);
+});
+
+test('avis : panne de Resend = échec affiché, jamais un faux succès', async () => {
+  reponseResend = () => new Response('{}', { status: 500 });
+  const r = await worker.fetch(postAvis(AVIS), ENV);
+  assert.equal(lieu(r), 'https://legantis.net/donner-mon-avis/#avis-echec');
+  const j = await worker.fetch(postAvis(AVIS, JSON_OK), ENV);
+  assert.equal(j.status, 503);
+  assert.deepEqual(await j.json(), { ok: false });
+  reponseResend = () => { throw new TypeError('réseau'); };
+  const e = await worker.fetch(postAvis({ ...AVIS, langue: 'en' }), ENV);
+  assert.equal(lieu(e), 'https://legantis.net/donner-mon-avis/#avis-echec');   // exception : la langue n'est plus sûre, retour sur la page française
+  const ej = await worker.fetch(postAvis(AVIS, JSON_OK), ENV);
+  assert.equal(ej.status, 503);
+});
+
+test('avis : limite de débit respectée, sans envoi', async () => {
+  const cles = [];
+  const r = await worker.fetch(postAvis(AVIS, JSON_OK), { ...ENV, LIMITE: { limit: async ({ key }) => { cles.push(key); return { success: false }; } } });
+  assert.equal(r.status, 503);
+  assert.deepEqual(await r.json(), { ok: false, code: 'limite' });
+  assert.deepEqual(cles, ['203.0.113.7']);
+  assert.equal(envois.length, 0);
+});
+
+test('avis : envoi de test marqué [TEST]', async () => {
+  await worker.fetch(postAvis({ ...AVIS, nom: 'Essai NE PAS TRAITER' }), ENV);
+  assert.ok(envois[0].corps.subject.startsWith('[TEST] Avis client — '));
+  assert.ok(envois[0].corps.text.startsWith('[TEST]'));
+});
+
+test('avis : seule l\'adresse /avis mène aux avis ; la racine reste le formulaire de devis', async () => {
+  const r = await worker.fetch(post(AVIS, JSON_OK), ENV);   // un avis posté à la racine est lu comme un devis : il est refusé (pas de projet), rien ne part
+  assert.equal(r.status, 422);
+  assert.deepEqual((await r.json()).erreurs, ['projet']);
+  const d = await worker.fetch(postAvis(VALIDE, JSON_OK), ENV);   // un devis posté sur /avis n'est pas envoyé comme un devis
+  assert.equal(d.status, 422);
+  assert.equal(envois.length, 0);
+  await worker.fetch(post(VALIDE), ENV);
+  assert.ok(envois[0].corps.subject.startsWith('Demande de devis'));
+});

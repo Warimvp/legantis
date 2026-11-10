@@ -66,6 +66,7 @@
       telephone: 'Please enter a valid phone number, for example +212 6 12 34 56 78.', projet: 'Describe your project in a few words (at least 10 characters).',
       contact: 'Please enter a valid email address or phone number.', type: 'Please choose a type of project.', budget: 'Please choose a budget range.', delai: 'Please choose a timeline.',
       consentement: 'Please tick the box so that we can process your request.', url_site: 'Please enter the public address of your website, for example yoursite.ma.',
+      note: 'Please choose a rating from 1 to 5.', avis: 'Please write your review (at least 20 characters).', publication: 'Please tell us whether we may publish your review.',
     },
     defaut: 'Please check this field.', envoi: 'Sending…',
     limite: 'Too many requests in a short time. Please try again in a minute, or write to us at ', reessayer: 'Please try again in a moment, or write to us at ',
@@ -75,6 +76,7 @@
       telephone: 'Indiquez un numéro de téléphone valide, par exemple 06 12 34 56 78.', projet: 'Décrivez votre besoin en quelques mots (10 caractères au moins).',
       contact: 'Indiquez une adresse e-mail ou un numéro de téléphone valide.', type: 'Choisissez un type de projet.', budget: 'Choisissez une tranche de budget.', delai: 'Choisissez un délai.',
       consentement: 'Cochez la case pour que nous puissions traiter votre demande.', url_site: 'Indiquez l\'adresse publique de votre site, par exemple votresite.ma.',
+      note: 'Choisissez une note de 1 à 5.', avis: 'Écrivez votre avis (20 caractères au moins).', publication: 'Indiquez si nous pouvons publier votre avis.',
     },
     defaut: 'Vérifiez ce champ.', envoi: 'Envoi en cours…',
     limite: 'Trop d\'envois en peu de temps. Réessayez dans une minute, ou écrivez-nous à ', reessayer: 'Réessayez dans un instant, ou écrivez-nous à ',
@@ -107,6 +109,7 @@
       });
       if (form.__montrerChamp && premier) form.__montrerChamp(premier);
       if (premier) premier.focus();
+      else afficherEchec();   /* refus sur un champ que la page n'a pas (Worker plus ancien que la page) : un échec visible plutôt qu'un bouton qui ne dit rien */
     }
     function afficherEchec(code) {
       if (!echec) return;

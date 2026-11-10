@@ -328,7 +328,7 @@ for u, lang in ((BASE, 'fr'), (BASE + 'en/', 'en')):
     for img in re.findall(r'<div class="ecran">(<img [^>]*>)</div>', h):
         if not re.search(r'\bwidth="\d+" height="\d+"', img) or 'loading="lazy"' not in img: echecs.append(f'{u}: capture {img[:60]}… sans width/height ou sans loading="lazy"')
 # ── Conversion (30/10/2026) ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-HORS_SITEMAP = ['offre-lancement/', 'credits/', 'realisations/demos/restaurant/', 'realisations/demos/services/', 'realisations/demos/reservation/', 'realisations/demos/gestion/', 'realisations/demos/distribution-os/', 'realisations/demos/services/services/', 'realisations/demos/services/services/climatisation/', 'realisations/demos/services/services/electricite/', 'realisations/demos/services/services/maintenance/', 'realisations/demos/services/realisations/', 'realisations/demos/services/a-propos/', 'realisations/demos/services/contact/', 'realisations/demos/services/devis/', 'realisations/demos/services/espace/', 'realisations/demos/reservation/reserver/']
+HORS_SITEMAP = ['offre-lancement/', 'credits/', 'donner-mon-avis/', 'en/leave-a-review/', 'realisations/demos/restaurant/', 'realisations/demos/services/', 'realisations/demos/reservation/', 'realisations/demos/gestion/', 'realisations/demos/distribution-os/', 'realisations/demos/services/services/', 'realisations/demos/services/services/climatisation/', 'realisations/demos/services/services/electricite/', 'realisations/demos/services/services/maintenance/', 'realisations/demos/services/realisations/', 'realisations/demos/services/a-propos/', 'realisations/demos/services/contact/', 'realisations/demos/services/devis/', 'realisations/demos/services/espace/', 'realisations/demos/reservation/reserver/']
 for rel in HORS_SITEMAP:
     u = BASE + rel
     if f'<loc>{u}</loc>' in sm: echecs.append(f'{u}: page d\'offre ou démonstration dans le sitemap')
@@ -619,6 +619,70 @@ if os.path.exists(CONFIG) and os.path.exists(fichier(OFFRE)):
             if u_[len(BASE):] in conf['mise_en_avant']: continue
             lien_ = re.sub(r'<li><a href="[^"]*offre-lancement/">Offre Visibilité</a></li>', '', lien_)   # l'entrée commune du menu et du pied reste admise partout
         if re.search(r'href="[^"]*offre-lancement/?[#"?]', lien_): echecs.append(f'{u_}: lien vers /offre-lancement/ (page pilote non reliée tant que le propriétaire n\'a pas décidé)')
+# ── Avis clients (10/11/2026) ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# Recueil : /donner-mon-avis/ et /en/leave-a-review/ (noindex et hors sitemap : HORS_SITEMAP plus haut), postés au Worker sur /avis. Contrôlé : adresse,
+# champs = ceux que lit lireAvis, réponses des notes et de l'accord de publication = listes blanches du Worker, bornes du texte, chemins de retour, messages,
+# piège, consentement ; aucune autre page ne les relie (le lien s'envoie à un client, pas à tout visiteur). Affichage : chaque figure.avis-client porte la date
+# de l'accord écrit (data-accord) et la forme acceptée (data-forme) ; « initiales » = des initiales, rien d'autre. Jamais de Review ni d'AggregateRating en
+# JSON-LD : Google n'affiche pas d'étoiles pour des avis publiés par l'entreprise sur elle-même, et une note agrégée sur peu d'avis tromperait.
+PAGES_AVIS = {'donner-mon-avis/': 'fr', 'en/leave-a-review/': 'en'}
+def corps_fonction(source, nom):
+    m = re.search(r'\nfunction ' + nom + r'\(.*?\n}\n', source, re.S)
+    return m.group(0) if m else ''
+def cles_objet(source, nom):
+    m = re.search(r'const ' + nom + r' = \{([^}]*)\}', source)
+    return set(re.findall(r"(?:^|,)\s*'?([a-z0-9]+)'?\s*:", m.group(1))) if m else set()
+LIRE_AVIS = corps_fonction(WS, 'lireAvis')
+champs_avis = set(re.findall(r"donnees\.get\('([a-z_]+)'\)", LIRE_AVIS)) | cles_objet(WS, 'LIGNES_AVIS') | {'site_web'}
+if not LIRE_AVIS or 'LIGNES_AVIS' not in LIRE_AVIS: echecs.append('worker/src/index.js : lireAvis ou LIGNES_AVIS introuvable')
+avis_min = re.search(r'AVIS_MIN = (\d+), AVIS_MAX = (\d+);', WS)
+retours_avis = dict(re.findall(r"(fr|en): '/([^']*)'", (re.search(r'const RETOUR_AVIS = \{[^}]*\}', WS) or [''])[0]))
+for rel, lang in PAGES_AVIS.items():
+    u = BASE + rel
+    if retours_avis.get(lang) != rel: echecs.append(f'{u}: chemin de retour du Worker pour « {lang} » = {retours_avis.get(lang)!r}')
+    if not os.path.exists(fichier(u)): continue   # absence déjà signalée par HORS_SITEMAP
+    t = open(fichier(u), encoding='utf-8').read()
+    if f'<html lang="{lang}">' not in t: echecs.append(f'{u}: langue de la page')
+    m = re.search(r'<form class="devis-form avis-form"([^>]*)>(.*?)</form>', t, re.S)
+    if not m: echecs.append(f'{u}: formulaire d\'avis absent'); continue
+    ouv, corps = m.group(1), m.group(2)
+    action = (re.search(r'action="([^"]*)"', ouv) or [None, ''])[1]
+    if 'method="post"' not in ouv or not re.fullmatch(r'https://[a-z0-9-]+(\.[a-z0-9-]+)*\.workers\.dev/avis', action): echecs.append(f'{u}: méthode ou adresse du formulaire d\'avis ({action!r}, …/avis attendu)')
+    if 'data-ok="avis-envoye"' not in ouv or 'data-echec="avis-echec"' not in ouv: echecs.append(f'{u}: data-ok / data-echec du formulaire d\'avis')
+    for ident in ('avis-envoye', 'avis-echec'):
+        if f'id="{ident}"' not in t: echecs.append(f'{u}: message #{ident} absent')
+    noms = set(re.findall(r'<(?:input|select|textarea)\b[^>]*\bname="([^"]+)"', corps))
+    if noms != champs_avis: echecs.append(f'{u}: champs du formulaire d\'avis {sorted(noms)} ≠ champs lus par le Worker {sorted(champs_avis)}')
+    if f'<input type="hidden" name="langue" value="{lang}">' not in corps: echecs.append(f'{u}: langue envoyée au Worker')
+    for nom_, cle_ in (('note', 'NOTES'), ('publication', 'PUBLICATIONS')):
+        valeurs = re.findall(r'<input type="radio" name="' + nom_ + r'" value="([^"]+)" required>', corps)
+        if sorted(valeurs) != sorted(cles_objet(WS, cle_)) or len(valeurs) != len(re.findall(r'name="' + nom_ + '"', corps)): echecs.append(f'{u}: réponses « {nom_} » {valeurs} ≠ {cle_} du Worker, ou une réponse sans required')
+    for nom_ in ('nom', 'email', 'avis', 'consentement'):
+        balise = re.search(r'<(?:input|textarea)\b[^>]*\bname="' + nom_ + r'"[^>]*>', corps)
+        if not balise or 'required' not in balise.group(0): echecs.append(f'{u}: champ « {nom_} » absent ou facultatif')
+    texte_avis = re.search(r'<textarea\b[^>]*\bname="avis"[^>]*>', corps)
+    if not avis_min or not texte_avis or f'minlength="{avis_min.group(1)}"' not in texte_avis.group(0) or f'maxlength="{avis_min.group(2)}"' not in texte_avis.group(0): echecs.append(f'{u}: bornes du texte de l\'avis ≠ AVIS_MIN / AVIS_MAX du Worker')
+    if 'name="site_web" tabindex="-1"' not in corps: echecs.append(f'{u}: champ piège absent')
+    for ident in re.findall(r'<(?:input|textarea)\b(?![^>]*type="(?:hidden|radio)")[^>]*\bid="([^"]+)"', corps):
+        if f'for="{ident}"' not in corps: echecs.append(f'{u}: champ #{ident} sans <label for>')
+    if not re.search(r'href="[^"]*(?:mentions-legales/#avis-clients|legal/#customer-reviews)"', corps): echecs.append(f'{u}: le consentement ne renvoie pas au paragraphe des mentions légales sur les avis')
+for rel, ident in (('mentions-legales/', 'avis-clients'), ('en/legal/', 'customer-reviews')):
+    if f'<p id="{ident}">' not in open(fichier(BASE + rel), encoding='utf-8').read(): echecs.append(f'{BASE + rel}: paragraphe #{ident} (avis clients) absent')
+for chemin in glob.glob(os.path.join(RACINE, '**', '*.html'), recursive=True):
+    rel = os.path.relpath(chemin, RACINE).replace(os.sep, '/')
+    t = open(chemin, encoding='utf-8').read()
+    if rel.removesuffix('index.html') not in PAGES_AVIS and re.search(r'href="[^"]*(?:donner-mon-avis|leave-a-review)/?[#"?]', t): echecs.append(f'{rel}: lien vers la page de recueil des avis (elle s\'envoie à un client, elle ne se relie pas)')
+    for ld in re.findall(r'<script type="application/ld\+json">(.*?)</script>', t, re.S):
+        if re.search(r'"(?:@type"\s*:\s*"(?:Review|AggregateRating)"|aggregateRating"|review"|reviewRating")', ld): echecs.append(f'{rel}: avis ou note en JSON-LD (Review, AggregateRating)')
+    for fig in re.findall(r'<figure\b[^>]*\bclass="avis-client"[^>]*>.*?</figure>', t, re.S):
+        ouv = fig[:fig.index('>') + 1]
+        if not re.search(r'\bdata-accord="20\d\d-[01]\d-[0-3]\d"', ouv): echecs.append(f'{rel}: avis publié sans data-accord="AAAA-MM-JJ" (date de l\'accord écrit)')
+        forme = re.search(r'\bdata-forme="(complet|initiales)"', ouv)
+        if not forme: echecs.append(f'{rel}: avis publié sans data-forme="complet" ou "initiales"')
+        auteur = re.search(r'<figcaption>\s*<p><b>([^<]*)</b>', fig)
+        if not auteur: echecs.append(f'{rel}: avis publié sans auteur (<figcaption><p><b>…</b>)')
+        elif forme and forme.group(1) == 'initiales' and (not re.fullmatch(r'(?:[A-ZÀ-ÖØ-Þ]\.\s?){1,3}', auteur.group(1).replace('&nbsp;', ' ').strip()) or len(re.findall(r'<p>', fig.split('<figcaption>')[1])) > 1): echecs.append(f'{rel}: avis « initiales » qui montre un nom ou une entreprise ({auteur.group(1)!r})')
+        if 'avis-etoiles' in fig and not re.search(r'<p class="avis-note"><span class="avis-etoiles" aria-hidden="true">★*☆*</span>[1-5]/5</p>', fig): echecs.append(f'{rel}: note d\'avis mal formée (étoiles décoratives + « n/5 » lisible)')
 # aucun identifiant en double dans une page (deux formulaires sur la même page : messages et libellés distincts, sinon #ancre et <label for> visent le mauvais élément)
 import collections
 for chemin in glob.glob(os.path.join(RACINE, '**', '*.html'), recursive=True):

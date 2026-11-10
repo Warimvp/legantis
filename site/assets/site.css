@@ -1285,6 +1285,34 @@ a.badge { text-decoration: none; transition: border-color .2s, color .2s; }
 .formulaire-carte .devis-statut { margin-bottom: 20px; }
 .devis-statut.visible { display: flex; }
 [data-formulaire]:has(#devis-envoye:is(:target, .visible)) form { display: none; }
+
+/* Avis clients. Recueil : /donner-mon-avis/ et /en/leave-a-review/ (hors index, lien envoyé à un client après une prestation livrée ; Worker POST /avis).
+   Affichage : .avis-clients > figure.avis-client, sur aucune page tant qu'aucun avis réel n'est publié ; gabarit et règles dans docs/avis-clients.md,
+   et outils/controles_site.py exige pour chaque avis la date de l'accord et la forme acceptée. Textes en <p> : déjà dans TEXTE de lumiere.js.
+   Propriétés logiques seulement (rien à miroiter dans le bloc « Arabe »). */
+[data-formulaire]:has(#avis-envoye:is(:target, .visible)) form { display: none; }
+.choix-grille.avis-notes { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.avis-notes .choix { justify-items: center; text-align: center; padding-inline: 8px; }
+.avis-notes .choix b { font-size: 1.5rem; font-stretch: 112%; line-height: 1.1; }
+.avis-notes .choix span { font-size: 0.84rem; }
+@media (max-width: 680px) {
+  .choix-grille.avis-publication { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .choix-grille.avis-notes { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .avis-notes .choix { grid-template-columns: 2ch minmax(0, 1fr); align-items: baseline; justify-items: start; gap: 14px; text-align: start; padding-block: 12px 11px; }
+}
+.avis-clients { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: clamp(16px, 2vw, 24px); margin: 0; padding: 0; list-style: none; }
+.avis-clients > li { display: grid; }   /* la carte prend la hauteur de la rangée */
+.avis-client { display: grid; grid-template-rows: auto 1fr auto; gap: 16px; margin: 0; padding: clamp(22px, 3vw, 30px); background: var(--carte); border: 1px solid var(--filet); border-radius: 8px; }
+.avis-note { margin: 0; font: 500 0.75rem/1.4 var(--f-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gris); }
+.avis-etoiles { margin-inline-end: 10px; font-size: 1rem; letter-spacing: 0.12em; color: var(--tampon); }
+.avis-client blockquote { margin: 0; font-size: 1.04rem; line-height: 1.6; color: var(--encre); }
+.avis-client blockquote p { margin: 0; }
+.avis-client blockquote p + p { margin-block-start: 0.8em; }
+.avis-client figcaption { display: grid; gap: 2px; padding-block-start: 14px; border-block-start: 1px solid var(--filet); font-size: 0.92rem; color: var(--gris); }
+.avis-client figcaption p { margin: 0; }
+.avis-client figcaption b { font-weight: 650; color: var(--encre); }
 .consentement { grid-column: 1 / -1; }
 .devis-form .consentement label { display: grid; grid-template-columns: 1.25rem minmax(0, 1fr); gap: 12px; align-items: start; font: 400 0.92rem/1.5 var(--f-texte); letter-spacing: 0; text-transform: none; color: var(--encre); cursor: pointer; }
 .devis-form .consentement input { width: 1.25rem; height: 1.25rem; margin: 2px 0 0; accent-color: var(--tampon); }

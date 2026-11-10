@@ -9,6 +9,10 @@ navigateur ──POST──▶ Worker (Cloudflare) ──▶ API Resend ──�
           ◀─303 /#devis-envoye ou /#devis-echec
 ```
 
+Une seule autre adresse : `POST /avis`, les avis clients de `/donner-mon-avis/` et `/en/leave-a-review/` (mêmes garde-fous, retour sur
+`#avis-envoye` ou `#avis-echec` de la page de la langue, objet « Avis client », jamais « Demande de devis »). Le Worker ne publie aucun avis :
+la publication est manuelle (`docs/avis-clients.md`). Toute autre adresse reste le formulaire de devis.
+
 Le Worker ne stocke rien : ni base, ni KV, observabilité coupée, aucun journal du contenu. Garde-fous : champ piège `site_web`,
 contrôle de l'origine (Origin, à défaut Referer), corps de 16 Ko au plus, valeurs de `supports` et `delai` en liste blanche,
 5 envois par minute et par adresse IP (binding Rate Limiting : approximatif, par site Cloudflare). Pas de CAPTCHA : Turnstile

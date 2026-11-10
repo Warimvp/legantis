@@ -3,6 +3,7 @@
 // envoie le formulaire tel quel (application/x-www-form-urlencoded) et ce Worker répond par un 303 vers la page d'origine, ancre #devis-envoye
 // ou #devis-echec (le message s'affiche par :target, en CSS). Avec script (assets/conversion.js), le même POST part avec Accept: application/json :
 // la réponse est du JSON { ok, erreurs } et le formulaire garde ce que le visiteur a saisi. Rien n'est stocké : ni base, ni KV, ni journal du contenu.
+// Une seule autre adresse : POST /avis, les avis clients (section « Avis clients » plus bas), transmis par e-mail de la même façon et jamais publiés par ce Worker.
 //
 // Variables (wrangler.jsonc) : SITE_ORIGIN, MAIL_TO, MAIL_FROM. Secret : RESEND_API_KEY (wrangler secret put, jamais dans le dépôt).
 // Binding optionnel : LIMITE (Rate Limiting) ; absent, la limite de débit est simplement sautée (tests, wrangler dev).
@@ -363,6 +364,111 @@ async function lireCorps(request) {
   }
 }
 
+// ── Avis clients (10/11/2026) ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// POST /avis, depuis /donner-mon-avis/ (FR) et /en/leave-a-review/ (EN) : deux pages hors index et hors navigation, dont le lien est envoyé à un client après une
+// prestation livrée. Ce Worker ne publie rien : l'avis part par e-mail à contact@legantis.net ; le propriétaire vérifie que l'auteur est bien un client et le publie
+// à la main, seulement sous la forme que l'auteur a acceptée (docs/avis-clients.md). Rien n'est stocké, comme pour les devis, et rien n'est compté.
+// L'objet commence par « Avis client », jamais par « Demande de devis » : l'analyseur du courrier de legantis-crm ne doit pas le prendre pour un prospect.
+const CHEMIN_AVIS = '/avis';
+const RETOUR_AVIS = { fr: '/donner-mon-avis/', en: '/en/leave-a-review/' };
+const NOTES = { 5: 'Très satisfait', 4: 'Satisfait', 3: 'Mitigé', 2: 'Déçu', 1: 'Très déçu' };
+// Accord de publication : une des trois réponses de la page, jamais une valeur libre. « prive » = un retour à ne jamais publier.
+const PUBLICATIONS = { complet: 'Oui, avec mon nom, ma fonction et mon entreprise', initiales: 'Oui, avec mes initiales seulement', prive: 'Non : retour privé, à ne pas publier' };
+const PUBLICATIONS_OBJET = { complet: 'publiable avec son nom', initiales: 'publiable en initiales', prive: 'retour privé' };
+const AVIS_MIN = 20, AVIS_MAX = 1500;
+// Champs d'une ligne et leur longueur maximale (outils/controles_site.py lit ces clés pour les comparer aux pages).
+const LIGNES_AVIS = { nom: 100, fonction: 100, entreprise: 120, email: 254, realisation: 200 };
+
+function lireAvis(donnees) {
+  const accord = donnees.get('consentement');
+  const a = {
+    note: Object.hasOwn(NOTES, donnees.get('note')) ? donnees.get('note') : '',
+    avis: texte(donnees.get('avis'), AVIS_MAX, true),
+    publication: Object.hasOwn(PUBLICATIONS, donnees.get('publication')) ? donnees.get('publication') : '',
+    consentement: accord === 'oui',
+    langue: Object.hasOwn(RETOUR_AVIS, donnees.get('langue')) ? donnees.get('langue') : 'fr',
+  };
+  for (const [champ, max] of Object.entries(LIGNES_AVIS)) a[champ] = texte(donnees.get(champ), max);
+  const e = [];
+  if (!(a.nom.length >= 1)) e.push('nom');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(a.email)) e.push('email');
+  if (!a.note) e.push('note');
+  if (!(a.avis.length >= AVIS_MIN)) e.push('avis');
+  if (!a.publication) e.push('publication');
+  if (!a.consentement) e.push('consentement');
+  a.erreurs = e;
+  return a;
+}
+
+const avisTest = a => /ne pas traiter/i.test(a.nom + ' ' + a.entreprise);
+
+// L'accord de publication passe avant le nom : un nom long, coupé à 120 caractères, ne doit jamais le faire disparaître de l'objet.
+function objetAvis(a) {
+  return ((avisTest(a) ? '[TEST] ' : '') + 'Avis client — ' + a.note + '/5 — ' + PUBLICATIONS_OBJET[a.publication] + ' — ' + a.nom).slice(0, 120);
+}
+
+function corpsAvis(a) {
+  return [
+    ...(avisTest(a) ? ['[TEST] Envoi de test (« NE PAS TRAITER ») : à ne jamais publier.', ''] : []),
+    'Avis reçu par la page ' + RETOUR_AVIS[a.langue] + ' de legantis.net (page ' + (a.langue === 'en' ? 'anglaise' : 'française') + ').',
+    '',
+    'Note : ' + a.note + '/5 (' + NOTES[a.note] + ')',
+    'Nom : ' + a.nom,
+    'Fonction : ' + (a.fonction || 'non indiquée'),
+    'Entreprise : ' + (a.entreprise || 'non indiquée'),
+    'E-mail : ' + a.email,
+    'Projet réalisé avec Legantis : ' + (a.realisation || 'non précisé'),
+    '',
+    'Avis :',
+    a.avis,
+    '',
+    'Accord de publication : ' + PUBLICATIONS[a.publication] + ' (donné le ' + new Date().toISOString().slice(0, 10) + ' en envoyant le formulaire).',
+    'Consentement au traitement : oui',
+    '',
+    a.publication === 'prive'
+      ? '— Retour privé : ne le publier jamais, ni en entier ni en extrait.'
+      : '— Avant de publier : vérifier que cette personne est bien un client (la page est publique : n\'importe qui peut l\'envoyer), ne publier que son texte ou un extrait qu\'elle a relu, sous la forme acceptée ci-dessus, et garder ce message, preuve de son accord (docs/avis-clients.md).',
+    '— Répondre à ce message écrit directement à ' + a.nom + '.',
+  ].join('\n');
+}
+
+async function envoyerAvis(a, env) {
+  return (await fetch(RESEND, {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + env.RESEND_API_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: env.MAIL_FROM, reply_to: a.email, subject: objetAvis(a), text: corpsAvis(a), to: [env.MAIL_TO] }),
+    signal: AbortSignal.timeout(8000),
+  })).ok;
+}
+
+// Sans script : 303 vers la page de la langue, ancre #avis-envoye ou #avis-echec (chemin fixe). Avec script : le même JSON que les devis.
+function retourAvis(env, langue, envoye) {
+  return new Response(null, { status: 303, headers: { Location: env.SITE_ORIGIN + RETOUR_AVIS[langue] + (envoye ? '#avis-envoye' : '#avis-echec'), 'Cache-Control': 'no-store' } });
+}
+
+function issueAvis(request, env, a, envoye, erreurs = [], code = '') {
+  if (!veutJson(request)) return retourAvis(env, a.langue, envoye);
+  return json(env, envoye ? 200 : (erreurs.length ? 422 : 503), { ok: envoye, ...(erreurs.length ? { erreurs } : {}), ...(code ? { code } : {}) });
+}
+
+// Mêmes garde-fous d'entrée que les devis : méthode, origine, format, taille, champ piège, limite de débit (la même par adresse IP, tous formulaires confondus).
+async function traiterAvis(request, env) {
+  if (request.method !== 'POST') return refus(405, 'Avis client de legantis.net : POST seulement.');
+  if (!origineAcceptee(request, env)) return refus(403, 'Origine refusée pour un avis.');
+  if (!(request.headers.get('Content-Type') || '').startsWith('application/x-www-form-urlencoded')) return refus(415, 'Format d\'avis non pris en charge.');
+  const brut = await lireCorps(request);
+  if (brut === null) return refus(413, 'Avis trop long.');
+  const donnees = new URLSearchParams(brut);
+  const a = lireAvis(donnees);
+  if (texte(donnees.get('site_web'), 200)) return issueAvis(request, env, a, true);   // champ piège : « envoyé », et rien ne part
+  if (a.erreurs.length) return issueAvis(request, env, a, false, a.erreurs);
+  if (env.LIMITE) {
+    const { success } = await env.LIMITE.limit({ key: request.headers.get('CF-Connecting-IP') || 'inconnue' });
+    if (!success) return issueAvis(request, env, a, false, [], 'limite');
+  }
+  return issueAvis(request, env, a, await envoyerAvis(a, env));
+}
+
 async function traiter(request, env) {
   if (request.method !== 'POST') return refus(405, 'Formulaire de devis de legantis.net : POST seulement.');
   if (!origineAcceptee(request, env)) return refus(403, 'Origine refusée.');
@@ -397,10 +503,13 @@ async function traiter(request, env) {
 
 export default {
   async fetch(request, env) {
+    // Seul /avis a son propre traitement : toute autre adresse reste le formulaire de devis, comme avant (les pages publiées postent à la racine).
+    const avis = new URL(request.url).pathname === CHEMIN_AVIS;
     try {
-      return await traiter(request, env);
+      return await (avis ? traiterAvis(request, env) : traiter(request, env));
     } catch (e) {
       // Pas de journal du contenu (données personnelles) : seulement le type d'erreur, et le visiteur voit le message d'échec.
+      if (avis) { console.error('avis:', e && e.name); return veutJson(request) ? json(env, 503, { ok: false }) : retourAvis(env, 'fr', false); }
       console.error('devis:', e && e.name);
       await compter(env, 'exception');
       return veutJson(request) ? json(env, 503, { ok: false }) : retour(env, 'fr', 'devis-echec');

@@ -17,6 +17,7 @@ Prix ou hypothèses de prix, prospects, stratégie commerciale, état réel des 
 - `site/realisations/demos/distribution-os/` : démonstration interactive Distribution OS (données fictives, aucune requête), mode d'emploi dans `docs/distribution-os.md`.
 - `site/realisations/demos/restaurant/`, `reservation/`, `services/` : démonstrations interactives, entreprises fictives, état en mémoire, aucune requête. Après modification : `node outils/captures_demos.js`.
 - `worker/` : Worker des formulaires, tests dans `worker/test/`, mise en service dans `worker/README.md`.
+- Avis clients : `/donner-mon-avis/` et `/en/leave-a-review/` (hors index, non reliées), Worker `POST /avis`, publication manuelle : `docs/avis-clients.md`.
 - `config/commercial.json` : valeurs commerciales de production, appliquées à `site/` par `outils/commercial.py`.
 - `mesure/` : mesure préparée, non activée. `docs/` : modes d'emploi techniques.
 - `outils/` : contrôles du site.
@@ -73,6 +74,14 @@ node outils/test_formulaires.mjs
 
 ```bash
 node outils/test_contact_rapide.mjs
+```
+
+```bash
+node outils/test_avis.mjs
+```
+
+```bash
+python3 outils/sabotages_controles_avis.py
 ```
 
 ```bash
