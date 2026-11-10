@@ -29,7 +29,10 @@ n = git('rev-list', '--count', 'origin/main..HEAD').stdout.strip()
 verifier('un seul commit à publier', n == '1', f'{n} commits : l\'historique complet deviendrait public')
 
 conf = json.load(open(os.path.join(RACINE, 'config', 'commercial.json'), encoding='utf-8'))
-verifier('WhatsApp désactivé', not (conf.get('whatsapp') or {}).get('numero'))
+# WhatsApp activé le 10/11/2026 sur décision du propriétaire, sur le numéro de la société (déjà publié sur le site) : tout autre numéro est refusé.
+NUMERO_WHATSAPP = '212672759097'
+numero_wa = (conf.get('whatsapp') or {}).get('numero') or ''
+verifier('WhatsApp : numéro de la société seulement', numero_wa in ('', NUMERO_WHATSAPP), numero_wa)
 # Packs : éteints, ou limités par packs_pages à des pages noindex et absentes du sitemap (pilote du 04/11/2026, /offre-lancement/). Publier des prix
 # sur une page indexée ou sur l'accueil reste une décision du propriétaire : il faudra alors changer ce contrôle sciemment.
 plan = open(os.path.join(SITE, 'sitemap.xml'), encoding='utf-8').read()
@@ -42,7 +45,7 @@ verifier('grille de prix désactivée', (conf.get('grille') or {}).get('valide')
 pages = [os.path.join(d, x) for d, _, fs in os.walk(SITE) for x in fs if x.endswith(('.html', '.js'))]
 texte = {p: open(p, encoding='utf-8').read() for p in pages}
 verifier('Meta Pixel absent du site', not [p for p, t in texte.items() if re.search(r'fbevents|connect\.facebook\.net|fbq\(|pixel\.js', t)])
-verifier('aucun lien WhatsApp publié', not [p for p, t in texte.items() if 'wa.me/' in t])
+verifier('liens WhatsApp : seulement vers le numéro configuré', not [p for p, t in texte.items() if any(n != numero_wa for n in re.findall(r'wa\.me/(\d*)', t))])
 verifier('aucun outil de mesure chargé', not [p for p, t in texte.items() if re.search(r'plausible\.io/js|cloud\.umami\.is|googletagmanager|google-analytics', t)])
 w = open(os.path.join(RACINE, 'worker', 'src', 'index.js'), encoding='utf-8').read()
 verifier('Worker : parcours /commandes/ conservé', "commandes: '/commandes/'" in w and 'const QUALIFICATION' in w and 'function priorite' in w)

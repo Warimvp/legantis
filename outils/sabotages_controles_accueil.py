@@ -34,5 +34,8 @@ T=[
  ('offre : premier écran sans lien vers le contact rapide','site/offre-lancement/index.html','Pressé&nbsp;? <a href="#rappel">','Pressé&nbsp;? <a href="#demande">','premier écran sans lien'),
  ('offre : étude de cas Ostad retirée','site/offre-lancement/index.html','href="../etude-de-cas-ostad/"','href="../realisations/"','étude de cas etude-de-cas-ostad'),
  ('commandes : lien d\'appel retiré','site/commandes/index.html','<a href="tel:+212672759097">','<a href="#devis">','commandes/: lien d\'appel'),
+ # WhatsApp activé le 10/11/2026 : seul le numéro configuré est admis
+ ('WhatsApp vers un autre numéro','site/index.html','https://wa.me/212672759097','https://wa.me/212600000000','lien WhatsApp vers un autre numéro'),
+ ('numéro WhatsApp retiré de la configuration','config/commercial.json','"numero": "212672759097"','"numero": ""','lien WhatsApp vers un autre numéro'),
 ]
 n=sum(essai(*t) for t in T); print(n,'sabotages détectés sur',len(T)); sys.exit(0 if n==len(T) else 1)

@@ -1,6 +1,6 @@
 {
   "_lire": "Valeurs de PRODUCTION appliquées à site/ par outils/commercial.py. Dépôt public : rien de non validé ici. Mode d'emploi : docs/conversion/README.md.",
-  "whatsapp": { "numero": "" },
+  "whatsapp": { "numero": "212672759097" },
   "offre_ouverture": { "valide": true, "titre": "Offre de lancement", "texte": "Votre site pro à prix affiché : dès 3 490 MAD HT, trois pages au plus. Voir l'offre", "lien": "offre-lancement/" },
   "packs_pages": ["offre-lancement/"],
   "fourchettes": {

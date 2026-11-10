@@ -460,7 +460,7 @@ for rel in ('offre-lancement/', 'commandes/'):
 est = fichier(BASE + 'estimer-mon-projet/')
 if os.path.exists(est) and 'Votre projet nécessite une estimation personnalisée. Recevez un devis gratuit adapté à vos besoins.' not in open(est, encoding='utf-8').read(): echecs.append('simulateur : message d\'estimation personnalisée absent')
 # aucun tarif non validé dans ce qui est publié : tant que config/commercial.json ne porte aucun pack validé, aucun montant de vente ; seuls sont admis le capital, les tranches
-# de budget du visiteur et, dans les démonstrations, les prix fictifs. Aucune adresse wa.me non plus tant qu'aucun numéro n'est configuré.
+# de budget du visiteur et, dans les démonstrations, les prix fictifs. Aucune adresse wa.me vers un autre numéro que celui configuré (aucune s'il n'y en a pas).
 CONFIG = os.path.join(RACINE, '..', 'config', 'commercial.json')
 if os.path.exists(CONFIG):
     conf = json.load(open(CONFIG, encoding='utf-8'))
@@ -473,7 +473,8 @@ if os.path.exists(CONFIG):
             if not nom.endswith(('.html', '.js', '.css', '.json', '.xml', '.txt')): continue
             chemin = os.path.join(dossier, nom); relatif = os.path.relpath(chemin, RACINE)
             t = open(chemin, encoding='utf-8').read().replace('&nbsp;', ' ').replace('\u00a0', ' ')
-            if not (conf.get('whatsapp') or {}).get('numero') and 'wa.me/' in t: echecs.append(f'{relatif}: lien WhatsApp alors qu\'aucun numéro n\'est configuré')
+            numero_wa = (conf.get('whatsapp') or {}).get('numero') or ''
+            if any(n != numero_wa for n in re.findall(r'wa\.me/(\d*)', t)): echecs.append(f'{relatif}: lien WhatsApp vers un autre numéro que celui configuré ({numero_wa or "aucun"})')
             if relatif.startswith(os.path.join('realisations', 'demos')): continue
             for m in re.findall(r'(\d[\d ]*\d|\d)\s*(?:MAD|DH|dirhams)\b', t):
                 if m.strip() not in ADMIS | montants_valides: echecs.append(f'{relatif}: montant « {m} MAD » non validé dans config/commercial.json')

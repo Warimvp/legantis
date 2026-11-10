@@ -73,7 +73,7 @@ for nom, mod, attendu in (('encart non validé', negatifs['encart non validé'],
 d = copie(lambda c: c.update(grille={'valide': True})); res = garde(d); shutil.rmtree(d)
 verifier('bout en bout : « grille de prix désactivée » refuse toujours une grille publiée', res.get('grille de prix désactivée') is False)
 d = copie(lambda c: c.update(whatsapp={'numero': '212600000000'})); res = garde(d); shutil.rmtree(d)
-verifier('bout en bout : « WhatsApp désactivé » refuse toujours un numéro', res.get('WhatsApp désactivé') is False)
+verifier('bout en bout : « WhatsApp : numéro de la société seulement » refuse un autre numéro', res.get('WhatsApp : numéro de la société seulement') is False)
 d = copie(lambda c: c.update(packs_pages=[])); res = garde(d); shutil.rmtree(d)
 verifier('bout en bout : packs hors page noindex (packs_pages vide) toujours refusé', res.get(NOM_PACKS) is False)
 print(f'\n{echecs} échec(s)' if echecs else '\ntout passe')

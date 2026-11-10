@@ -26,7 +26,7 @@ tout = lambda d: ''.join(open(os.path.join(r, f), encoding='utf-8').read() for r
 
 d = copie()
 verifier('état de production : conforme à la configuration', lancer(d, '--verifier').returncode == 0)
-verifier('état de production : packs sur la seule page d\'offre, aucun lien WhatsApp', 'pack-prix' not in hors_offre(d) and 'pack-prix' in offre(d) and 'wa.me/' not in tout(d))
+verifier('état de production : packs sur la seule page d\'offre, WhatsApp vers le seul numéro de la société', 'pack-prix' not in hors_offre(d) and 'pack-prix' in offre(d) and set(re.findall(r'wa\.me/(\d+)', tout(d))) == {'212672759097'})
 verifier('candidat : la FAQ « Combien coûte un projet ? » cite le prix d\'appel et lie l\'offre, sans « pas de prix unique »', 'Nous ne publions pas de prix unique' not in open(os.path.join(d, 'site/index.html'), encoding='utf-8').read() and 'href="offre-lancement/">périmètre écrit' in open(os.path.join(d, 'site/index.html'), encoding='utf-8').read())
 shutil.rmtree(d)
 
