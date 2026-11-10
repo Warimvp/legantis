@@ -2,14 +2,14 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://legantis.net/</loc>
-    <lastmod>2026-11-09</lastmod>
+    <lastmod>2026-11-10</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://legantis.net/"/>
   </url>
   <url>
     <loc>https://legantis.net/en/</loc>
-    <lastmod>2026-11-08</lastmod>
+    <lastmod>2026-11-10</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://legantis.net/"/>
@@ -182,7 +182,7 @@
   </url>
   <url>
     <loc>https://legantis.net/commandes/</loc>
-    <lastmod>2026-11-09</lastmod>
+    <lastmod>2026-11-10</lastmod>
   </url>
   <url>
     <loc>https://legantis.net/estimer-mon-projet/</loc>
@@ -197,16 +197,12 @@
     <lastmod>2026-11-08</lastmod>
   </url>
   <url>
-    <loc>https://legantis.net/credits/</loc>
-    <lastmod>2026-11-08</lastmod>
-  </url>
-  <url>
     <loc>https://legantis.net/e-commerce-marketplace-maroc/</loc>
-    <lastmod>2026-11-08</lastmod>
+    <lastmod>2026-11-10</lastmod>
   </url>
   <url>
     <loc>https://legantis.net/automatisation-integrations-maroc/</loc>
-    <lastmod>2026-11-08</lastmod>
+    <lastmod>2026-11-10</lastmod>
   </url>
   <url>
     <loc>https://legantis.net/expertise-technique/</loc>
@@ -214,6 +210,6 @@
   </url>
   <url>
     <loc>https://legantis.net/partenaires-sous-traitance/</loc>
-    <lastmod>2026-11-08</lastmod>
+    <lastmod>2026-11-10</lastmod>
   </url>
 </urlset>
