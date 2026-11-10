@@ -1,0 +1,66 @@
+# Legantis
+
+> Legantis (LEGANTIS DIGITAL SERVICE SAS) est une agence web et un studio de développement à Casablanca, au Maroc. Elle conçoit sur mesure des sites web et e-commerce, des applications web et mobiles (iPhone et Android) et des logiciels de gestion, en français et en arabe. Devis gratuit et sans engagement.
+
+Repères :
+
+- Société par actions simplifiée immatriculée le 7 septembre 2026 au registre du commerce de Casablanca (RC Casablanca n° 745587).
+- Une même équipe du cadrage à la mise en ligne, un devis écrit avant de commencer, et le code source remis.
+- Langues de travail : français, arabe, anglais.
+- Éditeur de trois produits : Atlasya (plateforme médicale), Rihla (apprentissage des langues) et Ostad (plateforme pédagogique).
+- Contact : contact@legantis.net, +212 6 72 75 90 97 (téléphone et WhatsApp), du lundi au samedi de 9 h à 18 h. Réponse aux demandes de devis sous 48 heures ouvrées.
+
+## Prestations
+
+- [Création de site web sur mesure à Casablanca](https://legantis.net/creation-site-web-casablanca/): site vitrine, catalogue, boutique en ligne ou refonte, en français et en arabe.
+- [Site e-commerce et marketplace au Maroc](https://legantis.net/e-commerce-marketplace-maroc/): boutiques en ligne et marketplaces multivendeurs, catalogue, commandes, paiement à la livraison.
+- [Application web sur mesure au Maroc](https://legantis.net/application-web-maroc/): plateformes, espaces clients, tableaux de bord.
+- [Application mobile iPhone et Android à Casablanca](https://legantis.net/application-mobile-casablanca/): publication sur l'App Store et Google Play, fonctionnement hors connexion, français et arabe.
+- [Logiciel métier sur mesure au Maroc](https://legantis.net/logiciel-sur-mesure-maroc/): caisse, gestion, suivi de terrain, outils internes.
+- [Logiciel de commandes et de stock pour distributeurs](https://legantis.net/commandes/): commandes, clients et stock au même endroit pour les distributeurs et grossistes, à la place de WhatsApp et d'Excel.
+- [Automatisation et intégrations API](https://legantis.net/automatisation-integrations-maroc/): automatisation de processus, tableaux de bord, échanges entre logiciels.
+- [Conseil et reprise d'application existante](https://legantis.net/conseil-reprise-application-maroc/): cadrage, audit de sécurité et de qualité, conformité à la loi 09-08, reprise et modernisation.
+- [Partenariat et sous-traitance technique](https://legantis.net/partenaires-sous-traitance/): développement web et mobile pour les agences, cabinets et intégrateurs, dans un cadre écrit.
+
+## Produits édités par Legantis
+
+- [Étude de cas Atlasya](https://legantis.net/etude-de-cas-atlasya/): plateforme médicale. Les patients trouvent un médecin et prennent rendez-vous en ligne ; les cabinets gèrent agenda, dossiers et encaissements avec Atlasya Pro. Sur iPhone (App Store) et sur le web.
+- [Étude de cas Rihla](https://legantis.net/etude-de-cas-rihla/): application d'apprentissage des langues, gratuite à ce jour, sans compte, hors ligne sur l'iPhone, interface en français et en arabe. Sur iPhone (App Store) et sur le web.
+- [Étude de cas Ostad](https://legantis.net/etude-de-cas-ostad/): plateforme pédagogique sur le web (classes par code, cours, devoirs, exercices corrigés, notes, présence, bulletins), pas encore ouverte au grand public.
+- [Réalisations et démonstrations](https://legantis.net/realisations/): les produits de Legantis et des démonstrations interactives d'entreprises fictives, présentées comme telles.
+
+## Démarrer un projet
+
+- [Préparer un devis gratuit](https://legantis.net/estimer-mon-projet/): décrire son projet en quelques étapes, sans engagement.
+- [Mini-audit gratuit d'un site web](https://legantis.net/audit-gratuit/): première analyse faite à la main de l'affichage mobile, de la vitesse, du message et du référencement.
+
+## La société
+
+- [Expertise technique](https://legantis.net/expertise-technique/): méthode, tests, sécurité, données personnelles et remise du code. Aucune certification n'est revendiquée.
+- [Mentions légales et confidentialité](https://legantis.net/mentions-legales/): identité légale complète de LEGANTIS DIGITAL SERVICE SAS et politique de confidentialité.
+
+## English
+
+- [Home](https://legantis.net/en/): websites, business software and web and mobile apps built to order in Casablanca.
+- [Website development](https://legantis.net/en/website-development-casablanca/)
+- [Web application development](https://legantis.net/en/web-app-morocco/)
+- [Mobile app development](https://legantis.net/en/mobile-app-casablanca/)
+- [Custom software development](https://legantis.net/en/custom-software-morocco/)
+- [App consulting and takeover](https://legantis.net/en/app-consulting-takeover-morocco/)
+- [Atlasya case study](https://legantis.net/en/case-study-atlasya/)
+- [Rihla case study](https://legantis.net/en/case-study-rihla/)
+- [Ostad case study](https://legantis.net/en/case-study-ostad/)
+- [Legal notice and privacy](https://legantis.net/en/legal/)
+
+## العربية
+
+- [إنشاء موقع إلكتروني على المقاس في الدار البيضاء](https://legantis.net/ar/website-development-casablanca/)
+- [تطوير تطبيق ويب على المقاس في المغرب](https://legantis.net/ar/web-app-morocco/)
+- [تطوير تطبيقات iPhone وAndroid في الدار البيضاء](https://legantis.net/ar/mobile-app-casablanca/)
+- [برمجيات مهنية على المقاس في المغرب](https://legantis.net/ar/custom-software-morocco/)
+
+## Optional
+
+- [Plan du site](https://legantis.net/sitemap.xml)
+- [LinkedIn](https://www.linkedin.com/company/legantis-digital-service-sas/)
+- [Instagram](https://www.instagram.com/legantis.ma/)

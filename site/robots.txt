@@ -1,4 +1,14 @@
+# legantis.net, site public de LEGANTIS DIGITAL SERVICE SAS (Casablanca, Maroc).
+# Tout le site est ouvert aux moteurs de recherche et aux IA : indexation,
+# réponses générées et entraînement des modèles.
+#
+# Les pages volontairement hors index portent une balise noindex. Elles ne sont
+# pas bloquées ici : un robot bloqué ne lirait pas cette balise.
+
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
 Allow: /
 
 Sitemap: https://legantis.net/sitemap.xml
+
+# Présentation du site pour les IA (format llmstxt.org) : https://legantis.net/llms.txt

@@ -25,8 +25,11 @@ await new Promise(r => serveur.listen(0, '127.0.0.1', r));
 const ORIGINE = `http://127.0.0.1:${serveur.address().port}`;
 
 // Worker de production supposé = celui de origin/main (état entre la mise en ligne du site et celle du Worker, si l'ordre n'était pas respecté).
+// Une fois les avis publiés, origin/main contient déjà la route /avis : il n'y a plus d'« ancien » Worker à comparer, ce cas n'a plus d'objet (comme dans test_ordre_deploiement.mjs).
 const tmp = await mkdtemp(path.join(tmpdir(), 'avis-'));
-await writeFile(path.join(tmp, 'ancien-worker.mjs'), execFileSync('git', ['-C', DEPOT, 'show', 'origin/main:worker/src/index.js']));
+const sourceAncien = execFileSync('git', ['-C', DEPOT, 'show', 'origin/main:worker/src/index.js']);
+const avisPublies = /CHEMIN_AVIS/.test(sourceAncien.toString());
+await writeFile(path.join(tmp, 'ancien-worker.mjs'), sourceAncien);
 const ancienWorker = (await import(pathToFileURL(path.join(tmp, 'ancien-worker.mjs')).href)).default;
 
 let envois = [], panne = false;
@@ -110,7 +113,8 @@ for (const [langue, url, mention] of PAGES) {
     verifier(`${langue} 320 px : aucun texte ne sort de sa case`, debordes.length === 0, JSON.stringify(debordes.slice(0, 5)));
     await ctx.close();
   }
-  { // ancien Worker (origin/main) + nouvelle page : aucun mail, et l'échec se voit
+  if (avisPublies) console.log(`sans objet : ${langue} ancien Worker (origin/main gère déjà /avis, les avis sont publiés)`);
+  else { // ancien Worker (origin/main) + nouvelle page : aucun mail, et l'échec se voit
     envois = []; const ctx = await contexte({}, { traitant: ancienWorker }); const p = await ctx.newPage(); await p.goto(ORIGINE + url); await p.waitForTimeout(150);
     await remplir(p); await p.locator(`${F} [type="submit"]`).click(); await p.waitForTimeout(400);
     verifier(`${langue} ancien Worker : aucun mail, message d'échec visible`, envois.length === 0 && (await visible(p, '#avis-echec')) && !(await visible(p, '#avis-envoye')));

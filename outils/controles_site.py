@@ -689,6 +689,22 @@ for chemin in glob.glob(os.path.join(RACINE, '**', '*.html'), recursive=True):
     sans_script = re.sub(r'<script\b.*?</script>|<!--.*?-->', '', open(chemin, encoding='utf-8').read(), flags=re.S)
     doubles = [k for k, v in collections.Counter(re.findall(r'<[a-zA-Z][^>]*?\sid="([^"]+)"', sans_script)).items() if v > 1]
     if doubles: echecs.append(f'{os.path.relpath(chemin, RACINE)}: identifiants en double {doubles}')
+# robots.txt (10/11/2026, choix du propriétaire : tout ouvert, entraînement des IA compris) : un seul groupe « * » sans Disallow (les pages hors index se protègent par noindex,
+# qu'un robot bloqué ne lirait pas ; un groupe nommé ignorerait celui-ci, RFC 9309), un Content-Signal et la ligne Sitemap. llms.txt : titre « # » en première ligne,
+# et ne relie que des URL du sitemap (ni page hors index, ni page renommée ou retirée).
+CHEMIN_ROBOTS = os.path.join(RACINE, 'robots.txt')
+regles = [l.split('#')[0].strip() for l in (open(CHEMIN_ROBOTS, encoding='utf-8').read() if os.path.exists(CHEMIN_ROBOTS) else '').splitlines() if l.split('#')[0].strip()]
+if [l for l in regles if re.match(r'user-agent\s*:', l, re.I)] != ['User-agent: *']: echecs.append('robots.txt : un seul groupe attendu, « User-agent: * »')
+if any(re.match(r'disallow\s*:\s*\S', l, re.I) for l in regles): echecs.append('robots.txt : Disallow présent (les pages hors index se protègent par noindex)')
+if not any(re.fullmatch(r'Content-Signal: search=(yes|no), ai-input=(yes|no), ai-train=(yes|no)', l) for l in regles): echecs.append('robots.txt : Content-Signal absent ou mal formé')
+if 'Sitemap: https://legantis.net/sitemap.xml' not in regles: echecs.append('robots.txt : ligne Sitemap absente')
+CHEMIN_LLMS = os.path.join(RACINE, 'llms.txt')
+if not os.path.exists(CHEMIN_LLMS): echecs.append('llms.txt absent')
+else:
+    t_llms = open(CHEMIN_LLMS, encoding='utf-8').read()
+    if not t_llms.startswith('# '): echecs.append('llms.txt : la première ligne doit être le titre « # … »')
+    for lien in re.findall(r'\]\((https://legantis\.net/[^)\s]*)\)', t_llms):
+        if lien not in urls and lien != BASE + 'sitemap.xml': echecs.append(f'llms.txt : {lien} absent du sitemap (page renommée, retirée ou hors index)')
 IMAGES = os.path.join(RACINE, '..', 'outils', 'images.py')
 if os.path.exists(IMAGES) and 'CAPITAL' in open(IMAGES, encoding='utf-8').read(): echecs.append('outils/images.py : capital sur l\'image de partage')
 import subprocess
