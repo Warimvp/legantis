@@ -1,4 +1,4 @@
-// Contact rapide (accueils FR et EN) : vraies pages, vrai code du Worker, Resend simulé : aucun e-mail ne part.
+// Contact rapide (accueils FR et EN, page d'offre depuis le 10/11/2026) : vraies pages, vrai code du Worker, Resend simulé : aucun e-mail ne part.
 //     node outils/test_contact_rapide.mjs       NAVIGATEUR=webkit|firefox, NAVIGATEUR_CHEMIN=exécutable
 // Avec script (e-mail, téléphone seul, refus du serveur, panne de Resend, UTM, double clic), sans script (POST classique, retour sur #rappel-envoye), au bureau et au téléphone.
 import { createRequire } from 'node:module';
@@ -49,8 +49,9 @@ const remplir = async (p, { nom = 'Karim Test', contact = 'karim@exemple.ma', ty
   await p.locator(`${F} [name="type"]`).selectOption(type); if (projet) await p.locator(`${F} [name="projet"]`).fill(projet);
   await p.locator(`${F} [name="consentement"]`).check();
 };
-const PAGES = [['FR', '/', 'Contact rapide', 'Merci'], ['EN', '/en/', 'Contact rapide', 'Thank you']];
-for (const [langue, url, , merci] of PAGES) {
+// Dernier élément : page de retour sans script. Le Worker renvoie le contact rapide vers l'accueil de la langue (chemin fixe), qui porte le même message #rappel-envoye.
+const PAGES = [['FR', '/', 'Contact rapide', 'Merci', '/'], ['EN', '/en/', 'Contact rapide', 'Thank you', '/en/'], ['FR offre', '/offre-lancement/', 'Contact rapide', 'Merci', '/']];
+for (const [langue, url, , merci, retour] of PAGES) {
   for (const [appareil, options] of [['bureau', {}], ['téléphone', { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }]]) {
     const nom = `${langue} ${appareil}`;
     { // e-mail, avec script, source UTM recopiée
@@ -93,14 +94,14 @@ for (const [langue, url, , merci] of PAGES) {
     envois = []; const ctx = await contexte({ javaScriptEnabled: false }); const p = await ctx.newPage(); await p.goto(ORIGINE + url);
     await remplir(p); await p.locator(`${F} [type="submit"]`).click();
     await p.waitForURL(u => u.hash === '#rappel-envoye' || u.hash === '#rappel-echec', { timeout: 8000 }).catch(() => {});
-    verifier(`${langue} sans script : envoi, retour sur #rappel-envoye, message visible, formulaire masqué`, envois.length === 1 && p.url().endsWith(`${url}#rappel-envoye`) && (await visible(p, '#rappel-envoye')) && !(await visible(p, F)), p.url());
+    verifier(`${langue} sans script : envoi, retour sur #rappel-envoye, message visible, formulaire masqué`, envois.length === 1 && p.url().endsWith(`${retour}#rappel-envoye`) && (await visible(p, '#rappel-envoye')) && !(await visible(p, F)), p.url());
     await ctx.close();
   }
   { // sans script, échec : retour sur #rappel-echec
     envois = []; panne = true; const ctx = await contexte({ javaScriptEnabled: false }); const p = await ctx.newPage(); await p.goto(ORIGINE + url);
     await remplir(p); await p.locator(`${F} [type="submit"]`).click();
     await p.waitForURL(u => u.hash === '#rappel-echec' || u.hash === '#rappel-envoye', { timeout: 8000 }).catch(() => {}); panne = false;
-    verifier(`${langue} sans script : panne, retour sur #rappel-echec, message d'échec visible`, p.url().endsWith(`${url}#rappel-echec`) && (await visible(p, '#rappel-echec')), p.url());
+    verifier(`${langue} sans script : panne, retour sur #rappel-echec, message d'échec visible`, p.url().endsWith(`${retour}#rappel-echec`) && (await visible(p, '#rappel-echec')), p.url());
     await ctx.close();
   }
   { // le formulaire détaillé n'est pas touché par le contact rapide

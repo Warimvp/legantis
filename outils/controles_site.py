@@ -202,17 +202,20 @@ for u, lang in ((BASE, 'fr'), (BASE + 'en/', 'en')):
 
 # contact rapide (05/11/2026) : nom, un moyen de contact (e-mail OU téléphone) et le besoin, sur l'accueil FR. Parcours « rapide » du Worker, qui renvoie vers #rappel-envoye / #rappel-echec
 # (les ancres du formulaire détaillé, #devis-envoye / #devis-echec, restent à celui-ci : jamais deux fois le même identifiant dans une page).
+# Depuis le 10/11/2026, aussi sur la page d'offre, page d'arrivée des publicités Google : au premier écran, un lien vers ce formulaire et un lien d'appel.
 CHAMPS_RAPIDE = {'langue', 'parcours', 'nom', 'contact', 'type', 'projet', 'consentement', 'site_web'}
 TYPES_WORKER = set(re.findall(r'(\w+):', (re.search(r"const TYPES = \{([^}]*)\}", open(WORKER_SRC, encoding='utf-8').read()) or [None, ''])[1])) if os.path.exists(WORKER_SRC) else None
-for u, lang in ((BASE, 'fr'), (BASE + 'en/', 'en')):
-    if u not in pages: continue
+for u, lang in ((BASE, 'fr'), (BASE + 'en/', 'en'), (BASE + 'offre-lancement/', 'fr')):
+    if not os.path.exists(fichier(u)): echecs.append(f'{u}: page absente'); continue
     h = open(fichier(u), encoding='utf-8').read()
+    if u in pages: q = pages[u]
+    else: q = P(); q.feed(h)
     m = re.search(r'<form class="devis-form rappel-form"([^>]*)>(.*?)</form>', h, re.S)
     if not m: echecs.append(f'{u}: formulaire de contact rapide absent'); continue
     ouv, corps = m.group(1), m.group(2)
     if 'method="post"' not in ouv or not re.search(r'action="https://[a-z0-9-]+(\.[a-z0-9-]+)*\.workers\.dev/"', ouv): echecs.append(f'{u}: contact rapide : method="post" et adresse workers.dev attendus')
     for attr, ident in (('data-ok', 'rappel-envoye'), ('data-echec', 'rappel-echec')):
-        if f'{attr}="{ident}"' not in ouv or ident not in pages[u].ids: echecs.append(f'{u}: contact rapide : {attr}="{ident}" et message #{ident} attendus')
+        if f'{attr}="{ident}"' not in ouv or ident not in q.ids: echecs.append(f'{u}: contact rapide : {attr}="{ident}" et message #{ident} attendus')
     noms = set(re.findall(r'<(?:input|select|textarea)\b[^>]*\bname="([^"]+)"', corps))
     if noms != CHAMPS_RAPIDE or (champs_worker is not None and not noms <= champs_worker): echecs.append(f'{u}: contact rapide : champs {sorted(noms)} ≠ {sorted(CHAMPS_RAPIDE)} ou non lus par le Worker')
     if '<input type="hidden" name="parcours" value="rapide">' not in corps or f'<input type="hidden" name="langue" value="{lang}">' not in corps: echecs.append(f'{u}: contact rapide : champs cachés parcours=rapide et langue={lang} attendus')
@@ -224,6 +227,10 @@ for u, lang in ((BASE, 'fr'), (BASE + 'en/', 'en')):
     if TYPES_WORKER is not None and (not options or not options <= TYPES_WORKER): echecs.append(f'{u}: contact rapide : besoins {sorted(options)} absents de la liste du Worker')
     if not re.search(r'<div class="visuellement-cache" aria-hidden="true"><label>[^<]*<input type="text" name="site_web" tabindex="-1" autocomplete="off"></label></div>', corps): echecs.append(f'{u}: contact rapide : champ piège absent ou visible')
     if ('mentions-legales/#donnees' if lang == 'fr' else 'legal/#personal-data') not in corps: echecs.append(f'{u}: contact rapide : lien vers les mentions légales (données) absent')
+    if u not in ACCUEILS:
+        tete = re.search(r'<section class="service-tete".*?</section>', h, re.S)
+        if not tete or 'href="#rappel"' not in tete.group(0) or 'href="tel:+212672759097"' not in tete.group(0): echecs.append(f'{u}: premier écran sans lien vers le contact rapide (#rappel) ou sans lien d\'appel')
+        continue
     # trois offres : chacune a son identifiant et son devis, dont le type existe dans le simulateur
     for ident, type_ in (('visibilite', 'vitrine'), ('gestion', 'logiciel'), ('applications', 'web')):
         offre = re.search(r'<li class="prestation[^"]*" id="' + ident + r'">(.*?)</li>', h, re.S)
@@ -427,7 +434,7 @@ for rel, parcours in (('estimer-mon-projet/', 'simulateur'), ('audit-gratuit/', 
     u = BASE + rel
     if not os.path.exists(fichier(u)): echecs.append(f'{u}: page absente'); continue
     t = open(fichier(u), encoding='utf-8').read()
-    m = re.search(r'<form class="devis-form[^"]*"([^>]*)>(.*?)</form>', t, re.S)
+    m = re.search(r'<form class="devis-form(?! rappel-form)[^"]*"([^>]*)>(.*?)</form>', t, re.S)
     if not m: echecs.append(f'{u}: formulaire absent'); continue
     ouv, corps = m.group(1), m.group(2)
     action = (re.search(r'action="([^"]*)"', ouv) or [None, ''])[1]
@@ -442,6 +449,13 @@ for rel, parcours in (('estimer-mon-projet/', 'simulateur'), ('audit-gratuit/', 
         if f'id="{ident}"' not in t: echecs.append(f'{u}: message #{ident} absent')
     for ident in re.findall(r'<(?:input|select|textarea)\b[^>]*\bid="([^"]+)"', corps):
         if f'<label for="{ident}">' not in corps: echecs.append(f'{u}: champ #{ident} sans <label for>')
+# pages d'arrivée des publicités (10/11/2026) : un lien d'appel vers le numéro de la société ; la page d'offre montre les produits publiés (études de cas)
+for rel in ('offre-lancement/', 'commandes/'):
+    t = open(fichier(BASE + rel), encoding='utf-8').read() if os.path.exists(fichier(BASE + rel)) else ''
+    if 'href="tel:+212672759097"' not in t: echecs.append(f'{BASE + rel}: lien d\'appel vers +212 6 72 75 90 97 absent')
+    if rel == 'offre-lancement/':
+        for cas in ('etude-de-cas-atlasya', 'etude-de-cas-ostad', 'etude-de-cas-rihla'):
+            if f'href="../{cas}/"' not in t: echecs.append(f'{BASE + rel}: lien vers l\'étude de cas {cas} absent (produits publiés)')
 # le simulateur affiche le texte convenu tant que la grille n'est pas validée
 est = fichier(BASE + 'estimer-mon-projet/')
 if os.path.exists(est) and 'Votre projet nécessite une estimation personnalisée. Recevez un devis gratuit adapté à vos besoins.' not in open(est, encoding='utf-8').read(): echecs.append('simulateur : message d\'estimation personnalisée absent')

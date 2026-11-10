@@ -1,4 +1,4 @@
-"""Éprouve les contrôles du contact rapide et des trois offres de l'accueil (05/11/2026) : chaque copie volontairement cassée de site/ doit faire échouer controles_site.py.
+"""Éprouve les contrôles du contact rapide et des trois offres de l'accueil (05/11/2026), et de la page d'offre (10/11/2026) : chaque copie volontairement cassée de site/ doit faire échouer controles_site.py.
     python3 outils/sabotages_controles_accueil.py        → « n sabotages détectés sur n » ; code de sortie 1 si l'un survit."""
 import shutil,subprocess,sys,os,re,tempfile
 RAC=os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..'))
@@ -26,5 +26,13 @@ T=[
  ('EN : contact rapide sans consentement','site/en/index.html','name="consentement" type="checkbox" value="oui" required><span>I agree that LEGANTIS DIGITAL SERVICE SAS may use this information to answer my request, and that it passes through its service providers outside Morocco, as explained in the <a href="legal/#personal-data">legal notice</a>.</span></label></div>\n          <div class="visuellement-cache" aria-hidden="true"><label>Leave this field empty<input type="text" name="site_web" tabindex="-1" autocomplete="off"></label></div>\n          <div class="devis-bas">\n            <button class="bouton bouton--plein" type="submit">Get in touch','name="consentement" type="checkbox" value="oui"><span>I agree that LEGANTIS DIGITAL SERVICE SAS may use this information to answer my request, and that it passes through its service providers outside Morocco, as explained in the <a href="legal/#personal-data">legal notice</a>.</span></label></div>\n          <div class="visuellement-cache" aria-hidden="true"><label>Leave this field empty<input type="text" name="site_web" tabindex="-1" autocomplete="off"></label></div>\n          <div class="devis-bas">\n            <button class="bouton bouton--plein" type="submit">Get in touch','non obligatoire'),
  ('EN : offre Gestion sans contact rapide','site/en/index.html','href="#rappel" aria-label="Get a quote for Management"','href="#devis" aria-label="Get a quote for Management"','offre « gestion »'),
  ('Worker sans le type d\'un besoin','worker/src/index.js',"ecommerce: 'Site e-commerce', ","","absents de la liste du Worker"),
+ # page d'offre, page d'arrivée des publicités Google (10/11/2026)
+ ('offre : contact rapide sans parcours','site/offre-lancement/index.html','<input type="hidden" name="parcours" value="rapide">','','offre-lancement/: contact rapide : champs cachés parcours=rapide'),
+ ('offre : message de succès du contact rapide retiré','site/offre-lancement/index.html','id="rappel-envoye"','id="rappel-ok"','offre-lancement/: contact rapide : data-ok'),
+ ('offre : formulaire détaillé sans son parcours','site/offre-lancement/index.html','<input type="hidden" name="parcours" value="offre">','','parcours=offre absent'),
+ ('offre : premier écran sans lien d\'appel','site/offre-lancement/index.html','Ou appelez le <a href="tel:+212672759097">','Ou appelez le <a href="#demande">','premier écran sans lien'),
+ ('offre : premier écran sans lien vers le contact rapide','site/offre-lancement/index.html','Pressé&nbsp;? <a href="#rappel">','Pressé&nbsp;? <a href="#demande">','premier écran sans lien'),
+ ('offre : étude de cas Ostad retirée','site/offre-lancement/index.html','href="../etude-de-cas-ostad/"','href="../realisations/"','étude de cas etude-de-cas-ostad'),
+ ('commandes : lien d\'appel retiré','site/commandes/index.html','<a href="tel:+212672759097">','<a href="#devis">','commandes/: lien d\'appel'),
 ]
 n=sum(essai(*t) for t in T); print(n,'sabotages détectés sur',len(T)); sys.exit(0 if n==len(T) else 1)

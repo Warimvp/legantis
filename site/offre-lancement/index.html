@@ -84,6 +84,7 @@
       <h1 id="titre">Un site professionnel, <em>à partir de 3&nbsp;490 MAD HT.</em></h1>
       <p class="chapeau">Un site de présentation clair&nbsp;: jusqu'à trois pages, un design professionnel adapté au téléphone, un formulaire de contact et un lien WhatsApp. Le prix est plus bas parce que nous partons de bases déjà construites et testées, pas parce que nous en faisons moins. Le périmètre est écrit&nbsp;; tout ce qui le dépasse est chiffré avant d'être fait.</p>
       <div class="actions"><a class="bouton bouton--plein" href="#offres">Voir l'offre <span class="fleche" aria-hidden="true">→</span></a> <a class="bouton bouton--trait" href="#demande">Demander un devis gratuit</a> <!-- commercial:whatsapp type=offre style=bouton --><!-- /commercial --></div>
+      <p class="ouverture-rappel">Pressé&nbsp;? <a href="#rappel">Laissez votre nom et un contact</a>, nous vous recontactons sous 48&nbsp;h ouvrées. Ou appelez le <a href="tel:+212672759097">+212&nbsp;6&nbsp;72&nbsp;75&nbsp;90&nbsp;97</a>, du lundi au samedi de 9&nbsp;h à 18&nbsp;h.</p>
       <ul class="garanties" role="list"><li>Devis gratuit et sans engagement</li><li>Réponse sous 48 h ouvrées</li><li>Prix hors taxes</li><li>Code source remis</li></ul>
     </div>
   </section>
@@ -112,6 +113,41 @@
         </div>
         <a class="bouton bouton--trait" href="../commandes/">Découvrir le Pack Commandes <span class="fleche" aria-hidden="true">→</span></a>
       </article>
+    </div>
+  </section>
+
+  <section class="section section--2" id="rappel" aria-labelledby="rappel-titre">
+    <div class="enveloppe">
+      <div class="offre offre--rappel" data-formulaire>
+        <p class="devis-statut devis-statut--ok" id="rappel-envoye" role="status" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span><b>Merci, nous avons bien reçu votre demande.</b> Nous revenons vers vous sous 48 heures ouvrées, par le moyen de contact que vous avez indiqué.</span></p>
+        <p class="devis-statut devis-statut--echec" id="rappel-echec" role="alert" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 8v5m0 4h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg><span><b>Votre demande n'a pas pu être envoyée.</b> <span data-detail>Réessayez dans un instant, ou écrivez-nous à</span> <a href="mailto:contact@legantis.net">contact@legantis.net</a>.</span></p>
+        <div class="offre-texte reveler">
+          <span class="surtitre">Réponse sous 48 h ouvrées</span>
+          <h2 id="rappel-titre">Pressé&nbsp;? <em>Laissez un contact.</em></h2>
+          <p>Trois champs suffisent. Nous vous recontactons par téléphone ou par écrit, selon ce que vous indiquez, pour vérifier que votre projet entre dans l'offre. Le devis détaillé, gratuit et sans engagement, suit.</p>
+          <p class="offre-ou">Vous préférez appeler&nbsp;? <a href="tel:+212672759097">+212&nbsp;6&nbsp;72&nbsp;75&nbsp;90&nbsp;97</a>, du lundi au samedi de 9&nbsp;h à 18&nbsp;h. Pour tout détailler, utilisez le <a href="#demande">formulaire complet</a>.</p>
+        </div>
+        <ul class="engagements reveler" role="list">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><b>Une minute</b><span>Votre nom, un moyen de vous joindre et votre besoin.</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><b>Téléphone ou e-mail</b><span>Indiquez celui des deux que vous préférez.</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><b>Gratuit et sans engagement</b><span>Le premier échange et le devis ne vous obligent à rien.</span></li>
+        </ul>
+        <form class="devis-form rappel-form" method="post" action="https://legantis-devis.rihla-serveur.workers.dev/" data-envoi data-ok="rappel-envoye" data-echec="rappel-echec" aria-labelledby="rappel-titre">
+          <input type="hidden" name="langue" value="fr">
+          <input type="hidden" name="parcours" value="rapide">
+          <div class="champ"><label for="rappel-nom">Votre nom</label><input id="rappel-nom" name="nom" type="text" autocomplete="name" required maxlength="100"></div>
+          <div class="champ"><label for="rappel-contact">E-mail ou téléphone</label><input id="rappel-contact" name="contact" type="text" autocomplete="email" autocapitalize="none" spellcheck="false" enterkeyhint="next" required maxlength="254" aria-describedby="rappel-contact-aide"><small id="rappel-contact-aide" class="champ-aide">Par exemple 06 12 34 56 78 ou vous@entreprise.ma</small></div>
+          <div class="champ"><label for="rappel-type">Votre besoin</label>
+            <select id="rappel-type" name="type" required><option value="">Choisissez</option><option value="site" selected>Un site web (Visibilité)</option><option value="ecommerce">Une boutique en ligne (Visibilité)</option><option value="logiciel">Un logiciel de gestion, un CRM, une automatisation (Gestion)</option><option value="web">Une application web ou une plateforme (Applications)</option><option value="mobile">Une application mobile (Applications)</option><option value="conseil">Un audit, un conseil ou la reprise d'une application</option><option value="autre">Autre, ou à définir ensemble</option></select></div>
+          <div class="champ champ--large"><label for="rappel-projet">En une phrase <small>(facultatif)</small></label><textarea id="rappel-projet" name="projet" rows="2" maxlength="500" placeholder="Votre activité, ce que vous voulez améliorer…"></textarea></div>
+          <div class="champ consentement"><label for="rappel-consentement"><input id="rappel-consentement" name="consentement" type="checkbox" value="oui" required><span>J'accepte que LEGANTIS DIGITAL SERVICE SAS utilise ces informations pour répondre à ma demande, et qu'elles transitent par ses prestataires hors du Maroc, comme expliqué dans les <a href="../mentions-legales/#donnees">mentions légales</a>.</span></label></div>
+          <div class="visuellement-cache" aria-hidden="true"><label>Ne pas remplir ce champ<input type="text" name="site_web" tabindex="-1" autocomplete="off"></label></div>
+          <div class="devis-bas">
+            <button class="bouton bouton--plein" type="submit">Être recontacté <span class="fleche" aria-hidden="true">→</span></button>
+            <p class="devis-note">Vos informations servent uniquement à répondre à votre demande ; elles ne sont ni cédées ni utilisées pour de la prospection. Droits d'accès, de rectification et d'opposition (loi 09-08) : <a href="mailto:contact@legantis.net">contact@legantis.net</a>.</p>
+          </div>
+        </form>
+      </div>
     </div>
   </section>
 
@@ -214,6 +250,21 @@
         <li class="projet modele"><div class="projet-image"><img src="../assets/captures/modele-fictif-editorial.webp" alt="Haut de la page d'accueil de la même entreprise fictive, style Éditorial : grand titre à empattements sur fond blanc" width="800" height="500" loading="lazy" decoding="async"></div><div class="projet-corps"><span class="nature nature--demo">Modèle fictif</span><h3>Style «&nbsp;Éditorial&nbsp;»</h3><p>Entreprise et données fictives. Sobre et typographique, pour un cabinet ou un conseil.</p></div></li>
         <li class="projet modele"><div class="projet-image"><img src="../assets/captures/modele-fictif-bloc.webp" alt="Haut de la page d'accueil de la même entreprise fictive, style Bloc : fond bleu, titre en capitales et illustration encadrée" width="800" height="500" loading="lazy" decoding="async"></div><div class="projet-corps"><span class="nature nature--demo">Modèle fictif</span><h3>Style «&nbsp;Bloc&nbsp;»</h3><p>Entreprise et données fictives. Contrasté et affirmé, pour une activité qui veut se démarquer.</p></div></li>
       </ul>
+    </div>
+  </section>
+
+  <section class="section section--2" id="publies" aria-labelledby="preuves-titre">
+    <div class="enveloppe">
+      <div class="entete reveler">
+        <span class="surtitre">Ce que nous avons déjà publié</span>
+        <h2 id="preuves-titre">Nos produits, <em>à vérifier vous-même.</em></h2>
+        <p class="intro">Ce sont nos propres produits, que nous éditons et maintenons : pas des projets clients. Ils montrent notre façon de construire un outil complet.</p>
+      </div>
+      <div class="atouts reveler">
+        <div class="atout"><h3>Atlasya</h3><p>Une plateforme médicale avec un logiciel de cabinet : agenda, dossiers, encaissements et exports.</p><a class="suivre" href="../etude-de-cas-atlasya/">Lire l'étude de cas <span aria-hidden="true">→</span></a></div>
+        <div class="atout"><h3>Ostad</h3><p>Une plateforme pédagogique avec des espaces distincts pour le professeur, l'élève et le parent.</p><a class="suivre" href="../etude-de-cas-ostad/">Lire l'étude de cas <span aria-hidden="true">→</span></a></div>
+        <div class="atout"><h3>MaRihla</h3><p>Une application d'apprentissage des langues, publiée sur l'App Store.</p><a class="suivre" href="../etude-de-cas-rihla/">Lire l'étude de cas <span aria-hidden="true">→</span></a></div>
+      </div>
     </div>
   </section>
 
