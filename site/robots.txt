@@ -6,7 +6,6 @@
 # pas bloquées ici : un robot bloqué ne lirait pas cette balise.
 
 User-agent: *
-Content-Signal: search=yes, ai-input=yes, ai-train=yes
 Allow: /
 
 Sitemap: https://legantis.net/sitemap.xml
