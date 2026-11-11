@@ -5,7 +5,7 @@ avec `mise_en_avant` défini et limité aux pages autorisées, et sans autre fou
 Toute autre configuration est refusée : un nouveau cas à admettre se décide par écrit, puis se code ici."""
 import re
 
-PAGES_ADMISES = {'', 'creation-site-web-casablanca/'}
+PAGES_ADMISES = {'', 'creation-site-web-casablanca/', 'prix-site-web-maroc/'}   # guide des prix : décision du propriétaire du 11/11/2026 (« avec fourchettes »)
 LIEN_ADMIS = 'offre-lancement/'
 MOTS_INTERDITS = re.compile(r'promo|remise|réduction|reduction|solde|urgent|dernière|dernières|dernier|places?\b|compte à rebours|gratuit(?!\w)|-\s?\d+\s?%|\d+\s?%', re.I)
 

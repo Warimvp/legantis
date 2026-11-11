@@ -64,7 +64,7 @@
   </url>
   <url>
     <loc>https://legantis.net/creation-site-web-casablanca/</loc>
-    <lastmod>2026-11-10</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/creation-site-web-casablanca/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/website-development-casablanca/"/>
     <xhtml:link rel="alternate" hreflang="ar" href="https://legantis.net/ar/website-development-casablanca/"/>
@@ -88,7 +88,7 @@
   </url>
   <url>
     <loc>https://legantis.net/logiciel-sur-mesure-maroc/</loc>
-    <lastmod>2026-11-10</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/logiciel-sur-mesure-maroc/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/custom-software-morocco/"/>
     <xhtml:link rel="alternate" hreflang="ar" href="https://legantis.net/ar/custom-software-morocco/"/>
@@ -211,5 +211,13 @@
   <url>
     <loc>https://legantis.net/partenaires-sous-traitance/</loc>
     <lastmod>2026-11-10</lastmod>
+  </url>
+  <url>
+    <loc>https://legantis.net/prix-site-web-maroc/</loc>
+    <lastmod>2026-11-11</lastmod>
+  </url>
+  <url>
+    <loc>https://legantis.net/logiciel-sur-mesure-ou-standard/</loc>
+    <lastmod>2026-11-11</lastmod>
   </url>
 </urlset>

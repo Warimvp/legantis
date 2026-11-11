@@ -287,7 +287,7 @@ if os.path.exists(ACQ):
 #   Les liens qui affichent l'adresse e-mail (contact, ligne « Vous préférez écrire directement ? ») gardent leur mailto : ils n'ont pas ces classes.
 #   Depuis le 30/10/2026, les pages françaises mènent au simulateur (?type= garde le contexte de la prestation) ; EN et AR gardent le formulaire #devis de leur accueil.
 CTA_UNIQUES = ('barre-cta', 'menu-devis', 'pied-devis')
-TYPES_PAGE = {'creation-site-web-casablanca/': '?type=vitrine', 'application-web-maroc/': '?type=web', 'application-mobile-casablanca/': '?type=mobile', 'logiciel-sur-mesure-maroc/': '?type=logiciel', 'conseil-reprise-application-maroc/': '?type=autre', 'etude-de-cas-atlasya/': '?type=web', 'etude-de-cas-rihla/': '?type=mobile', 'etude-de-cas-ostad/': '?type=web', 'e-commerce-marketplace-maroc/': '?type=ecommerce', 'automatisation-integrations-maroc/': '?type=logiciel', 'expertise-technique/': '', 'partenaires-sous-traitance/': '?type=autre'}
+TYPES_PAGE = {'creation-site-web-casablanca/': '?type=vitrine', 'application-web-maroc/': '?type=web', 'application-mobile-casablanca/': '?type=mobile', 'logiciel-sur-mesure-maroc/': '?type=logiciel', 'conseil-reprise-application-maroc/': '?type=autre', 'etude-de-cas-atlasya/': '?type=web', 'etude-de-cas-rihla/': '?type=mobile', 'etude-de-cas-ostad/': '?type=web', 'e-commerce-marketplace-maroc/': '?type=ecommerce', 'automatisation-integrations-maroc/': '?type=logiciel', 'expertise-technique/': '', 'partenaires-sous-traitance/': '?type=autre', 'prix-site-web-maroc/': '?type=vitrine', 'logiciel-sur-mesure-ou-standard/': '?type=logiciel'}
 for u in gabarit:
     h = open(fichier(u), encoding='utf-8').read()
     rel = u[len(BASE):]
@@ -468,6 +468,9 @@ if os.path.exists(CONFIG):
     for f_ in [v for k, v in (conf.get('fourchettes') or {}).items() if not k.startswith('_')]:   # fourchettes indicatives des trois offres : admises seulement validées
         if f_.get('valide') is True: montants_valides |= {f"{f_[k]:,}".replace(',', ' ') for k in ('a_partir_de', 'jusqu_a') if isinstance(f_.get(k), int)}
     ADMIS = {'10 000', '5 000', '15 000', '50 000', '25 000', '100 000'}   # capital ; tranches de budget du visiteur (simulateur, /commandes/)
+    # Guides de prix (11/11/2026, décision du propriétaire : « avec fourchettes ») : des prix DU MARCHÉ y sont admis, jamais un prix de Legantis non validé.
+    # Chaque montant du marché est balisé <span class="marche">, la page dit sa méthode et la date du relevé (p.guide-source) ; hors de ces pages, aucune balise.
+    GUIDES_PRIX = ('prix-site-web-maroc/', 'logiciel-sur-mesure-ou-standard/')
     for dossier, _, fichiers in os.walk(RACINE):
         for nom in fichiers:
             if not nom.endswith(('.html', '.js', '.css', '.json', '.xml', '.txt')): continue
@@ -476,6 +479,10 @@ if os.path.exists(CONFIG):
             numero_wa = (conf.get('whatsapp') or {}).get('numero') or ''
             if any(n != numero_wa for n in re.findall(r'wa\.me/(\d*)', t)): echecs.append(f'{relatif}: lien WhatsApp vers un autre numéro que celui configuré ({numero_wa or "aucun"})')
             if relatif.startswith(os.path.join('realisations', 'demos')): continue
+            if 'class="marche"' in t:
+                if os.path.relpath(dossier, RACINE).replace(os.sep, '/') + '/' not in GUIDES_PRIX: echecs.append(f'{relatif}: montants « du marché » hors des guides de prix')
+                elif not re.search(r'<p class="guide-source">[^<]*relev[ée]s? le \d{2}/\d{2}/\d{4}', t): echecs.append(f'{relatif}: montants du marché sans méthode ni date de relevé (p.guide-source)')
+                else: t = re.sub(r'<span class="marche">[^<]*</span>', '', t)
             for m in re.findall(r'(\d[\d ]*\d|\d)\s*(?:MAD|DH|dirhams)\b', t):
                 if m.strip() not in ADMIS | montants_valides: echecs.append(f'{relatif}: montant « {m} MAD » non validé dans config/commercial.json')
             if not conf.get('packs') and re.search(r'\b(pack starter|pack business|prix_mad)\b', re.sub(r'<script type="application/ld\+json">.*?</script>', '', t, flags=re.S), re.I) and not relatif.endswith('conversion.js'): echecs.append(f'{relatif}: offre non validée publiée')

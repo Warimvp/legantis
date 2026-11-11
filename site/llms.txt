@@ -29,6 +29,11 @@ Repères :
 - [Étude de cas Ostad](https://legantis.net/etude-de-cas-ostad/): plateforme pédagogique sur le web (classes par code, cours, devoirs, exercices corrigés, notes, présence, bulletins), pas encore ouverte au grand public.
 - [Réalisations et démonstrations](https://legantis.net/realisations/): les produits de Legantis et des démonstrations interactives d'entreprises fictives, présentées comme telles.
 
+## Guides
+
+- [Combien coûte un site web au Maroc en 2026 ?](https://legantis.net/prix-site-web-maroc/): prix publiés par des prestataires installés au Maroc, type de site par type de site, ce qui fait varier un devis, frais annuels et questions à poser.
+- [Logiciel sur mesure ou standard : que choisir au Maroc ?](https://legantis.net/logiciel-sur-mesure-ou-standard/): quand un logiciel du commerce suffit, quand le sur-mesure se justifie, le cas des commandes des distributeurs, le coût sur trois ans.
+
 ## Démarrer un projet
 
 - [Préparer un devis gratuit](https://legantis.net/estimer-mon-projet/): décrire son projet en quelques étapes, sans engagement.
