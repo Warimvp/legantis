@@ -287,6 +287,8 @@ if os.path.exists(ACQ):
 #   Les liens qui affichent l'adresse e-mail (contact, ligne « Vous préférez écrire directement ? ») gardent leur mailto : ils n'ont pas ces classes.
 #   Depuis le 30/10/2026, les pages françaises mènent au simulateur (?type= garde le contexte de la prestation) ; EN et AR gardent le formulaire #devis de leur accueil.
 CTA_UNIQUES = ('barre-cta', 'menu-devis', 'pied-devis')
+# Recrutement (12/11/2026) : sur la page de stage, le bouton plein « Postuler par e-mail » (classe postuler) ouvre un e-mail de candidature, contrôlé plus bas (« Stage commercial »).
+PAGES_STAGE = ('stage-commercial-casablanca/',)
 TYPES_PAGE = {'creation-site-web-casablanca/': '?type=vitrine', 'application-web-maroc/': '?type=web', 'application-mobile-casablanca/': '?type=mobile', 'logiciel-sur-mesure-maroc/': '?type=logiciel', 'conseil-reprise-application-maroc/': '?type=autre', 'etude-de-cas-atlasya/': '?type=web', 'etude-de-cas-rihla/': '?type=mobile', 'etude-de-cas-ostad/': '?type=web', 'e-commerce-marketplace-maroc/': '?type=ecommerce', 'automatisation-integrations-maroc/': '?type=logiciel', 'expertise-technique/': '', 'partenaires-sous-traitance/': '?type=autre', 'prix-site-web-maroc/': '?type=vitrine', 'logiciel-sur-mesure-ou-standard/': '?type=logiciel'}
 for u in gabarit:
     h = open(fichier(u), encoding='utf-8').read()
@@ -301,7 +303,7 @@ for u in gabarit:
         attendu = '#demande' if rel == 'audit-gratuit/' and cls == 'barre-cta' else cible   # page d'arrivée de la publicité Services : son bouton de barre reste sur son formulaire
         if liens != [attendu]: echecs.append(f'{u}: lien « {cls} » = {liens} (attendu une fois {attendu})')
     for classes, href in re.findall(r'<a class="([^"]*)" href="([^"]*)"', h):
-        if any(c in classes.split() for c in CTA_UNIQUES + ('bouton--plein',)) and href.startswith('mailto:'): echecs.append(f'{u}: bouton « {classes} » ouvre encore un mailto')
+        if any(c in classes.split() for c in CTA_UNIQUES + ('bouton--plein',)) and href.startswith('mailto:') and not ('postuler' in classes.split() and rel in PAGES_STAGE): echecs.append(f'{u}: bouton « {classes} » ouvre encore un mailto')
         if 'bouton--plein' in classes.split() and '#devis' in href and href != cible: echecs.append(f'{u}: bouton « {classes} » vise {href} (attendu {cible})')
 # catalogue et compteurs (26/10/2026 ; l'intro disait « Deux titres » au-dessus de trois cartes) : pas de build qui centraliserait le nombre de titres,
 #   donc un contrôle. Sur chaque accueil, le nombre de cartes du Catalogue = le compteur de l'ouverture = le chiffre « titres publiés » = le mot de l'intro ;
@@ -700,6 +702,41 @@ for chemin in glob.glob(os.path.join(RACINE, '**', '*.html'), recursive=True):
 # qu'un robot bloqué ne lirait pas ; un groupe nommé ignorerait celui-ci, RFC 9309) et la ligne Sitemap ; rien d'autre que User-agent, Allow, Disallow et Sitemap (Bing a marqué
 # Content-Signal « Syntax not understood » le 10/11/2026, ligne retirée le 11/11 sur décision du propriétaire : tout ouvert, elle ne changeait rien). llms.txt : titre « # » en première ligne,
 # et ne relie que des URL du sitemap (ni page hors index, ni page renommée ou retirée).
+# ── Stage commercial (12/11/2026) ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+# Offre de stage de fin d'études (décisions du propriétaire du 12/11/2026 : conventionné, non rémunéré, gratification possible à son appréciation,
+# hybride à Casablanca, 4 à 6 mois, candidature par e-mail avec CV), balisée JobPosting pour la recherche d'emplois de Google. Une offre expirée ou
+# pourvue doit quitter le site : la date limite dépassée fait échouer (retirer la page, ou repousser la date sur décision du propriétaire).
+# Contrôlé : un JobPosting complet, stage (INTERN), employeur = l'Organization de l'accueil, lieu Casablanca ; rémunération cohérente entre la page et
+# le balisage (« n'est pas rémunéré » écrit et aucun baseSalary, ou l'inverse) ; date limite affichée = validThrough ; chaque bouton « postuler » ouvre
+# un e-mail de candidature vers contact@legantis.net ; renvoi au paragraphe #candidatures des mentions légales (ancre contrôlée plus haut) ; l'accueil relie la page.
+import datetime
+for rel in PAGES_STAGE:
+    u = BASE + rel
+    if u not in pages: echecs.append(f'{u}: page de stage absente du sitemap'); continue
+    h = open(fichier(u), encoding='utf-8').read(); t = visible(h); offres = []
+    for j in pages[u].jsonld:
+        try: o = json.loads(j)
+        except Exception: continue
+        offres += [g for g in (o.get('@graph', [o]) if isinstance(o, dict) else o) if isinstance(g, dict) and g.get('@type') == 'JobPosting']
+    if len(offres) != 1: echecs.append(f'{u}: {len(offres)} JobPosting (1 attendu)'); continue
+    o = offres[0]
+    echecs += [f'{u}: JobPosting sans {c}' for c in ('title', 'description', 'datePosted', 'validThrough', 'employmentType', 'hiringOrganization', 'jobLocation') if not o.get(c)]
+    if o.get('employmentType') != 'INTERN': echecs.append(f'{u}: employmentType {o.get("employmentType")} (INTERN attendu)')
+    if (o.get('hiringOrganization') or {}).get('@id') != BASE + '#organisation': echecs.append(f'{u}: employeur ≠ Organization de l\'accueil')
+    adresse = (o.get('jobLocation') or {}).get('address') or {}
+    if (adresse.get('addressLocality'), adresse.get('addressCountry')) != ('Casablanca', 'MA'): echecs.append(f'{u}: lieu du stage {adresse} (Casablanca, MA attendus)')
+    if ('baseSalary' in o) == ("n'est pas rémunéré" in t): echecs.append(f'{u}: rémunération contradictoire ou absente entre la page et le JobPosting (baseSalary : {"baseSalary" in o})')
+    try: fin = datetime.date.fromisoformat(str(o.get('validThrough', ''))[:10])
+    except ValueError: echecs.append(f'{u}: validThrough illisible'); fin = None
+    if fin:
+        if f"candidatures jusqu'au {fin:%d/%m/%Y}" not in t: echecs.append(f'{u}: date limite affichée ≠ validThrough ({fin:%d/%m/%Y})')
+        if fin < datetime.date.today(): echecs.append(f'{u}: offre expirée le {fin:%d/%m/%Y} : retirer la page ou repousser la date (décision du propriétaire)')
+        if str(o.get('datePosted', '')) > fin.isoformat(): echecs.append(f'{u}: datePosted après validThrough')
+    boutons = re.findall(r'<a class="([^"]*\bpostuler\b[^"]*)" href="([^"]*)"', h)
+    if not boutons: echecs.append(f'{u}: aucun bouton « postuler »')
+    echecs += [f'{u}: bouton « postuler » vers {href[:60]}' for _, href in boutons if not href.startswith('mailto:contact@legantis.net?subject=Candidature%20stage')]
+    if '../mentions-legales/#candidatures' not in pages[u].hrefs: echecs.append(f'{u}: pas de renvoi aux mentions légales #candidatures')
+    if BASE in pages and rel not in pages[BASE].hrefs: echecs.append(f'{BASE}: aucun lien vers {rel}')
 CHEMIN_ROBOTS = os.path.join(RACINE, 'robots.txt')
 regles = [l.split('#')[0].strip() for l in (open(CHEMIN_ROBOTS, encoding='utf-8').read() if os.path.exists(CHEMIN_ROBOTS) else '').splitlines() if l.split('#')[0].strip()]
 if [l for l in regles if re.match(r'user-agent\s*:', l, re.I)] != ['User-agent: *']: echecs.append('robots.txt : un seul groupe attendu, « User-agent: * »')

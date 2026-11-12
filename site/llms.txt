@@ -41,6 +41,7 @@ Repères :
 
 ## La société
 
+- [Stage commercial de fin d'études à Casablanca](https://legantis.net/stage-commercial-casablanca/): stage PFE de 4 à 6 mois en développement commercial, en hybride, conventionné ; candidature par e-mail avec CV.
 - [Expertise technique](https://legantis.net/expertise-technique/): méthode, tests, sécurité, données personnelles et remise du code. Aucune certification n'est revendiquée.
 - [Mentions légales et confidentialité](https://legantis.net/mentions-legales/): identité légale complète de LEGANTIS DIGITAL SERVICE SAS et politique de confidentialité.
 

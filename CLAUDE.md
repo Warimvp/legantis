@@ -18,6 +18,7 @@ Prix ou hypothèses de prix, prospects, stratégie commerciale, état réel des 
 - `site/realisations/demos/restaurant/`, `reservation/`, `services/` : démonstrations interactives, entreprises fictives, état en mémoire, aucune requête. Après modification : `node outils/captures_demos.js`.
 - `worker/` : Worker des formulaires, tests dans `worker/test/`, mise en service dans `worker/README.md`.
 - Avis clients : `/donner-mon-avis/` et `/en/leave-a-review/` (hors index, non reliées), Worker `POST /avis`, publication manuelle : `docs/avis-clients.md`.
+- Recrutement : `/stage-commercial-casablanca/` (offre de stage balisée `JobPosting`, candidature par e-mail, paragraphe `#candidatures` des mentions légales). Une offre expirée fait échouer `controles_site.py` : retirer la page ou repousser la date.
 - `config/commercial.json` : valeurs commerciales de production, appliquées à `site/` par `outils/commercial.py`.
 - `mesure/` : mesure préparée, non activée. `docs/` : modes d'emploi techniques.
 - `outils/` : contrôles du site.
@@ -82,6 +83,10 @@ node outils/test_avis.mjs
 
 ```bash
 python3 outils/sabotages_controles_avis.py
+```
+
+```bash
+python3 outils/sabotages_controles_stage.py
 ```
 
 ```bash

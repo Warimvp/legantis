@@ -1660,14 +1660,15 @@ html[dir="rtl"] .pied-marque { padding-right: 0; border-right: 0; padding-left: 
 
 /* ── Guides (11/11/2026) : articles dans le gabarit des prestations (/prix-site-web-maroc/, /logiciel-sur-mesure-ou-standard/) ──
    Texte long en colonne de lecture (.guide-texte), fourchettes de marché sur des cartes .atout (déjà dans CARTES de lumiere.js ;
-   p, li et h3 sont déjà dans TEXTE : rien à ajouter aux listes du curseur). Propriétés logiques seulement : rien à miroiter dans le bloc « Arabe ». */
+   p, li et h3 sont déjà dans TEXTE : rien à ajouter aux listes du curseur). Propriétés logiques seulement : rien à miroiter dans le bloc « Arabe ».
+   .fait (12/11/2026) : le chiffre clé des cartes de /stage-commercial-casablanca/, même graisse que les fourchettes. */
 .guide-maj { font: 500 0.8rem/1.5 var(--f-mono); color: var(--gris); margin-block: -12px 30px; }
 .guide-texte { max-width: var(--mesure); display: grid; gap: 14px; }
 .guide-texte h3 { font-weight: 650; font-size: 1.22rem; line-height: 1.3; margin-block-start: 18px; }
 .guide-texte :is(ul, ol) { margin: 0; padding-inline-start: 22px; display: grid; gap: 10px; }
 .guide-texte li::marker { color: var(--tampon); }
 .guide-texte b { font-weight: 650; }
-.atout .fourchette { font-weight: 700; font-size: 1.3rem; font-stretch: 112%; letter-spacing: -0.02em; line-height: 1.2; color: var(--encre); }
+.atout :is(.fourchette, .fait) { font-weight: 700; font-size: 1.3rem; font-stretch: 112%; letter-spacing: -0.02em; line-height: 1.2; color: var(--encre); }
 .atout .nombre-sources { font: 500 0.75rem/1.45 var(--f-mono); letter-spacing: 0.03em; color: var(--gris); }
 .guide-source { max-width: var(--mesure); margin-block-start: clamp(32px, 4vw, 48px); padding-block-start: 16px; border-block-start: 1px solid var(--filet); font-size: 0.9rem; color: var(--gris); }
 .guide-texte + .service-cta { margin-inline-start: 0; }

@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://legantis.net/</loc>
-    <lastmod>2026-11-10</lastmod>
+    <lastmod>2026-11-12</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://legantis.net/"/>
@@ -168,14 +168,14 @@
   </url>
   <url>
     <loc>https://legantis.net/mentions-legales/</loc>
-    <lastmod>2026-11-10</lastmod>
+    <lastmod>2026-11-12</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/mentions-legales/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/legal/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://legantis.net/mentions-legales/"/>
   </url>
   <url>
     <loc>https://legantis.net/en/legal/</loc>
-    <lastmod>2026-11-10</lastmod>
+    <lastmod>2026-11-12</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://legantis.net/mentions-legales/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legantis.net/en/legal/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://legantis.net/mentions-legales/"/>
@@ -219,5 +219,9 @@
   <url>
     <loc>https://legantis.net/logiciel-sur-mesure-ou-standard/</loc>
     <lastmod>2026-11-11</lastmod>
+  </url>
+  <url>
+    <loc>https://legantis.net/stage-commercial-casablanca/</loc>
+    <lastmod>2026-11-12</lastmod>
   </url>
 </urlset>
