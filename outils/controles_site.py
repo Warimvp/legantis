@@ -704,9 +704,10 @@ for chemin in glob.glob(os.path.join(RACINE, '**', '*.html'), recursive=True):
 # et ne relie que des URL du sitemap (ni page hors index, ni page renommée ou retirée).
 # ── Stage commercial (12/11/2026) ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 # Offre de stage de fin d'études (décisions du propriétaire du 12/11/2026 : conventionné, non rémunéré, gratification possible à son appréciation,
-# hybride à Casablanca, 4 à 6 mois, candidature par e-mail avec CV), balisée JobPosting pour la recherche d'emplois de Google. Une offre expirée ou
+# 4 à 6 mois, candidature par e-mail avec CV ; 100 % à distance depuis le Maroc, corrigé le même jour après une première version en hybride), balisée JobPosting pour la recherche d'emplois de Google. Une offre expirée ou
 # pourvue doit quitter le site : la date limite dépassée fait échouer (retirer la page, ou repousser la date sur décision du propriétaire).
-# Contrôlé : un JobPosting complet, stage (INTERN), employeur = l'Organization de l'accueil, lieu Casablanca ; rémunération cohérente entre la page et
+# Contrôlé : un JobPosting complet, stage (INTERN), employeur = l'Organization de l'accueil, télétravail (TELECOMMUTE) ouvert aux candidats du Maroc,
+# aucun lieu physique balisé et plus aucun « hybride » dans la page ; rémunération cohérente entre la page et
 # le balisage (« n'est pas rémunéré » écrit et aucun baseSalary, ou l'inverse) ; date limite affichée = validThrough ; chaque bouton « postuler » ouvre
 # un e-mail de candidature vers contact@legantis.net ; renvoi au paragraphe #candidatures des mentions légales (ancre contrôlée plus haut) ; l'accueil relie la page.
 import datetime
@@ -720,11 +721,12 @@ for rel in PAGES_STAGE:
         offres += [g for g in (o.get('@graph', [o]) if isinstance(o, dict) else o) if isinstance(g, dict) and g.get('@type') == 'JobPosting']
     if len(offres) != 1: echecs.append(f'{u}: {len(offres)} JobPosting (1 attendu)'); continue
     o = offres[0]
-    echecs += [f'{u}: JobPosting sans {c}' for c in ('title', 'description', 'datePosted', 'validThrough', 'employmentType', 'hiringOrganization', 'jobLocation') if not o.get(c)]
+    echecs += [f'{u}: JobPosting sans {c}' for c in ('title', 'description', 'datePosted', 'validThrough', 'employmentType', 'hiringOrganization') if not o.get(c)]
     if o.get('employmentType') != 'INTERN': echecs.append(f'{u}: employmentType {o.get("employmentType")} (INTERN attendu)')
     if (o.get('hiringOrganization') or {}).get('@id') != BASE + '#organisation': echecs.append(f'{u}: employeur ≠ Organization de l\'accueil')
-    adresse = (o.get('jobLocation') or {}).get('address') or {}
-    if (adresse.get('addressLocality'), adresse.get('addressCountry')) != ('Casablanca', 'MA'): echecs.append(f'{u}: lieu du stage {adresse} (Casablanca, MA attendus)')
+    if o.get('jobLocationType') != 'TELECOMMUTE' or (o.get('applicantLocationRequirements') or {}).get('name') != 'Morocco': echecs.append(f'{u}: télétravail (TELECOMMUTE) ou pays des candidats (Morocco) absent du JobPosting')
+    if 'jobLocation' in o: echecs.append(f'{u}: lieu physique balisé pour un stage 100 % à distance')
+    if re.search(r'hybride', t, re.I): echecs.append(f'{u}: « hybride » dans la page d\'un stage 100 % à distance')
     if ('baseSalary' in o) == ("n'est pas rémunéré" in t): echecs.append(f'{u}: rémunération contradictoire ou absente entre la page et le JobPosting (baseSalary : {"baseSalary" in o})')
     try: fin = datetime.date.fromisoformat(str(o.get('validThrough', ''))[:10])
     except ValueError: echecs.append(f'{u}: validThrough illisible'); fin = None
